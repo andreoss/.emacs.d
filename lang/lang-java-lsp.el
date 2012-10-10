@@ -93,7 +93,11 @@
 (setq lsp-ui-sideline-update-mode 'point)
 (setq lsp-ui-doc-enable nil)
 (setq ai:lombok-jar (expand-file-name (concat user-emacs-directory "lombok.jar")))
-(setq ai:java-format-settings-file (expand-file-name (concat user-emacs-directory "eclipse-java-google-style.xml" )))
+(setq ai:java-format-settings-file
+      (expand-file-name
+       (concat user-emacs-directory "java.xml")
+       )
+      )
 (setq lsp-java-vmargs
         (list "-noverify"
               "-Xmx2G"

@@ -16,6 +16,7 @@
             (setq gc-cons-percentage 0.1)
             (garbage-collect)))
 ;; Start server unless it is already running
+(require 'server)
 (add-hook 'after-init-hook
           (lambda ()
             (if (not (server-running-p))
@@ -70,14 +71,15 @@
 (require 'lang-c)
 (require 'lang-java-lsp)
 (require 'lang-scala-lsp)
-(comment (require 'lang-scala-ensime))
 (require 'lang-clojure)
 (require 'lang-haskell)
 (require 'lang-go)
-(require 'lang-lua)
 (require 'lang-perl)
 (require 'lang-python)
 (require 'lang-scheme)
 (require 'lang-sh)
 (provide 'init)
 ;;; init.el ends here
+(custom-set-variables
+ '(initial-frame-alist (quote ((width . 80) (height . 40))))
+ )
