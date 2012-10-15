@@ -3,8 +3,7 @@
 ;;; Code:
 (use-package better-defaults)
 (scroll-bar-mode +1)
-(use-package doom-themes)
-(load-theme 'doom-opera-light t)
+(load-theme 'tango t)
 (defun ai:setup-frame (frame)
   "Setup a FRAME."
   (setq frame (or frame (selected-frame)))
@@ -12,13 +11,14 @@
     (set-background-color "#ffffea")
     (set-foreground-color "#000000")
     )
-  (set-frame-font "Source Code Pro 10" t (list frame))
   (set-frame-width frame 80)
   (set-frame-height frame 40)
   (fringe-mode '(14 . 7))
   (custom-set-faces
    '(fringe ((t (:background "#f7f7da"))))))
-(ai:setup-frame nil)
+(add-hook 'after-init-hook
+          (lambda ()
+            (ai:setup-frame nil)) t)
 (add-to-list 'after-make-frame-functions #'ai:setup-frame)
 (minibuffer-electric-default-mode +1)
 (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
