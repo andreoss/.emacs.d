@@ -87,10 +87,12 @@ Start server unless it is already running
 
 * Environment
 #+BEGIN_SRC emacs-lisp
-(setq debug-on-error t)
-(set-language-environment "UTF-8")
-(update-env-var "PATH"
-                  (expand-file-name (concat dotfiles-directory-name "bin")))
+  (setq debug-on-error t)
+  (set-language-environment "UTF-8")
+  (update-env-var
+   "PATH"
+   (expand-file-name
+    (concat dotfiles-directory-name "bin")))
 #+END_SRC
 * Appearance
 ** Theme
@@ -136,7 +138,6 @@ Unkillable & presistant scratch buffer
 ** Dashboard
 #+begin_src emacs-lisp
 (use-package dashboard
-    :ensure t
     :config
     (dashboard-setup-startup-hook)
     (setq dashboard-banner-official-png nil)
@@ -147,14 +148,8 @@ Unkillable & presistant scratch buffer
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
 #+end_src
-** Transparency
-#+begin_src emacs-lisp
-  ;;(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
-#+end_src
 ** Frame size
 #+begin_src emacs-lisp
-  (setq initial-frame-alist
-        '((width . 80) (height . 20)))
 #+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
@@ -1443,7 +1438,10 @@ C-w handles windows in all states
 (add-hook 'c-mode-hook        'c-turn-on-eldoc-mode)
 (add-hook 'c-mode-common-hook 'elide-head)
 #+end_src
-
+** C++
+#+begin_src emacs-lisp
+(add-hook 'cpp-mode-hook 'lsp)
+#+end_src
 ** Java
 #+begin_src emacs-lisp
   (require 'cc-mode)
