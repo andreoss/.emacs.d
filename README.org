@@ -31,22 +31,9 @@ Basic package configuration required by straight.el
  #+END_SRC
  Setup straight.el
  #+BEGIN_SRC emacs-lisp
-   (setq-default straight-use-package-by-default t)
-   (setq-default straight-vc-git-default-clone-depth 1)
-   (defvar bootstrap-version)
-   (let ((bootstrap-file
-          (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-         (bootstrap-version 5))
-     (unless (file-exists-p bootstrap-file)
-       (with-current-buffer
-           (url-retrieve-synchronously
-            "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-            'silent 'inhibit-cookies)
-         (goto-char (point-max))
-         (eval-print-last-sexp)))
-     (load bootstrap-file nil 'nomessage))
-   (require 'straight)
-   (straight-use-package 'use-package)
+   (require 'use-package)
+   (setq use-package-always-ensure nil)
+   (use-package quelpa-use-package)
  #+END_SRC
 
 ** Server
@@ -97,9 +84,10 @@ Start server unless it is already running
 * Appearance
 ** Theme
 #+begin_src emacs-lisp
+  (use-package quelpa-use-package)
   (use-package jc-theme
-    :straight
-    (jc-theme :type git :host gitlab :repo "andreoss/jc-theme")
+    :quelpa
+    ((jc-theme :fetcher gitlab :repo "andreoss/jc-theme"))
     :config
     (load-theme 'jc t)
     )
@@ -727,7 +715,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     (setq enable-recursive-minibuffers t)
     (selectrum-mode +1)
     )
-  (use-package org-pdfview :ensure t)
   (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1)))
 #+end_src
 ** Other
@@ -1755,7 +1742,7 @@ If the region is active and `transient-mark-mode' is on, call
 
 ** Lisp
 #+begin_src emacs-lisp
-(use-package paredit :straight (:host github :repo "emacsmirror/paredit") :ensure t)
+(use-package paredit)
 (hook! lisp-mode-hook paredit-mode)
 (hook! lisp-mode-hook prettify-symbols-mode)
 (use-package lispy)
