@@ -606,6 +606,17 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (use-package hl-todo
     :init
     (global-hl-todo-mode))
+  (use-package bug-reference
+    :commands bug-reference-prog-mode
+    :init (add-hook 'prog-mode-hook 'bug-reference-prog-mode)
+    :config
+    (setq bug-reference-bug-regexp
+          "\\([Bb]ug ?#?\\|[Pp]atch ?#\\|RFE ?#\\|todo ?#?\\|PR [a-z+-]+/\\)\\([0-9]+\\(?:#[0-9]+\\)?\\)"
+          )
+    )
+  (use-package bug-reference-github
+    :commands bug-reference-github-set-url-format
+    :init (add-hook 'prog-mode-hook 'bug-reference-github-set-url-format))
   ;; Borrowed from
   ;; http://endlessparentheses.com/ispell-and-abbrev-the-perfect-auto-correct.html
   (define-key ctl-x-map "\C-i"
