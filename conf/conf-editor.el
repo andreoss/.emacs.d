@@ -304,5 +304,7 @@ abort completely with `C-g'."
 (use-package vlf
   :config
   (require 'vlf-setup))
+(use-package crux)
+(crux-reopen-as-root-mode +1)
 (provide 'conf-editor)
 ;;; conf-editor.el ends here
