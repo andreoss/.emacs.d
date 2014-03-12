@@ -76,6 +76,7 @@
 (require 'lang-python)
 (require 'lang-scheme)
 (require 'lang-sh)
+(require 'lang-rust)
 (provide 'init)
 ;;; init.el ends here
 (custom-set-variables
