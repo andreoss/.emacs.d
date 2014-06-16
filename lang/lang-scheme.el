@@ -1,11 +1,5 @@
-(use-package geiser)
-(use-package ac-geiser)
-
-(setq-default geiser-guile-binary "/run/current-system/profile/bin/guile")
-(add-hook 'geiser-mode-hook      'ac-geiser-setup)
-
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'geiser-repl-mode))
+(require 'geiser)
+(setq geiser-active-implementations '(guile))
 
 (hook! scheme-mode-hook
    (paredit-mode)
