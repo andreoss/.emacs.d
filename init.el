@@ -1,10 +1,11 @@
-;; init --- init ; -*- lexical-binding: t -*-
+;;; init --- init ; -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;;
 ;;; Code:
-;; Enable readable backtraces when error occurs
 (defvar exwm-enable? nil)
+;; Enable readable backtraces when error occurs
 (setq debug-on-error t)
+(set-language-environment "UTF-8")
 ;; Disable GC for about 1s speed up
 ;; See https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (setq gc-cons-threshold  most-positive-fixnum
@@ -79,6 +80,3 @@
 (require 'lang-rust)
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- '(initial-frame-alist (quote ((width . 80) (height . 40))))
- )
