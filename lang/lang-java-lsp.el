@@ -11,15 +11,7 @@
   :after lsp-mode
   :bind (("C-M-b" . lsp-find-implementation))
   :config (add-hook 'java-mode-hook 'lsp))
-(hook! java-mode-hook
-       (hs-minor-mode +1)
-       (hs-hide-initial-comment-block)
-       )
-(hook! xml-mode-hook
-       (hs-minor-mode +1)
-       (hs-hide-initial-comment-block)
-       )
-(hook! groovy-mode-hook
+(hook! prog-mode-hook
        (hs-minor-mode +1)
        (hs-hide-initial-comment-block)
        )
@@ -51,7 +43,8 @@
                         )))
   "Eclipse Java Programming Style")
 (c-add-style "Eclipse" eclipse-java-style)
-(customize-set-variable 'c-default-style (quote ((java-mode . "eclipse") (awk-mode . "awk") (other . "gnu"))))
+(customize-set-variable 'c-default-style
+                        (quote ((java-mode . "eclipse") (awk-mode . "awk") (other . "gnu"))))
 (use-package dap-mode
   :after lsp-mode
   :config
