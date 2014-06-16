@@ -43,13 +43,17 @@
 (hook! prog-mode-hook rainbow-mode)
 (hook! prog-mode-hook hs-minor-mode)
 (use-package ivy)
+(use-package prescient)
+(use-package ivy-prescient)
+(use-package company-prescient)
+(ivy-prescient-mode +1)
 (use-package swiper :after ivy)
 (use-package flx)
 (use-package flx-ido)
 (flx-ido-mode +1)
 (setq ivy-re-builders-alist
       '((ivy-switch-buffer . ivy--regex-plus)
-        (t . ivy--regex-fuzzy)))
+        (t . ivy--regex-or-literal)))
 (setq ivy-initial-inputs-alist nil)
 (setq ido-ignore-files '("\\`#"
                          "\\`.#"
@@ -123,6 +127,12 @@
 (setq select-enable-clipboard t) ; as above
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 (setq default-input-method 'russian-computer)
+(use-package reverse-im
+  :ensure t
+  :custom
+  (reverse-im-input-methods '("russian-computer"))
+  :config
+  (reverse-im-mode t))
 (defun untabify-buffer ()
   "Replace tabs by spaces."
   (interactive)
@@ -304,7 +314,8 @@ abort completely with `C-g'."
 (use-package vlf
   :config
   (require 'vlf-setup))
-(use-package crux)
-(crux-reopen-as-root-mode +1)
+(require 'ispell)
+(setq auto-revert-verbose nil)
+(setq-default ispell-program-name "aspell")
 (provide 'conf-editor)
 ;;; conf-editor.el ends here
