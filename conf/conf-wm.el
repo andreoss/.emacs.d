@@ -97,11 +97,11 @@
 (use-package follow-mouse)
 (turn-on-follow-mouse)
 
-(use-package nav-flash)
-(defun nav-flash-show* (&rest xs) (nav-flash-show))
-(add-function :after (symbol-function 'other-window) #'nav-flash-show*)
-(add-function :after (symbol-function 'select-window) #'nav-flash-show*)
-(add-hook 'imenu-after-jump-hook 'nav-flash-show nil t)
+;; (use-package nav-flash)
+;; (defun nav-flash-show* (&rest xs) (nav-flash-show))
+;; (add-function :after (symbol-function 'other-window) #'nav-flash-show*)
+;; (add-function :after (symbol-function 'select-window) #'nav-flash-show*)
+;; (add-hook 'imenu-after-jump-hook 'nav-flash-show nil t)
 ;;; Zoom
 (use-package default-text-scale)
 (define-key global-map [(control +)] (function default-text-scale-increase))
@@ -133,6 +133,17 @@
                       "-"
                       (group (zero-or-more not-newline)))
                  . "\\1")))
+
+(defun stop-using-minibuffer ()
+  "kill the minibuffer"
+  (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+    (abort-recursive-edit)))
+
+(add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+;; Vertical window divider
+(setq window-divider-default-right-width 3)
+(setq window-divider-default-places 'right-only)
+(window-divider-mode)
 
 (provide 'conf-wm)
 ;;; conf-wm.el ends here
