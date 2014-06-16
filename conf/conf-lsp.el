@@ -1,5 +1,9 @@
+;;; conf-lsp --- LSP configuration
+;;; Commentary:
+;;; Code:
 (use-package projectile
   :config
+  (use-package ag)
   (global-set-key (kbd "C-S-t")
                   'projectile-toggle-between-implementation-and-test))
 ;; Helm:
@@ -58,9 +62,13 @@
   (tooltip-mode 1))
 (hook! lsp-mode-hook (lsp-lens-mode +1))
 (require 'evil)
-
 (global-set-key (kbd "M-2") 'lsp-treemacs-symbols)
 (evil-leader/set-key "l R" 'lsp-workspace-restart)
 (evil-leader/set-key "l f" 'lsp-format-buffer)
 (evil-leader/set-key "r" 'lsp-rename)
+(define-key lsp-ui-mode-map
+  [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+(define-key lsp-ui-mode-map
+  [remap xref-find-references] #'lsp-ui-peek-find-references)
 (provide 'conf-lsp)
+;;; conf-lsp.el ends here
