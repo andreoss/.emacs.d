@@ -132,9 +132,13 @@ STDERR with `org-babel-eval-error-notify'."
   (hook! org-mode-hook rasmus/org-prettify-symbols))
 ;; Switch to using enchant as our spell-checking backend (fallback to ispell)
 (setq ispell-program-name
-      (or (executable-find "enchant")
+      (or (executable-find "aspell")
           (executable-find "ispell")
           "ispell"))
+
+(use-package flyspell)
+(add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+(add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
 
 ;; Use langtool for grammar checking; ensure languagetool exists in
 ;; system
