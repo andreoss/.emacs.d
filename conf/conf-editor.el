@@ -317,5 +317,6 @@ abort completely with `C-g'."
 (require 'ispell)
 (setq auto-revert-verbose nil)
 (setq-default ispell-program-name "aspell")
+(mouse-avoidance-mode 'exile)
 (provide 'conf-editor)
 ;;; conf-editor.el ends here
