@@ -5,33 +5,34 @@
   :ensure t
   :config
     (dashboard-setup-startup-hook)
+    (setq dashboard-banner-official-png nil)
+    (setq dashboard-startup-banner nil)
+    (setq dashboard-banner-logo-png nil)
+    (setq dashboard-footer-messages nil)
     (setq dashboard-items '((recents  . 20)
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
 (use-package better-defaults)
 
 (scroll-bar-mode +1)
-
 (defun ai:setup-frame (frame)
   "Setup a FRAME."
   (setq frame (or frame (selected-frame)))
   (if-any-window-system
-   ;;(load-theme 'adwaita)
+   (use-package almost-mono-themes)
+   (load-theme 'almost-mono-cream)
    (when (display-graphic-p)
      (set-frame-parameter frame 'internal-border-width 16)
      (set-frame-width frame 80)
      (set-frame-height frame 40)
      (fringe-mode '(14 . 7)))
-   (custom-set-faces
-    '(fringe ((t (:background "#f7f7da"))))))
+   )
   )
 
 (add-hook 'after-init-hook
           (lambda ()
             (ai:setup-frame nil)) t)
 
-(add-to-list 'initial-frame-alist '(background-color . "#ffffea"))
-(add-to-list 'default-frame-alist '(background-color . "#ffffea"))
 (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
 (add-to-list 'after-make-frame-functions #'ai:setup-frame)
 
