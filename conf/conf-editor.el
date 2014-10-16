@@ -1,6 +1,8 @@
 ;;; conf-editor --- basic editor functions
 ;;; Commentary:
 ;;; Code:
+(use-package company)
+(add-hook 'after-init-hook 'global-company-mode)
 (use-package midnight)
 (use-package projectile)
 ;; Use Emacs session management
@@ -205,6 +207,7 @@
   :init
   (centered-cursor-mode +1))
 (global-eldoc-mode +1)
+(use-package undo-tree)
 (global-undo-tree-mode +1)
 (global-reveal-mode +1)
 (use-package hl-todo
