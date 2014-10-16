@@ -14,7 +14,7 @@
 (use-package winum
   :config (require 'evil-winner))
 (setq initial-frame-alist
-      '((top . 0) (left . 0) (width . 80) (height . 20)))
+      '((width . 80) (height . 20)))
 ;; Prefer vertical splits
 ;; https://www.emacswiki.org/emacs/HorizontalSplitting
 (setq-default split-width-threshold 160)
