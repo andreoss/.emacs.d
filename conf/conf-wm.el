@@ -15,6 +15,11 @@
   :config (require 'evil-winner))
 (setq initial-frame-alist
       '((width . 80) (height . 20)))
+(setq
+ idle-update-delay 2
+ jit-lock-defer-time 0
+ jit-lock-stealth-time 0.2
+ jit-lock-stealth-verbose nil)
 ;; Prefer vertical splits
 ;; https://www.emacswiki.org/emacs/HorizontalSplitting
 (setq-default split-width-threshold 160)
