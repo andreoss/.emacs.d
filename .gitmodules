@@ -11,6 +11,3 @@
 [submodule "epkg"]
 	path = lib/epkg
 	url = git@github.com:emacscollective/epkg.git
-[submodule "gitconfig"]
-	path = lib/gitconfig
-	url = git@github.com:tonini/gitconfig.el.git
