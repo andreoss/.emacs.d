@@ -3,7 +3,7 @@
 ;; See https://github.com/quicklisp/quicklisp-slime-helper
 ;;; Code:
 
-(use-package slime-company)
+(use-package slime-company :straight (:host github :repo "emacsmirror/slime-company"))
 (use-package slime
   :mode (("\\.lisp'"    . lisp-mode)
          ("\\.lsp'"     . lisp-mode)
