@@ -272,10 +272,6 @@ abort completely with `C-g'."
 (setq vc-follow-symlinks nil)
 (add-hook
  'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-(use-package paredit
-  :diminish
-  :hook
-  (lisp-mode-hook .paredit-mode))
 (use-package paren
   :init
   (setq-default show-paren-style 'parenthesis)
