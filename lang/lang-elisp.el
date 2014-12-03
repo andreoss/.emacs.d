@@ -56,7 +56,6 @@ If the region is active and `transient-mark-mode' is on, call
                           "&rest"       ?…
                           "&optional"   ?¿
                           )))
-(use-package emr)
 (evil-define-key   'normal emacs-lisp-mode-map
   (key g s)        'elisp-slime-nav-find-elisp-thing-at-point
   (key M-.)        'elisp-slime-nav-find-elisp-thing-at-point
