@@ -34,7 +34,7 @@
   :bind (("C-M-b" . lsp-find-implementation))
   :config
   (add-hook 'java-mode-hook 'lsp)
-  (add-hook 'java-mode-hook 'lsp-jt-lens-mode)
+  ;;(add-hook 'java-mode-hook 'lsp-jt-lens-mode)
   )
 (hook! prog-mode-hook
        (hs-minor-mode +1)
@@ -155,5 +155,7 @@
         (gethash "value" mt)
         ))
      (t nil))))
+
+(setq lsp-java-server-install-dir (expand-file-name (concat user-emacs-directory "eclipse.jdt.ls/server")))
 (provide 'lang-java-lsp)
 ;;; lang-java-lsp.el ends here
