@@ -13,8 +13,6 @@
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
 (use-package better-defaults)
-
-(scroll-bar-mode +1)
 (defun ai:setup-frame (frame)
   "Setup a FRAME."
   (setq frame (or frame (selected-frame)))
@@ -63,6 +61,7 @@
 (setq pop-up-windows t)
 ;; Indicate buffer boundaries
 (setq-default indicate-buffer-boundaries '((top . left) (t . right)))
+(scroll-bar-mode +1)
 (set-scroll-bar-mode 'right)
 (provide 'conf-appearence)
 ;;; conf-appearence ends here
