@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (use-package guix)
+(use-package nix-mode)
 (use-package pdf-tools
     :ensure t
     :config
