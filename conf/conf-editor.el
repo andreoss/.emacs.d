@@ -319,5 +319,9 @@ abort completely with `C-g'."
 (setq auto-revert-verbose nil)
 (setq-default ispell-program-name "aspell")
 (mouse-avoidance-mode 'exile)
+(use-package selectrum
+  :config
+  (selectrum-mode +1)
+  )
 (provide 'conf-editor)
 ;;; conf-editor.el ends here
