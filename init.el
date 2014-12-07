@@ -51,8 +51,6 @@
 ;;;
 ;; Enable packages
 (require 'conf-straight)
-(if (and exwm-enable? (eq (window-system) 'x))
-    (hook! after-init-hook (require 'conf-exwm)))
 (require 'conf-evil)
 (require 'conf-editor)
 (require 'conf-system)
