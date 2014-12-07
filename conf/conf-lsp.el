@@ -1,16 +1,22 @@
 ;;; conf-lsp --- LSP configuration
 ;;; Commentary:
 ;;; Code:
+(use-package ag)
 (use-package projectile
   :config
-  (use-package ag)
   (global-set-key (kbd "C-S-t")
                   'projectile-toggle-between-implementation-and-test))
+
+;; Enable nice rendering of diagnostics like compile errors.
+(use-package flycheck
+  :init (global-flycheck-mode))
+
 (use-package lsp-mode
   :config
   (setq lsp-java-code-generation-use-blocks t)
   (setq lsp-java-implementations-code-lens-enabled t)
   (setq lsp-server-trace "verbose")
+  (setq lsp-prefer-flymake nil)
   (setq lsp-inhibit-message t
         lsp-eldoc-render-all nil
         lsp-enable-file-watchers nil
@@ -18,7 +24,17 @@
   :hook
   (java-mode . lsp-deferred)
   (xml-mode . lsp-deferred)
+  (scala-mode . lsp)
+  (rust-mode . lsp)
+  (c++-mode . lsp)
+  (c-mode . lsp)
   :commands (lsp lsp-deferred))
+
+(use-package lsp-python-ms
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-python-ms)
+                          (lsp-deferred))))
+(setq lsp-python-ms-executable "pyls")
 
 (use-package lsp-ui
   :config
