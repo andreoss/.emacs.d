@@ -2,7 +2,5 @@
 /*/
 !/.gitignore
 !/.gitmodules
-!/lang/*.el
-!/conf/*.el
 !/*.el
-!/README.org
+!/*.org
