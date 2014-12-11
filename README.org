@@ -3,19 +3,14 @@
 #+PROPERTY: header-args :comments yes :results silent
 
 * Load paths
-Load extra files from ~/.emacs.d* Startup
-Disable GC at startup, and re-enable after the init is done.
-Gives about 1s speed up.
-https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 ** Package manager
- Basic package configuration required by straight.el
+Basic package configuration required by straight.el
 
  #+BEGIN_SRC emacs-lisp
    (require 'package)
    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
    (package-initialize)
  #+END_SRC
-
  Setup straight.el
  #+BEGIN_SRC emacs-lisp
    (setq-default straight-use-package-by-default t)
@@ -38,6 +33,9 @@ https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 
 
 ** GC Tweaks
+Disable GC at startup, and re-enable after the init is done.
+Gives about 1s speed up.
+https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold  most-positive-fixnum
         gc-cons-percentage 0.6)
@@ -60,6 +58,7 @@ Start server unless it is already running
 
 #+END_SRC
 ** Scratch buffer
+Unkillable & presistant scratch buffer
 #+begin_src emacs-lisp
 (setq-default inhibit-startup-screen t)
 (setq-default initial-major-mode 'org-mode)
@@ -106,6 +105,31 @@ Start server unless it is already running
                   (expand-file-name (concat dotfiles-directory-name "bin")))
 #+END_SRC
 * Appearance
+** Theme
+#+begin_src emacs-lisp
+  (use-package jc-theme
+    :straight
+    '(jc-theme :type git :host gitlab :repo "andreoss/jc-theme")
+    :config
+    (load-theme 'jc t)
+  )
+    (defun ai:setup-frame (frame)
+      "Setup a FRAME."
+      (setq frame (or frame (selected-frame)))
+      (if-any-window-system
+       (when (display-graphic-p)
+         (set-frame-parameter frame 'internal-border-width 32)
+         (set-frame-width frame 80)
+         (set-frame-height frame 40)
+         (fringe-mode '(14 . 7)))
+       )
+      )
+
+    (add-hook 'after-init-hook
+              (lambda ()
+                (ai:setup-frame nil)) t)
+#+end_src
+** Rest
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
     :ensure t
@@ -118,23 +142,6 @@ Start server unless it is already running
     (setq dashboard-items '((recents  . 20)
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
-  (defun ai:setup-frame (frame)
-    "Setup a FRAME."
-    (setq frame (or frame (selected-frame)))
-    (if-any-window-system
-     (use-package plan9-theme)
-     (load-theme 'plan9 t)
-     (when (display-graphic-p)
-       (set-frame-parameter frame 'internal-border-width 16)
-       (set-frame-width frame 80)
-       (set-frame-height frame 40)
-       (fringe-mode '(14 . 7)))
-     )
-    )
-
-  (add-hook 'after-init-hook
-            (lambda ()
-              (ai:setup-frame nil)) t)
 
   (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
   (add-to-list 'after-make-frame-functions #'ai:setup-frame)
@@ -332,6 +339,7 @@ Start server unless it is already running
 https://git.sr.ht/~technomancy/better-defaults
 #+begin_src emacs-lisp
   (use-package better-defaults)
+  (scroll-bar-mode t)
 #+end_src
 ** Spelling
 Switch to using enchant as our spell-checking backend (fallback to ispell)
@@ -1610,22 +1618,23 @@ STDERR with `org-babel-eval-error-notify'."
 
 ** Scala
 #+BEGIN_SRC emacs-lisp
-(use-package scala-mode
-  :mode "\\.s\\(cala\\|bt\\)$")
-(use-package sbt-mode
-  :commands sbt-start sbt-command
-  :config
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map)
-  )
-(hook! scala-mode-hook
-       (hs-minor-mode +1)
-       (hs-hide-initial-comment-block)
-       )
+  (use-package scala-mode
+    :mode "\\.s\\(cala\\|bt\\)$")
+  (use-package lsp-metals)
+  (use-package sbt-mode
+    :commands sbt-start sbt-command
+    :config
+    ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+    ;; allows using SPACE when in the minibuffer
+    (substitute-key-definition
+     'minibuffer-complete-word
+     'self-insert-command
+     minibuffer-local-completion-map)
+    )
+  (hook! scala-mode-hook
+         (hs-minor-mode +1)
+         (hs-hide-initial-comment-block)
+         )
 #+END_SRC
 
 ** Go
