@@ -112,26 +112,25 @@ Unkillable & presistant scratch buffer
     '(jc-theme :type git :host gitlab :repo "andreoss/jc-theme")
     :config
     (load-theme 'jc t)
-  )
-    (defun ai:setup-frame (frame)
-      "Setup a FRAME."
-      (setq frame (or frame (selected-frame)))
-      (if-any-window-system
-       (when (display-graphic-p)
-         (set-frame-parameter frame 'internal-border-width 32)
-         (set-frame-width frame 80)
-         (set-frame-height frame 40)
-         (fringe-mode '(14 . 7)))
-       )
-      )
-
+    )
+  (defun ai:setup-frame (frame)
+    "Setup a FRAME."
+    (setq frame (or frame (selected-frame)))
+    (if-any-window-system
+     (when (display-graphic-p)
+       (set-frame-parameter frame 'internal-border-width 32)
+       (set-frame-width frame 80)
+       (set-frame-height frame 40)
+       (fringe-mode '(14 . 7)))
+     )
+    )
     (add-hook 'after-init-hook
               (lambda ()
                 (ai:setup-frame nil)) t)
 #+end_src
-** Rest
-#+BEGIN_SRC emacs-lisp
-  (use-package dashboard
+** Dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
     :ensure t
     :config
     (dashboard-setup-startup-hook)
@@ -142,7 +141,9 @@ Unkillable & presistant scratch buffer
     (setq dashboard-items '((recents  . 20)
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
-
+#+end_src
+** Rest
+#+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
   (add-to-list 'after-make-frame-functions #'ai:setup-frame)
 
@@ -165,8 +166,7 @@ Unkillable & presistant scratch buffer
   (setq pop-up-windows t)
   ;; Indicate buffer boundaries
   (setq-default indicate-buffer-boundaries '((top . left) (t . right)))
-  (scroll-bar-mode +1)
-  (set-scroll-bar-mode 'right)
+  (set-scroll-bar-mode 'left)
 #+END_SRC
 
 ** Disable mode-line
@@ -192,14 +192,8 @@ Unkillable & presistant scratch buffer
     (evil-global-set-key 'normal (kbd ";") 'evil-ex)
     (setq async-shell-command-buffer nil)
     (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
-    (evil-global-set-key 'insert (kbd "C-a") 'beginning-of-line)
-    (evil-global-set-key 'normal (kbd "C-h") 'delete-backward-char)
-    (evil-global-set-key 'insert (kbd "C-h") 'delete-backward-char)
-    (evil-global-set-key 'insert (kbd "C-e") 'end-of-line)
-    (evil-global-set-key 'insert (kbd "C-k") 'kill-line)
     (loop for (mode . state) in
-          '((exwm-mode                . emacs)
-            (sbt-mode                 . insert)
+          '((sbt-mode                 . insert)
             (shell-mode               . insert)
             (eshell-mode              . insert))
           do (evil-set-initial-state mode state))
@@ -210,11 +204,22 @@ Unkillable & presistant scratch buffer
           evil-emacs-state-cursor      '(bar)
           evil-motion-state-cursor     '(bar)
           evil-visual-state-cursor     '("#11312F" hbar . hollow))
-    ;; Disable mode switching
-    (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
-    (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
-    (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
 #+END_SRC
+Bring some standard keybiding back
+#+begin_src emacs-lisp
+  (evil-global-set-key 'insert (kbd "C-a") 'beginning-of-line)
+  (evil-global-set-key 'normal (kbd "C-h") 'delete-backward-char)
+  (evil-global-set-key 'insert (kbd "C-h") 'delete-backward-char)
+  (evil-global-set-key 'insert (kbd "C-e") 'end-of-line)
+  (evil-global-set-key 'insert (kbd "C-k") 'kill-line)
+#+end_src
+Disable mode switching
+#+begin_src emacs-lisp
+  (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
+  (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
+  (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
       ;; Evil exchange, easily swap two things
       (use-package evil-exchange
@@ -225,19 +230,21 @@ Unkillable & presistant scratch buffer
         (define-key evil-visual-state-map "gx" #'evil-exchange)
         (define-key evil-normal-state-map "gX" #'evil-exchange-cancel)
         (define-key evil-visual-state-map "gX" #'evil-exchange-cancel))
-      ;; Esc quits from everything
-      (define-key evil-normal-state-map [escape] #'keyboard-quit)
-      (define-key evil-emacs-state-map [escape] #'evil-normal-state)
-      (define-key evil-visual-state-map [escape] #'keyboard-quit)
-      (define-key evil-motion-state-map [escape] #'evil-normal-state)
-      (define-key evil-operator-state-map [escape] #'evil-normal-state)
-      (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
 
   #+END_SRC
+  Universal ESC
+  #+begin_src emacs-lisp
+    (define-key evil-normal-state-map [escape] #'keyboard-quit)
+    (define-key evil-emacs-state-map [escape] #'evil-normal-state)
+    (define-key evil-visual-state-map [escape] #'keyboard-quit)
+    (define-key evil-motion-state-map [escape] #'evil-normal-state)
+    (define-key evil-operator-state-map [escape] #'evil-normal-state)
+    (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
+  #+end_src
   #+BEGIN_SRC emacs-lisp
       (use-package evil-matchit
         :commands (evilmi-inner-text-object
