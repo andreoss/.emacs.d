@@ -150,7 +150,6 @@ Unkillable & presistant scratch buffer
   (minibuffer-electric-default-mode +1)
   (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
   (hook! prog-mode-hook (font-lock-mode -1))
-  (global-set-key (kbd "M-1") 'treemacs)
   (set-display-table-slot standard-display-table 'truncation
                           (make-glyph-code ?… 'default))
   (set-display-table-slot standard-display-table 'wrap
