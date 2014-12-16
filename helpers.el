@@ -59,10 +59,6 @@ E.g: (update-env-var \"PATH\" \"/usr/local/bin\")"
             (fmakunbound s)
           (makunbound s))))
 
-(if (not (fboundp 'make-thread))
-    (defun make-thread (function &optional name)
-      (funcall function))
-  )
 (defun set-exec-path ()
   "Set variable `exec-path' and PATH environment according to the user's shell."
   (interactive)

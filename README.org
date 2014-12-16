@@ -148,6 +148,15 @@ Unkillable & presistant scratch buffer
   (add-to-list 'after-make-frame-functions #'ai:setup-frame)
 
   (minibuffer-electric-default-mode +1)
+  (add-hook 'minibuffer-setup-hook
+            (lambda ()
+              (toggle-truncate-lines +1)
+              ))
+
+
+  (add-hook 'minibuffer-setup-hook
+            (lambda () (setq truncate-lines nil)))
+
   (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
   (hook! prog-mode-hook (font-lock-mode -1))
   (set-display-table-slot standard-display-table 'truncation
@@ -179,7 +188,7 @@ Unkillable & presistant scratch buffer
     :hook
     (after-init . feebleline-mode))
 #+end_src
-* Vi
+* COMMENT Vi
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :preface
@@ -219,19 +228,20 @@ Disable mode switching
   (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
 #+end_src
 
+Easily swap two things
 #+BEGIN_SRC emacs-lisp
-      ;; Evil exchange, easily swap two things
-      (use-package evil-exchange
-        :commands (evil-exchange
-                   evil-exchange-cancel)
-        :init
-        (define-key evil-normal-state-map "gx" #'evil-exchange)
-        (define-key evil-visual-state-map "gx" #'evil-exchange)
-        (define-key evil-normal-state-map "gX" #'evil-exchange-cancel)
-        (define-key evil-visual-state-map "gX" #'evil-exchange-cancel))
+  (use-package evil-exchange
+    :commands (evil-exchange
+               evil-exchange-cancel)
+    :init
+    (define-key evil-normal-state-map "gx" #'evil-exchange)
+    (define-key evil-visual-state-map "gx" #'evil-exchange)
+    (define-key evil-normal-state-map "gX" #'evil-exchange-cancel)
+    (define-key evil-visual-state-map "gX" #'evil-exchange-cancel))
 
   #+END_SRC
-  Universal ESC
+
+Universal ESC
   #+begin_src emacs-lisp
     (define-key evil-normal-state-map [escape] #'keyboard-quit)
     (define-key evil-emacs-state-map [escape] #'evil-normal-state)
@@ -705,24 +715,27 @@ abort completely with `C-g'."
   (use-package guix
     :config (guix-prettify-global-mode +1))
   (use-package nix-mode)
-  (use-package restart-emacs)
-  (use-package notmuch)
-  (defun notmuch-inbox ()
-    (notmuch-tree "is:inbox")
+  (use-package restart-emacs
+    :config
+    (evil-leader/set-key "S r" 'restart-emacs)
+    )
+  (use-package notmuch
+    :config
+    (evil-leader/set-key "m i"
+      '(lambda () (interactive) (notmuch-tree "is:inbox")))
+    (evil-leader/set-key "m m p"
+      '(lambda () (interactive) (notmuch-tree "is:inbox and is:private")))
+    (evil-leader/set-key "m m g"
+      '(lambda () (interactive) (notmuch-tree "is:inbox and is:github")))
+    (evil-leader/set-key "m s"
+      '(lambda () (interactive) (notmuch-tree)))
     )
   (use-package org)
   (use-package org-caldav)
   (use-package ytdl)
-  (use-package telega)
-  (telega-notifications-mode 1)
-  (evil-leader/set-key "m i"
-    '(lambda () (interactive) (notmuch-tree "is:inbox")))
-  (evil-leader/set-key "m m p"
-    '(lambda () (interactive) (notmuch-tree "is:inbox and is:private")))
-  (evil-leader/set-key "m m g"
-    '(lambda () (interactive) (notmuch-tree "is:inbox and is:github")))
-  (evil-leader/set-key "m s"
-    '(lambda () (interactive) (notmuch-tree)))
+  (use-package telega
+    :config
+    (telega-notifications-mode 1))
 #+END_SRC
 * LSP
 #+BEGIN_SRC emacs-lisp
