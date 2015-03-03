@@ -929,10 +929,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (setq kill-buffer-query-functions nil)
   (setq kill-emacs-query-functions nil)
 
-  ;; Docker
-  (use-package dockerfile-mode
-    :mode "Dockerfile")
-
   (add-to-list
    'auto-mode-alist '("cron\\(tab\\)?\\." . crontab-mode))
 #+END_SRC
