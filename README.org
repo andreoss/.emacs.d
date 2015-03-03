@@ -22,17 +22,42 @@ https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
               (setq gc-cons-percentage 0.1)
               (garbage-collect)))
 #+END_SRC
+** Load pats
+#+BEGIN_SRC emacs-lisp
+  (defconst dotfiles-directory-name
+    (file-name-directory (or (buffer-file-name) load-file-name))
+    "Location of main Emacs configuration files.")
+  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
+  (require 'macros         (concat dotfiles-directory-name "macros.el"))
+  (require 'helpers        (concat dotfiles-directory-name "helpers.el"))
+  (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
+  (add-to-loadpath vendor-dir)
+#+END_SRC
 ** Package manager
-Basic package configuration required by straight.el
+Basic package configuration
  #+BEGIN_SRC emacs-lisp
    (require 'package)
    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
    (package-initialize)
  #+END_SRC
- Setup straight.el
+ Setup quelpa
  #+BEGIN_SRC emacs-lisp
-   (require 'use-package)
-   (setq use-package-always-ensure nil)
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+ #+END_SRC
+ #+BEGIN_SRC emacs-lisp
+   (try
+    (progn
+      (require 'use-package)
+      (setq use-package-always-ensure nil))
+    (progn
+      (quelpa 'use-package)
+      (require 'use-package)
+      (setq use-package-always-ensure t))
+    )
    (use-package quelpa-use-package)
  #+END_SRC
 
@@ -46,18 +71,6 @@ Start server unless it is already running
                   (progn
                     (message "Starting server")
                     (server-start)))))
-
-#+END_SRC
-** Load pats
-#+BEGIN_SRC emacs-lisp
-  (defconst dotfiles-directory-name
-    (file-name-directory (or (buffer-file-name) load-file-name))
-    "Location of main Emacs configuration files.")
-  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
-  (require 'macros         (concat dotfiles-directory-name "macros.el"))
-  (require 'helpers        (concat dotfiles-directory-name "helpers.el"))
-  (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
-  (add-to-loadpath vendor-dir)
 #+END_SRC
 ** Post-init message
 #+begin_src emacs-lisp
