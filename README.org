@@ -9,7 +9,7 @@ mv ~/.emacs.d{,_}
 git clone https://github.com/andreoss/.emacs.d
 #+end_src
 * Startup
-** GC Tweaks
+** Tweaks
 Disable GC at startup, and re-enable after the init is done.
 Gives about 1s speed up.
 https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
@@ -22,16 +22,27 @@ https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
               (setq gc-cons-percentage 0.1)
               (garbage-collect)))
 #+END_SRC
-** Load pats
-#+BEGIN_SRC emacs-lisp
+Enable debug
+#+begin_src emacs-lisp
+(setq debug-on-error t)
+#+end_src
+** Load paths
+*** Path to this configuration
+#+begin_src emacs-lisp
   (defconst dotfiles-directory-name
     (file-name-directory (or (buffer-file-name) load-file-name))
     "Location of main Emacs configuration files.")
-  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
+#+end_src
+*** Macros
+#+begin_src emacs-lisp
   (require 'macros         (concat dotfiles-directory-name "macros.el"))
   (require 'helpers        (concat dotfiles-directory-name "helpers.el"))
-  (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
-  (add-to-loadpath vendor-dir)
+#+end_src
+*** Viper fallback
+[[https://www.gnu.org/software/emacs/manual/html_node/viper/index.html][Viper]] is activated before Evil in case Evil fails to be loaded.
+#+BEGIN_SRC emacs-lisp
+  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
+  (add-to-loadpath (</> dotfiles-directory-name "vendor"))
 #+END_SRC
 ** Package manager
 Basic package configuration
@@ -40,7 +51,7 @@ Basic package configuration
    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
    (package-initialize)
  #+END_SRC
- Setup quelpa
+Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
  #+BEGIN_SRC emacs-lisp
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
@@ -48,6 +59,7 @@ Basic package configuration
     (eval-buffer)
     (quelpa-self-upgrade)))
  #+END_SRC
+ Enable [[https://github.com/jwiegley/use-package][use-package]]
  #+BEGIN_SRC emacs-lisp
    (quelpa 'use-package)
    (require 'use-package)
@@ -80,8 +92,8 @@ Start server unless it is already running
 #+end_src
 
 * Environment
+Misc scripts inside [[~/.emacs.d/bin]]
 #+BEGIN_SRC emacs-lisp
-  (setq debug-on-error t)
   (set-language-environment "UTF-8")
   (update-env-var
    "PATH"
@@ -91,13 +103,15 @@ Start server unless it is already running
 * Appearance
 ** Theme
 #+begin_src emacs-lisp
-  (use-package quelpa-use-package)
   (use-package jc-theme
     :quelpa
     ((jc-theme :fetcher gitlab :repo "andreoss/jc-theme"))
     :config
     (load-theme 'jc t)
     )
+#+end_src
+** Frames
+#+begin_src emacs-lisp
   (defun ai:setup-frame (frame)
     "Setup a FRAME."
     (setq frame (or frame (selected-frame)))
@@ -143,9 +157,6 @@ Unkillable & presistant scratch buffer
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
 #+end_src
-** Frame size
-#+begin_src emacs-lisp
-#+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
   (minibuffer-electric-default-mode +1)
@@ -171,6 +182,8 @@ Unkillable & presistant scratch buffer
 #+END_SRC
 
 ** Disable mode-line
+Put mode-line in echo area.
+https://github.com/tautologyclub/feebleline
 #+begin_src emacs-lisp
   (use-package feebleline
     :custom
@@ -182,6 +195,7 @@ Unkillable & presistant scratch buffer
     (after-init . feebleline-mode))
 #+end_src
 * Vi
+Activate [[https://github.com/emacs-evil/evil][Evil]]
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :preface
@@ -208,11 +222,13 @@ Unkillable & presistant scratch buffer
 #+END_SRC
 Bring some standard keybindings back
 #+begin_src emacs-lisp
-  (evil-global-set-key 'insert (kbd "C-a") 'beginning-of-line)
-  (evil-global-set-key 'normal (kbd "C-h") 'delete-backward-char)
-  (evil-global-set-key 'insert (kbd "C-h") 'delete-backward-char)
-  (evil-global-set-key 'insert (kbd "C-e") 'end-of-line)
-  (evil-global-set-key 'insert (kbd "C-k") 'kill-line)
+  (loop for state in '(insert normal)
+    do
+    (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
+    (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
+    (evil-global-set-key state (kbd "C-e") 'end-of-line)
+    (evil-global-set-key state (kbd "C-k") 'kill-line)
+  )
 #+end_src
 Disable mode switching
 #+begin_src emacs-lisp
@@ -220,7 +236,6 @@ Disable mode switching
   (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
   (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
 #+end_src
-
 Easily swap two things
 #+BEGIN_SRC emacs-lisp
   (use-package evil-exchange
@@ -246,7 +261,22 @@ Universal ESC
     (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
     (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
   #+end_src
+  [[https://github.com/edkolev/evil-goggles][Goggles]]
+  #+begin_src  emacs-lisp
+        (use-package evil-goggles
+              :init
+              (evil-goggles-mode +1)
+              (setq-default evil-goggles-duration 0.5)
+              (custom-set-faces
+               '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
+               '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
+               '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
+               '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
+               '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
+               ))
+  #+end_src
   #+BEGIN_SRC emacs-lisp
+    (use-package evil-collection :config (try (evil-collection-init)))
     (use-package evil-matchit
       :commands (evilmi-inner-text-object
                  evilmi-outer-text-object)
@@ -259,19 +289,7 @@ Universal ESC
 
       :config
       (evilmi-init-plugins))
-    (use-package evil-collection :config (try (evil-collection-init)))
-    (use-package evil-goggles
-      :init
-      (evil-goggles-mode +1)
-      (setq-default evil-goggles-duration 0.5)
-      (custom-set-faces
-       '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
-       '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
-       '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
-       '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
-       '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
-       '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
-       ))
+
     (use-package evil-leader
       :config
       (defun e-top ()
@@ -1119,6 +1137,12 @@ STDERR with `org-babel-eval-error-notify'."
   )
 #+END_SRC
 
+** Eww
+#+begin_src emacs-lisp
+(set browse-url-browser-function 'eww-browse-url)
+(setq url-cookie-trusted-urls '()
+      url-cookie-untrusted-urls '(".*"))
+#+end_src
 * Shell integration
 #+BEGIN_SRC emacs-lisp
 (require 'eshell)
