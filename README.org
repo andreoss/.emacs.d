@@ -593,13 +593,15 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (hook! prog-mode-hook
          (unless (major-mode? org-mode makefile-mode)
            (hook! before-save-hook cleanup-buffer)))
+  (defun company-tng-mode (&rest rest))
   (use-package company
     :diminish
     :custom
     (company-show-numbers t)
-    :init
+    :config
     (global-company-mode +1)
     )
+  (use-package company-prescient)
   (defun *company-active-return ()
     (interactive)
     (if (company-explicit-action-p)
@@ -614,11 +616,12 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (require 'recentf)
   (recentf-mode +1)
   (use-package centered-cursor-mode
-    :init
+    :config
     (centered-cursor-mode +1))
   (global-eldoc-mode +1)
-  (use-package undo-tree)
-  (global-undo-tree-mode +1)
+  (use-package undo-tree
+    :config
+    (global-undo-tree-mode +1))
   (global-reveal-mode +1)
   (use-package hl-todo
     :init
@@ -768,8 +771,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
       '(lambda () (interactive) (notmuch-tree)))
     )
   (use-package org)
-  (use-package org-caldav)
-  (use-package ytdl)
   (use-package telega
     :config
     (telega-notifications-mode 1))
