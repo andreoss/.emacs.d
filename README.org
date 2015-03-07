@@ -277,7 +277,7 @@ Universal ESC
                ))
   #+end_src
   #+BEGIN_SRC emacs-lisp
-    (use-package evil-collection :config (try (evil-collection-init)))
+    (use-package evil-collection :config (evil-collection-init))
     (use-package evil-matchit
       :commands (evilmi-inner-text-object
                  evilmi-outer-text-object)
