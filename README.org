@@ -406,9 +406,9 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
               (quick-peek-update ov)))
           flycheck-inline-clear-function #'quick-peek-hide)
     (global-flycheck-inline-mode))
-
-  (use-package company)
-  (add-hook 'after-init-hook 'global-company-mode)
+  (use-package company
+    :config
+    (add-hook 'after-init-hook 'global-company-mode))
   (use-package midnight)
   (use-package projectile)
   ;; Use Emacs session management
