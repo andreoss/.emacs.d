@@ -61,7 +61,11 @@ Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
  Update Emacs's GPG keyring for GNU ELPA
 #+begin_src emacs-lisp
   (unless (package-installed-p 'gnu-elpa-keyring-update)
-    (package-install 'gnu-elpa-keyring-update))
+    (progn
+      (package-refresh-contents)
+      (package-install 'gnu-elpa-keyring-update)
+      )
+    )
 #+end_src
  Enable [[https://github.com/jwiegley/use-package][use-package]]
  #+BEGIN_SRC emacs-lisp
