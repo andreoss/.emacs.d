@@ -970,6 +970,13 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+END_SRC
 
 * Mouse
+** Zoom in/out
+#+begin_src emacs-lisp
+(global-set-key [C-mouse-4] 'text-scale-increase)
+(global-set-key [C-mouse-5] 'text-scale-decrease)
+#+end_src
+
+** Rest
 #+BEGIN_SRC emacs-lisp
 (defun find-file-at-mouse (event &optional promote-to-region)
   (interactive "e\np")
