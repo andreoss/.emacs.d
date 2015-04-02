@@ -88,16 +88,24 @@ Start server unless it is already running
                     (message "Starting server")
                     (server-start)))))
 #+END_SRC
+
+** Upgrading packages
+*** Run automatic upgrade
+#+begin_src emacs-lisp
+(setq quelpa-upgrade-interval 7)
+(add-hook #'after-init-hook #'quelpa-upgrade-all-maybe)
+#+end_src
+
 ** Post-init message
 #+begin_src emacs-lisp
-(defvar emacs-init-time-in-seconds
+(defun emacs-init-time-in-seconds ()
     (float-time
      (time-subtract after-init-time before-init-time)))
 (add-hook 'after-init-hook
           (lambda ()
             (message
              (format "* %.1f s\n"
-                     emacs-init-time-in-seconds))))
+                     (emacs-init-time-in-seconds)))))
 
 #+end_src
 
