@@ -395,17 +395,25 @@ https://git.sr.ht/~technomancy/better-defaults
       (scroll-bar-mode t)
       (set-scroll-bar-mode 'left)))
 #+end_src
+** Auto-revert on external changes
+#+begin_src emacs-lisp
+  (global-auto-revert-mode +1)
+#+end_src
+** Visual line by default
+#+begin_src emacs-lisp
+  (global-visual-line-mode -1)
+#+end_src
 ** Spelling
 Switch to using enchant as our spell-checking backend (fallback to ispell)
-#+begin_src
-(setq ispell-program-name
-      (or (executable-find "aspell")
-          (executable-find "ispell")
-          "ispell"))
-(use-package flyspell)
-(add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
-(add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
-(add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
+#+begin_src emacs-lisp
+  (setq ispell-program-name
+        (or (executable-find "aspell")
+            (executable-find "ispell")
+            "ispell"))
+  (use-package flyspell)
+  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+  (add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
+  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
 #+end_src
 ** Key binding
 #+begin_src emacs-lisp
