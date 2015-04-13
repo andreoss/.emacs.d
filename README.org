@@ -962,6 +962,12 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+END_SRC
 
 * Miscellaneous
+
+** PDF Tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools :init (pdf-tools-install))
+#+end_src
+** Rest
 #+BEGIN_SRC emacs-lisp
   (require 'saveplace)
   (require 's)
