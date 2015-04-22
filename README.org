@@ -317,46 +317,47 @@ Universal ESC
       :config
       (evilmi-init-plugins))
 
+    (defun e-top ()
+      (interactive)
+      (eshell-command "top"))
+    (defun linum-cycle ()
+      (interactive)
+      (cond ((not display-line-numbers)
+             (setq display-line-numbers 'relative))
+            ((equal display-line-numbers 'relative)
+             (setq display-line-numbers t))
+            ((equal display-line-numbers t)
+             (setq display-line-numbers nil))))
     (use-package evil-leader
       :config
-      (defun e-top ()
-        (interactive)
-        (eshell-command "top")
-        )
+      (global-evil-leader-mode +1))
+    (evil-leader/set-leader "<SPC>")
+    (evil-leader/set-key
+      "<SPC>" 'save-buffer
+      "s"  'shell
+      "x"  'eshell-here
+      "g"  'magit
+      "d"  'dired
+      "f"  'projectile-find-file-dwim
+      "b"  'switch-to-buffer
+      "k"  'kill-buffer
+      "i"  'indent-buffer
+      "&"  'async-shell-command
+      "/"  'swiper
+      "S g" 'guix
+      "S t" 'e-top
+      "S v" 'vterm
+      "j r" 'nodejs-repl-switch-to-repl
+      "j j" 'nodejs-repl-send-buffer
+      )
+    (defhydra visuals-control nil
+      "visual-control"
+      ("m" menu-bar-mode)
+      ("w" whitespace-mode)
+      ("c" font-lock-mode)
+      ("n" linum-cycle))
+    (evil-leader/set-key "v" 'visuals-control/body)
 
-      (defun linum-cycle ()
-        (interactive)
-        (cond ((not display-line-numbers)
-               (setq display-line-numbers 'relative))
-              ((equal display-line-numbers 'relative)
-               (setq display-line-numbers t))
-              ((equal display-line-numbers t)
-               (setq display-line-numbers nil))))
-
-      (global-evil-leader-mode +1)
-      (evil-leader/set-leader "<SPC>")
-      (evil-leader/set-key
-        "<SPC>" 'save-buffer
-        "s"  'shell
-        "x"  'eshell-here
-        "g"  'magit
-        "d" 'dired
-        "f"  'projectile-find-file-dwim
-        "b"  'switch-to-buffer
-        "k"  'kill-buffer
-        "i"  'indent-buffer
-        "&"  'async-shell-command
-        "/"  'swiper
-        "S g" 'guix
-        "S t" 'e-top
-        "j r" 'nodejs-repl-switch-to-repl
-        "j j" 'nodejs-repl-send-buffer
-        )
-      (evil-leader/set-key "v m" 'menu-bar-mode)
-      (evil-leader/set-key "v w" 'whitespace-mode)
-      (evil-leader/set-key "v c" 'font-lock-mode)
-      (evil-leader/set-key "v n" 'linum-cycle))
-    )
     (use-package undo-tree
       :quelpa (undo-tree :fetcher github :repo "apchamberlain/undo-tree.el")
       :config (global-undo-tree-mode +1))
@@ -382,8 +383,7 @@ Universal ESC
       :after evil
       :config
       (evil-snipe-mode +1)
-      (evil-snipe-override-mode +1)
-      )
+      (evil-snipe-override-mode +1))
 #+END_SRC
 * Editor
 ** "Better" defaults
