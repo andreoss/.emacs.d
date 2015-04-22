@@ -52,11 +52,11 @@ Basic package configuration
  #+END_SRC
 Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
  #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
+   (unless (package-installed-p 'quelpa)
+     (with-temp-buffer
+       (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+       (eval-buffer)
+       (quelpa-self-upgrade)))
  #+END_SRC
  Update Emacs's GPG keyring for GNU ELPA
 #+begin_src emacs-lisp
