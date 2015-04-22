@@ -1495,6 +1495,39 @@ C-w handles windows in all states
     (fullframe magit-status magit-mode-quit-window nil))
 #+END_SRC
 
+* Media
+
+** Emms
+#+begin_src emacs-lisp
+    (use-package emms
+      :config
+      (require 'emms-setup)
+      (emms-all)
+      (emms-default-players)
+      (require 'emms-info-native)
+      (require 'emms-info-exiftool)
+      (require 'emms-browser)
+      (add-to-list 'emms-info-functions 'emms-info-native)
+      (add-to-list 'emms-info-functions 'emms-info-cueinfo)
+      (add-to-list 'emms-info-functions 'emms-info-exiftool))
+
+  (evil-define-key 'normal dired-mode-map
+      (kbd "g p")     'emms-play-dired
+      )
+
+  (evil-leader/set-key "a"
+    (defhydra emms-control ()
+      "emms"
+      ("p" emms-pause        "pause")
+      ("." emms-seek-forward  ">>>")
+      ("," emms-seek-backward "<<<")
+      ("j" emms-cue-next      ">")
+      ("k" emms-cue-previous  "<")
+      ("0" emms-volume-raise  "^")
+      ("9" emms-volume-lower  "v")
+      ("i" emms-show "v")
+      ))
+#+end_src
 * Languages
 
 ** General
