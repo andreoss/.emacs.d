@@ -245,7 +245,7 @@ Activate [[https://github.com/emacs-evil/evil][Evil]]
           evil-operator-state-cursor   '(box)
           evil-emacs-state-cursor      '(bar)
           evil-motion-state-cursor     '(bar)
-          evil-visual-state-cursor     '("#11312F" hbar . hollow))
+          evil-visual-state-cursor     '("#11312F" hbar . hollow)))
 #+END_SRC
 Bring some standard keybindings back
 #+begin_src emacs-lisp
