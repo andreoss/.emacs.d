@@ -57,6 +57,7 @@ Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
        (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
        (eval-buffer)
        (quelpa-self-upgrade)))
+   (setq quelpa-update-melpa-p nil)
  #+END_SRC
  Update Emacs's GPG keyring for GNU ELPA
 #+begin_src emacs-lisp
