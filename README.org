@@ -1640,7 +1640,7 @@ C-w handles windows in all states
     (kbd "g d")        'lsp-find-definition
     (kbd "C-M-b")      'lsp-find-definition
     (kbd "g r")        'lsp-find-references
-   )
+    )
   (evil-define-key   'normal lsp-mode-map
     (kbd "g d")        'lsp-find-definition
     (kbd "C-M-b")      'lsp-find-definition
@@ -1655,41 +1655,45 @@ C-w handles windows in all states
   (use-package lsp-treemacs)
   (setq lsp-ui-sideline-update-mode 'point)
   (setq lsp-ui-doc-enable nil)
-  (setq ai:lombok-jar (expand-file-name (concat user-emacs-directory "lombok.jar")))
+  (setq ai:lombok-jar
+        (expand-file-name (concat user-emacs-directory "lombok.jar")))
+  (if (not (file-exists-p ai:lombok-jar))
+      (shell-command (concat "mvn dependency:get -Dartifact=org.projectlombok:lombok:LATEST -Ddest=" ai:lombok-jar)))
   (setq ai:java-format-settings-file
         (expand-file-name
          (concat user-emacs-directory "java.xml")
          )
         )
   (setq lsp-java-vmargs
-          (list "-noverify"
-                "-Xmx2G"
-                "-XX:+UseG1GC"
-                "-XX:+UseStringDeduplication"
-                (concat "-javaagent:" ai:lombok-jar)
-                (concat "-Xbootclasspath/a:" ai:lombok-jar))
-          lsp-file-watch-ignored
-          '(".idea" ".ensime_cache" ".eunit" "node_modules" ".git" ".hg" ".fslckout" "_FOSSIL_"
-            ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "build")
+        (list "-noverify"
+              "-Xmx2G"
+              "-XX:+UseG1GC"
+              "-XX:+UseStringDeduplication"
+              (concat "-javaagent:" ai:lombok-jar)
+              (concat "-Xbootclasspath/a:" ai:lombok-jar)
+              )
+        lsp-file-watch-ignored
+        '(".idea" ".ensime_cache" ".eunit" "node_modules" ".git" ".hg" ".fslckout" "_FOSSIL_"
+          ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "build")
 
-          lsp-java-import-order '["" "java" "javax" "#"]
-          ;; Don't organize imports on save
-          lsp-java-save-action-organize-imports nil
+        lsp-java-import-order '["" "java" "javax" "#"]
+        ;; Don't organize imports on save
+        lsp-java-save-action-organize-imports nil
 
-          ;; Formatter profile
-          lsp-java-format-settings-url (concat "file://" ai:java-format-settings-file)
-          lsp-enable-on-type-formatting t
-          lsp-enable-indentation t)
+        ;; Formatter profile
+        lsp-java-format-settings-url (concat "file://" ai:java-format-settings-file)
+        lsp-enable-on-type-formatting t
+        lsp-enable-indentation t)
   (defun ai:lsp-thing-at-point ()
     "Return symbol at point."
     (interactive)
     (let ((contents (-some->>
-                     (lsp--text-document-position-params)
-                     (lsp--make-request "textDocument/hover")
-                     (lsp--send-request)
-                     (gethash "contents")
-                    )
-          ))
+                        (lsp--text-document-position-params)
+                      (lsp--make-request "textDocument/hover")
+                      (lsp--send-request)
+                      (gethash "contents")
+                      )
+                    ))
       (message (format "%s %s" (type-of contents) contents))
       (cond
        ((hash-table-p contents) (gethash "value" contents))
@@ -1698,7 +1702,6 @@ C-w handles windows in all states
           (gethash "value" mt)
           ))
        (t nil))))
-
 #+end_src
 
 *** Misc
