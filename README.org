@@ -351,6 +351,7 @@ Universal ESC
       "j r" 'nodejs-repl-switch-to-repl
       "j j" 'nodejs-repl-send-buffer
       )
+    (use-package hydra)
     (defhydra visuals-control nil
       "visual-control"
       ("m" menu-bar-mode)
