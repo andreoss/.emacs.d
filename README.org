@@ -1602,8 +1602,8 @@ C-w handles windows in all states
   (setq lsp-java-server-install-dir (concat user-emacs-directory "eclipse.jdt.ls/server"))
   (setq lsp-java-configuration-runtimes
         '[
-          (:name "java-8" :path "/usr/lib/java/8" :default t)
-          (:name "java-11" :path "/usr/lib/java/11")
+          (:name "java-8" :path "/home/a/.jdk/8" :default t)
+          (:name "java-11" :path "/home/a/.jdk/11")
           ])
   (use-package lsp-java
     :after lsp-mode
