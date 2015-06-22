@@ -223,6 +223,37 @@ https://github.com/tautologyclub/feebleline
     :hook
     (after-init . feebleline-mode))
 #+end_src
+** Minibuffer
+#+begin_src emacs-lisp
+  ;; Enable richer annotations using the Marginalia package
+  (use-package marginalia
+    ;; The :init configuration is always executed (Not lazy!)
+    :init
+    ;; Must be in the :init section of use-package such that the mode gets
+    ;; enabled right away. Note that this forces loading the package.
+    (marginalia-mode))
+
+  ;; Universal Esc
+  (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
+
+
+  (use-package selectrum
+    :config
+    (setq enable-recursive-minibuffers t)
+    (selectrum-mode +1)
+    )
+
+  (defun stop-using-minibuffer ()
+    "kill the minibuffer"
+    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+      (abort-recursive-edit)))
+
+  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+#+end_src
 * Vi
 Activate [[https://github.com/emacs-evil/evil][Evil]]
 #+BEGIN_SRC emacs-lisp
@@ -284,11 +315,6 @@ Universal ESC
     (define-key evil-visual-state-map [escape] #'keyboard-quit)
     (define-key evil-motion-state-map [escape] #'evil-normal-state)
     (define-key evil-operator-state-map [escape] #'evil-normal-state)
-    (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
   #+end_src
   [[https://github.com/edkolev/evil-goggles][Goggles]]
   #+begin_src  emacs-lisp
@@ -777,11 +803,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (setq auto-revert-verbose nil)
   (setq-default ispell-program-name "aspell")
   (mouse-avoidance-mode 'exile)
-  (use-package selectrum
-    :config
-    (setq enable-recursive-minibuffers t)
-    (selectrum-mode +1)
-    )
   (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1)))
 #+end_src
 ** Other
@@ -1497,12 +1518,6 @@ C-w handles windows in all states
                         (group (zero-or-more not-newline)))
                    . "\\1")))
 
-  (defun stop-using-minibuffer ()
-    "kill the minibuffer"
-    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
-      (abort-recursive-edit)))
-
-  ;;(add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
   ;; Vertical window divider
   (setq window-divider-default-right-width 3)
   (setq window-divider-default-places 'right-only)
