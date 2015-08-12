@@ -1581,25 +1581,25 @@ C-w handles windows in all states
 
 ** Emms
 #+begin_src emacs-lisp
-  (use-package emms
-    :after hydra
-    :config
-    (require 'emms-setup)
-    (require 'emms-player-mpv)
-    (add-to-list 'emms-player-list 'emms-player-mpv)
-    (evil-define-key 'normal dired-mode-map
-      (kbd "g p")     'emms-play-dired)
-    (evil-leader/set-key "a"
-      (defhydra emms-control ()
-        "emms"
-        ("p" emms-pause        "pause")
-        ("." emms-seek-forward  ">>>")
-        ("," emms-seek-backward "<<<")
-        ("j" emms-cue-next      ">")
-        ("k" emms-cue-previous  "<")
-        ("0" emms-volume-raise  "^")
-        ("9" emms-volume-lower  "v")
-        ("i" emms-show "v"))))
+    (use-package emms
+      :after hydra
+      :config
+      (require 'emms-setup)
+      (require 'emms-player-mpv)
+      (add-to-list 'emms-player-list 'emms-player-mpv)
+      (evil-define-key 'normal dired-mode-map
+        (kbd "g p")     'emms-play-dired)
+      (evil-leader/set-key "a"
+        (defhydra emms-control ()
+          "emms"
+          ("p" emms-pause        "pause")
+          ("." emms-seek-forward  ">>>")
+          ("," emms-seek-backward "<<<")
+          ("j" emms-cue-next      ">")
+          ("k" emms-cue-previous  "<")
+          ("0" emms-volume-raise  "^")
+          ("9" emms-volume-lower  "v")
+          ("i" emms-show "v"))))
 #+end_src
 * Languages
 
