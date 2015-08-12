@@ -741,11 +741,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
         (user-error "No typo at or before point"))))
   (setq save-abbrevs 'silently)
   (setq-default abbrev-mode t)
-  (setq visual-line-fringe-indicators
-        '(left-curly-arrow right-curly-arrow))
-  (hook! text-mode-hook        turn-on-visual-line-mode)
-  (hook! fundamental-mode-hook turn-on-visual-line-mode)
-  (hook! org-mode-hook         turn-on-visual-line-mode)
+  (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
   (hook! prog-mode-hook        (font-lock-mode -1))
   (use-package backup-each-save
     :init
