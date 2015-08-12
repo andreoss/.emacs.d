@@ -188,8 +188,6 @@ Unkillable & presistant scratch buffer
 ** Rest
 #+BEGIN_SRC emacs-lisp
   (minibuffer-electric-default-mode +1)
-  (add-hook 'minibuffer-setup-hook (lambda () (toggle-truncate-lines +1)))
-  (add-hook 'minibuffer-setup-hook (lambda () (setq truncate-lines nil)))
   (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
   (hook! prog-mode-hook (font-lock-mode -1))
   (set-display-table-slot standard-display-table 'truncation
