@@ -443,6 +443,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
   (add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
   (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
+  (ispell-change-dictionary "en")
 #+end_src
 ** Key binding
 #+begin_src emacs-lisp
