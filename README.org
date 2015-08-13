@@ -2090,20 +2090,20 @@ See https://github.com/quicklisp/quicklisp-slime-helper
     (if (file-exists-p slime-helper)
         (progn
           (load (expand-file-name slime-helper))
-          (use-package slime-company)
           (use-package slime
             :mode (("\\.lisp'"    . lisp-mode)
                    ("\\.lsp'"     . lisp-mode)
                    ("\\.cl'"      . lisp-mode)
                    ("\\.asd'"     . lisp-mode)
                    ("\\.fasl'"    . lisp-mode))
-            :config (slime-setup '(slime-company))
             :init (setq slime-contribs '(slime-fancy)))
-
           (setq-default inferior-lisp-program "sbcl")
+          (use-package slime-company
+            :after (slime company)
+            :config (setq slime-company-completion 'fuzzy
+                          slime-company-after-completion 'slime-company-just-one-space))
 
           (setq slime-contribs '(slime-fancy))
-
           (defun slime-eval-last-expression-eros ()
             ""
             (interactive)
