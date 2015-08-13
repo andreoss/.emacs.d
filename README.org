@@ -1505,13 +1505,7 @@ C-w handles windows in all states
     :config
     (setq which-key-sort-order nil
           which-key-side-window-max-height 0.33)
-
-    (add-to-list 'which-key-description-replacement-alist
-                 `(,(rx "evil-"
-                        (or "a" "an" "inner")
-                        "-"
-                        (group (zero-or-more not-newline)))
-                   . "\\1")))
+    )
 
   ;; Vertical window divider
   (setq window-divider-default-right-width 3)
