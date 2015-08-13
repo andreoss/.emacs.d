@@ -1226,25 +1226,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
    eshell-review-quick-commands nil
    )
 
-  (defun ai:eshell/pwd (&rest args)
-    (if (equal (file-name-as-directory (getenv "HOME")) (file-name-as-directory default-directory))
-        ""
-      (abbreviate-file-name (directory-file-name default-directory))))
-  (defun ai:git-branch-string ()
-    "Returns current git branch as a string, or the empty string if
-  PWD is not in a git repo (or the git command is not found)."
-    (magit-get-current-branch))
-
-  (defun ai:eshell-prompt-function (&rest args)
-    (lambda ()
-      (concat (ai:eshell/pwd) " " (ai:git-branch-string) "\n " eshell-prompt-symbol " "))
-    )
-  (require 'eshell)
-  (require 'em-prompt)
-  (defvar eshell-prompt-symbol "*")
-  (setq
-   eshell-prompt-function (ai:eshell-prompt-function)
-   eshell-prompt-regexp (concat "^" "[ ]*" (regexp-quote eshell-prompt-symbol) "[ ]*"))
   (defun eshell-maybe-bol ()
     (interactive)
     (let ((p (point)))
