@@ -1527,8 +1527,6 @@ C-w handles windows in all states
     (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))
   (use-package magit-gitflow
     :after magit)
-  (use-package forge
-    :after magit)
   (use-package git-gutter
     :config
     (global-git-gutter-mode +1))
