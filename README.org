@@ -1516,8 +1516,6 @@ C-w handles windows in all states
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :bind ("C-x g" . magit-status))
-  (use-package evil-magit
-    :config (evil-magit-init))
   (use-package magit-filenotify
     :after magit
     :when (fboundp 'file-notify-add-watch)
