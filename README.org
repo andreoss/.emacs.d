@@ -2111,7 +2111,15 @@ See https://github.com/quicklisp/quicklisp-slime-helper
                 (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
               (eros--make-result-overlay (concat output value)
                 :where (point)
-                :duration eros-eval-result-duration))))))
+                :duration eros-eval-result-duration)))
+          )
+      )
+    )
+
+  (define-key company-active-map (kbd "\C-n") 'company-select-next)
+  (define-key company-active-map (kbd "\C-p") 'company-select-previous)
+  (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+  (define-key company-active-map (kbd "M-.") 'company-show-location)
 #+end_src
 ** Clojure
 #+begin_src emacs-lisp
