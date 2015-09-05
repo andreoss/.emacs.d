@@ -118,6 +118,13 @@ Start server unless it is already running
 
 #+end_src
 
+** Default shell
+#+begin_src emacs-lisp
+  (if-let ((bash-file-name (string-trim (shell-command-to-string "which bash"))))
+    (setq explicit-shell-file-name bash-file-name)
+    (setq shell-file-name explicit-shell-file-name)
+    (setenv "SHELL" explicit-shell-file-name))
+#+end_src
 * Environment
 Misc scripts inside [[~/.emacs.d/bin]]
 #+BEGIN_SRC emacs-lisp
