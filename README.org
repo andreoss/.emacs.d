@@ -50,14 +50,6 @@ Basic package configuration
    (require 'package)
    (package-initialize)
  #+END_SRC
-Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'quelpa)
-     (with-temp-buffer
-       (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-       (eval-buffer)
-       (quelpa-self-upgrade)))
-   (setq quelpa-update-melpa-p nil)
  #+END_SRC
  Update Emacs's GPG keyring for GNU ELPA
 #+begin_src emacs-lisp
@@ -70,20 +62,8 @@ Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
 #+end_src
  Enable [[https://github.com/jwiegley/use-package][use-package]]
  #+BEGIN_SRC emacs-lisp
-   (quelpa 'use-package)
    (require 'use-package)
-   (setq use-package-always-ensure t)
-
-   (defun local-or-quelpa (name args _state &optional _no-refresh)
-     ""
-     (interactive (list nil))
-     (when (not (require name nil 'noerror))
-       (quelpa name)
-       )
-     )
-   (setq use-package-ensure-function 'local-or-quelpa)
-   (setq quelpa-git-clone-depth nil)
-   (use-package quelpa-use-package)
+   (setq use-package-always-ensure nil)
  #+END_SRC
 
 ** Server
@@ -99,10 +79,8 @@ Start server unless it is already running
 #+END_SRC
 
 ** Upgrading packages
-*** Run automatic upgrade
+*** TODO Run automatic upgrade
 #+begin_src emacs-lisp
-(setq quelpa-upgrade-interval 7)
-(add-hook #'after-init-hook #'quelpa-upgrade-all-maybe)
 #+end_src
 
 ** Post-init message
@@ -125,11 +103,28 @@ Start server unless it is already running
     (setq shell-file-name explicit-shell-file-name)
     (setenv "SHELL" explicit-shell-file-name))
 #+end_src
+** Package manager
+#+begin_src emacs-lisp
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage))
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default nil)
+#+end_src
 * Environment
 Misc scripts inside [[~/.emacs.d/bin]]
 #+BEGIN_SRC emacs-lisp
   (set-language-environment "UTF-8")
-  (update-env-var
+  (env-prepend
    "PATH"
    (expand-file-name
     (concat dotfiles-directory-name "bin")))
@@ -137,12 +132,11 @@ Misc scripts inside [[~/.emacs.d/bin]]
 * Appearance
 ** Theme
 #+begin_src emacs-lisp
-  (use-package jc-theme
-    :quelpa
-    (jc-theme :fetcher gitlab :repo "andreoss/jc-theme")
-    :config
-    (load-theme 'jc t)
-    )
+(use-package jc-theme
+  :straight (jc-theme :type git :host gitlab :repo "andreoss/jc-theme")
+  :config
+  (load-theme 'jc t)
+  )
 #+end_src
 ** Frames
 #+begin_src emacs-lisp
@@ -393,7 +387,6 @@ Universal ESC
     (evil-leader/set-key "v" 'visuals-control/body)
 
     (use-package undo-tree
-      :quelpa (undo-tree :fetcher github :repo "apchamberlain/undo-tree.el")
       :config (global-undo-tree-mode +1))
     (use-package evil-commentary
       :after evil
@@ -444,11 +437,10 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
         (or (executable-find "aspell")
             (executable-find "ispell")
             "ispell"))
-  (use-package flyspell :config (ispell-change-dictionary "en"))
+  (use-package flyspell :config (ispell-change-dictionary "english"))
   (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
   (add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
   (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
-  (ispell-change-dictionary "en")
 #+end_src
 ** Key binding
 #+begin_src emacs-lisp
@@ -522,7 +514,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     :init
     (counsel-mode +1))
   (use-package rainbow-mode
-    :quelpa (rainbow-mode :fetcher github :repo "emacsmirror/rainbow-mode")
     :config
     (hook! prog-mode-hook rainbow-mode))
   (hook! prog-mode-hook hs-minor-mode)
@@ -1297,9 +1288,9 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (custom-set-variables
    '(ansi-color-names-vector
      [
-      "black"   "red4"  "green4"
+      "black"   "red4" "green4"
       "yellow4" "blue4" "magenta4"
-      "cyan4"   "gray40"
+      "cyan4"   "gray44"
       ]
      )
    )
@@ -1507,7 +1498,6 @@ C-w handles windows in all states
   (use-package magit-filenotify
     :after magit
     :when (fboundp 'file-notify-add-watch)
-    :quelpa (magit-filenotify :fetcher github :repo "magit/magit-filenotify")
     :config
     (add-hook 'after-save-hook 'magit-after-save-refresh-status)
     (add-hook 'magit-status-mode-hook 'magit-filenotify-mode))
@@ -1855,8 +1845,7 @@ C-w handles windows in all states
 
 ** Lisp
 #+begin_src emacs-lisp
-(use-package paredit
-   :quelpa (paredit :fetcher github :repo "emacsmirror/paredit"))
+(use-package paredit)
 (hook! lisp-mode-hook paredit-mode)
 (hook! lisp-mode-hook prettify-symbols-mode)
 (use-package lispy)

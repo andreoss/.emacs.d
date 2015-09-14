@@ -15,7 +15,7 @@ If ADD-SUBDIRS is non-nil, the subdirectories are also added to the path"
                      (not (string= "." (substring f 0 1))))
             (add-to-list 'load-path name))))))
 
-(defun update-env-var (var new-path)
+(defun env-prepend (var new-path)
   "Add to environment variable VAR a path NEW-PATH.
 E.g: (update-env-var \"PATH\" \"/usr/local/bin\")"
   (setenv var (concat new-path ":" (getenv var))))
