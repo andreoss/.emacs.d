@@ -908,8 +908,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
             (setq count (1+ count))
             (kill-buffer buffer)))
         (message "Killed %i dired buffer(s)." count))))
-  (eval-when-compile
-    (require 'evil))
   (require' dired-x)
   (setq dired-omit-files "^.$\\|^#\\|~$\\|^.#")
   (add-hook 'dired-mode-hook 'hl-line-mode)
