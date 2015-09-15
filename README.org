@@ -239,37 +239,34 @@ https://github.com/tautologyclub/feebleline
 * Vi
 Activate [[https://github.com/emacs-evil/evil][Evil]]
 #+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :preface
-    (viper-go-away)
-    (setq-default evil-want-minibuffer t)
-    (setq-default evil-want-keybinding nil)
-    :config
-    (evil-mode +1)
-    (evil-global-set-key 'normal (kbd ";") 'evil-ex)
-    (setq async-shell-command-buffer nil)
-    (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
-    (loop for (mode . state) in
-          '((sbt-mode                 . insert)
-            (shell-mode               . insert)
-            (eshell-mode              . insert))
-          do (evil-set-initial-state mode state))
-    ;; Universal Esc
-    (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
+    (use-package evil
+      :preface
+      (viper-go-away)
+      (setq-default evil-want-minibuffer t)
+      (setq-default evil-want-keybinding nil)
+      :config
+      (evil-mode +1)
+      (evil-global-set-key 'normal (kbd ";") 'evil-ex)
+      (setq async-shell-command-buffer nil)
+      (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
+      (loop for (mode . state) in
+            '((sbt-mode                 . insert)
+              (shell-mode               . insert)
+              (eshell-mode              . insert))
+            do (evil-set-initial-state mode state))
+      ;; Universal Esc
+      (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
+      (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
 
-    (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
-          evil-normal-state-cursor     '("#33A050" (hbar . 4))
-          evil-operator-state-cursor   '(box)
-          evil-emacs-state-cursor      '(bar)
-          evil-motion-state-cursor     '(bar)
-          evil-visual-state-cursor     '("#11312F" hbar . hollow)))
-#+END_SRC
-Bring some standard keybindings back
-#+begin_src emacs-lisp
+      (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
+            evil-normal-state-cursor     '("#33A050" (hbar . 4))
+            evil-operator-state-cursor   '(box)
+            evil-emacs-state-cursor      '(bar)
+            evil-motion-state-cursor     '(bar)
+            evil-visual-state-cursor     '("#11312F" hbar . hollow))
   (loop for state in '(insert normal)
     do
     (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
@@ -277,16 +274,21 @@ Bring some standard keybindings back
     (evil-global-set-key state (kbd "C-e") 'end-of-line)
     (evil-global-set-key state (kbd "C-k") 'kill-line)
   )
-#+end_src
-Disable mode switching
-#+begin_src emacs-lisp
   (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
   (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
   (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
+  )
+#+END_SRC
+Bring some standard keybindings back
+#+begin_src emacs-lisp
+#+end_src
+Disable mode switching
+#+begin_src emacs-lisp
 #+end_src
 Easily swap two things
 #+BEGIN_SRC emacs-lisp
   (use-package evil-exchange
+    :after (evil)
     :commands (evil-exchange
                evil-exchange-cancel)
     :config
@@ -298,15 +300,11 @@ Easily swap two things
   #+END_SRC
 Universal ESC
   #+begin_src emacs-lisp
-    (define-key evil-normal-state-map [escape] #'keyboard-quit)
-    (define-key evil-emacs-state-map [escape] #'evil-normal-state)
-    (define-key evil-visual-state-map [escape] #'keyboard-quit)
-    (define-key evil-motion-state-map [escape] #'evil-normal-state)
-    (define-key evil-operator-state-map [escape] #'evil-normal-state)
   #+end_src
   [[https://github.com/edkolev/evil-goggles][Goggles]]
   #+begin_src  emacs-lisp
         (use-package evil-goggles
+    :after (evil)
               :config
               (evil-goggles-mode +1)
               (setq-default evil-goggles-duration 0.5)
@@ -319,87 +317,89 @@ Universal ESC
                ))
   #+end_src
   #+BEGIN_SRC emacs-lisp
-    (use-package evil-collection :config (evil-collection-init))
-    (use-package evil-matchit
+      (use-package evil-collection :after (evil) :config (evil-collection-init))
+
+      (use-package evil-matchit
+      :after (evil)
       :commands (evilmi-inner-text-object
-                 evilmi-outer-text-object)
-      :config
-      ;; evil matchit, jump between matching tags and keywords
-      (define-key evil-normal-state-map "%" #'evilmi-jump-items)
-      (define-key evil-visual-state-map "%" #'evilmi-jump-items)
-      (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
-      (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
+                   evilmi-outer-text-object)
+        :config
+        ;; evil matchit, jump between matching tags and keywords
+        (define-key evil-normal-state-map "%" #'evilmi-jump-items)
+        (define-key evil-visual-state-map "%" #'evilmi-jump-items)
+        (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
+        (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
 
-      :config
-      (evilmi-init-plugins))
+        :config
+        (evilmi-init-plugins))
 
-    (defun e-top ()
-      (interactive)
-      (eshell-command "top"))
-    (defun linum-cycle ()
-      (interactive)
-      (cond ((not display-line-numbers)
-             (setq display-line-numbers 'relative))
-            ((equal display-line-numbers 'relative)
-             (setq display-line-numbers t))
-            ((equal display-line-numbers t)
-             (setq display-line-numbers nil))))
-    (use-package evil-leader
-      :config
-      (global-evil-leader-mode +1))
-    (evil-leader/set-leader "<SPC>")
-    (evil-leader/set-key
-      "<SPC>" 'save-buffer
-      "s"  'shell
-      "x"  'eshell-here
-      "g"  'magit
-      "d"  'dired
-      "f"  'projectile-find-file-dwim
-      "b"  'switch-to-buffer
-      "k"  'kill-buffer
-      "i"  'indent-buffer
-      "&"  'async-shell-command
-      "/"  'swiper
-      "S g" 'guix
-      "S t" 'e-top
-      "S v" 'vterm
-      "j r" 'nodejs-repl-switch-to-repl
-      "j j" 'nodejs-repl-send-buffer
-      )
-    (use-package hydra)
-    (defhydra visuals-control nil
-      "visual-control"
-      ("m" menu-bar-mode)
-      ("w" whitespace-mode)
-      ("c" font-lock-mode)
-      ("n" linum-cycle))
-    (evil-leader/set-key "v" 'visuals-control/body)
+      (defun e-top ()
+        (interactive)
+        (eshell-command "top"))
+      (defun linum-cycle ()
+        (interactive)
+        (cond ((not display-line-numbers)
+               (setq display-line-numbers 'relative))
+              ((equal display-line-numbers 'relative)
+               (setq display-line-numbers t))
+              ((equal display-line-numbers t)
+               (setq display-line-numbers nil))))
+      (use-package evil-leader
+        :config
+        (global-evil-leader-mode +1))
+      (evil-leader/set-leader "<SPC>")
+      (evil-leader/set-key
+        "<SPC>" 'save-buffer
+        "s"  'shell
+        "x"  'eshell-here
+        "g"  'magit
+        "d"  'dired
+        "f"  'projectile-find-file-dwim
+        "b"  'switch-to-buffer
+        "k"  'kill-buffer
+        "i"  'indent-buffer
+        "&"  'async-shell-command
+        "/"  'swiper
+        "S g" 'guix
+        "S t" 'e-top
+        "S v" 'vterm
+        "j r" 'nodejs-repl-switch-to-repl
+        "j j" 'nodejs-repl-send-buffer
+        )
+      (use-package hydra)
+      (defhydra visuals-control nil
+        "visual-control"
+        ("m" menu-bar-mode)
+        ("w" whitespace-mode)
+        ("c" font-lock-mode)
+        ("n" linum-cycle))
+      (evil-leader/set-key "v" 'visuals-control/body)
 
-    (use-package undo-tree
-      :config (global-undo-tree-mode +1))
-    (use-package evil-commentary
-      :after evil
-      :config (evil-commentary-mode +1))
+      (use-package undo-tree
+        :config (global-undo-tree-mode +1))
+      (use-package evil-commentary
+        :after evil
+        :config (evil-commentary-mode +1))
 
-    (use-package avy
-      :after evil
-      :config
-      (global-set-key (kbd "M-t") 'avy-goto-word-1)
-      (setq avy-style 'words)
-      (evil-global-set-key 'normal (kbd "g h") 'avy-goto-char)
-      (evil-global-set-key 'normal (kbd "g b") 'avy-goto-word-1)
-      (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
-      (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
-      )
-    (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
-    (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
-    (add-function
-     :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
-    (use-package evil-snipe
-      :after evil
-      :config
-      (evil-snipe-mode +1)
-      (evil-snipe-override-mode +1))
+      (use-package avy
+        :after evil
+        :config
+        (global-set-key (kbd "M-t") 'avy-goto-word-1)
+        (setq avy-style 'words)
+        (evil-global-set-key 'normal (kbd "g h") 'avy-goto-char)
+        (evil-global-set-key 'normal (kbd "g b") 'avy-goto-word-1)
+        (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
+        (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
+        )
+      (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
+      (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
+      (add-function
+       :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
+      (use-package evil-snipe
+        :after evil
+        :config
+        (evil-snipe-mode +1)
+        (evil-snipe-override-mode +1))
 #+END_SRC
 * Editor
 ** "Better" defaults
