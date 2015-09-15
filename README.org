@@ -239,47 +239,51 @@ https://github.com/tautologyclub/feebleline
 * Vi
 Activate [[https://github.com/emacs-evil/evil][Evil]]
 #+BEGIN_SRC emacs-lisp
-    (use-package evil
-      :preface
-      (viper-go-away)
-      (setq-default evil-want-minibuffer t)
-      (setq-default evil-want-keybinding nil)
-      :config
-      (evil-mode +1)
-      (evil-global-set-key 'normal (kbd ";") 'evil-ex)
-      (setq async-shell-command-buffer nil)
-      (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
-      (loop for (mode . state) in
-            '((sbt-mode                 . insert)
-              (shell-mode               . insert)
-              (eshell-mode              . insert))
-            do (evil-set-initial-state mode state))
-      ;; Universal Esc
-      (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-      (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
+  (use-package evil
+    :preface
+    (viper-go-away)
+    (setq-default evil-want-minibuffer t)
+    (setq-default evil-want-keybinding nil)
+    :config
+    (evil-mode +1)
+    (evil-global-set-key 'normal (kbd ";") 'evil-ex)
+    (setq async-shell-command-buffer nil)
+    (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
+    (loop for (mode . state) in
+          '((sbt-mode                 . insert)
+            (shell-mode               . insert)
+            (eshell-mode              . insert))
+          do (evil-set-initial-state mode state))
+    ;; Universal Esc
+    (global-set-key (key C-w) 'evil-window-map)
+    (evil-global-set-key 'insert (key C-w) 'evil-window-map)
+    (evil-global-set-key 'emacs  (key C-w) 'evil-window-map)
+    (evil-global-set-key 'normal (key C-w) 'evil-window-map)
+    (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
     (add-function
      :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
 
-      (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
-            evil-normal-state-cursor     '("#33A050" (hbar . 4))
-            evil-operator-state-cursor   '(box)
-            evil-emacs-state-cursor      '(bar)
-            evil-motion-state-cursor     '(bar)
-            evil-visual-state-cursor     '("#11312F" hbar . hollow))
-  (loop for state in '(insert normal)
-    do
-    (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
-    (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
-    (evil-global-set-key state (kbd "C-e") 'end-of-line)
-    (evil-global-set-key state (kbd "C-k") 'kill-line)
-  )
-  (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
-  (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
-  (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
-  )
+    (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
+          evil-normal-state-cursor     '("#33A050" (hbar . 4))
+          evil-operator-state-cursor   '(box)
+          evil-emacs-state-cursor      '(bar)
+          evil-motion-state-cursor     '(bar)
+          evil-visual-state-cursor     '("#11312F" hbar . hollow))
+    (loop for state in '(insert normal)
+          do
+          (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
+          (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
+          (evil-global-set-key state (kbd "C-e") 'end-of-line)
+          (evil-global-set-key state (kbd "C-k") 'kill-line)
+          )
+    (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
+    (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
+    (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
+    )
 #+END_SRC
 Bring some standard keybindings back
 #+begin_src emacs-lisp
@@ -1345,10 +1349,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 ** C-w behavior
 C-w handles windows in all states
 #+begin_src emacs-lisp
-  (global-set-key (key C-w) 'evil-window-map)
-  (evil-global-set-key 'insert (key C-w) 'evil-window-map)
-  (evil-global-set-key 'emacs  (key C-w) 'evil-window-map)
-  (evil-global-set-key 'normal (key C-w) 'evil-window-map)
 #+end_src
 
 ** Text scale
