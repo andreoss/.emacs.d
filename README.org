@@ -1362,50 +1362,52 @@ C-w handles windows in all states
 ** Rest
 #+BEGIN_SRC emacs-lisp
   (require 'uniquify)
-  (use-package winum)
-  (require 'winner)
-  (require 'winum)
-  (winum-mode +1)
-  (defconst evil-winner-key
-    (kbd "C-w")
-    "Evil winner prefix"
+  (use-package winum
+    :config
+    (require 'winner)
+    (require 'winum)
+    (winum-mode +1)
+    (defconst evil-winner-key
+      (kbd "C-w")
+      "Evil winner prefix"
+      )
+    (evil-global-set-key 'insert evil-winner-key 'evil-window-map)
+    (evil-global-set-key 'emacs  evil-winner-key 'evil-window-map)
+    (evil-global-set-key 'normal evil-winner-key 'evil-window-map)
+    (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
+    (define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
+    (define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
+    (define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
+    (define-key 'evil-window-map (kbd "5") 'winum-select-window-5)
+    (define-key 'evil-window-map (kbd "6") 'winum-select-window-6)
+    (define-key 'evil-window-map (kbd "7") 'winum-select-window-7)
+    (define-key 'evil-window-map (kbd "8") 'winum-select-window-8)
+    (define-key 'evil-window-map (kbd "9") 'winum-select-window-9)
+    (define-key 'evil-window-map (kbd "0") 'winum-select-window-0-or-10)
+    (winner-mode +1)
+    (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
+    (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
+    (define-key 'evil-window-map (kbd "u") 'winner-undo)
+    (define-key 'evil-window-map (kbd "l") 'winner-undo)
+    (define-key 'evil-window-map (kbd "<left>") 'shrink-window-horizontally)
+    (define-key 'evil-window-map (kbd "<right>") 'enlarge-window-horizontally)
+    (define-key 'evil-window-map (kbd "<down>") 'shrink-window)
+    (define-key 'evil-window-map (kbd "<up>") 'enlarge-window)
+    (setq-default windmove-wrap-around t)
+    (windmove-default-keybindings)
+    (setq
+     idle-update-delay 2
+     jit-lock-defer-time 0
+     jit-lock-stealth-time 0.2
+     jit-lock-stealth-verbose nil)
+    ;; Prefer vertical splits
+    ;; https://www.emacswiki.org/emacs/HorizontalSplitting
+    (setq-default split-width-threshold 160)
+    (setq-default use-dialog-box nil)
+    (setq frame-title-format '(
+                               (:eval (or (buffer-file-name) (buffer-name))) vc-mode)
+          )
     )
-  (evil-global-set-key 'insert evil-winner-key 'evil-window-map)
-  (evil-global-set-key 'emacs  evil-winner-key 'evil-window-map)
-  (evil-global-set-key 'normal evil-winner-key 'evil-window-map)
-  (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
-  (define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
-  (define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
-  (define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
-  (define-key 'evil-window-map (kbd "5") 'winum-select-window-5)
-  (define-key 'evil-window-map (kbd "6") 'winum-select-window-6)
-  (define-key 'evil-window-map (kbd "7") 'winum-select-window-7)
-  (define-key 'evil-window-map (kbd "8") 'winum-select-window-8)
-  (define-key 'evil-window-map (kbd "9") 'winum-select-window-9)
-  (define-key 'evil-window-map (kbd "0") 'winum-select-window-0-or-10)
-  (winner-mode +1)
-  (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
-  (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
-  (define-key 'evil-window-map (kbd "u") 'winner-undo)
-  (define-key 'evil-window-map (kbd "l") 'winner-undo)
-  (define-key 'evil-window-map (kbd "<left>") 'shrink-window-horizontally)
-  (define-key 'evil-window-map (kbd "<right>") 'enlarge-window-horizontally)
-  (define-key 'evil-window-map (kbd "<down>") 'shrink-window)
-  (define-key 'evil-window-map (kbd "<up>") 'enlarge-window)
-  (setq-default windmove-wrap-around t)
-  (windmove-default-keybindings)
-  (setq
-   idle-update-delay 2
-   jit-lock-defer-time 0
-   jit-lock-stealth-time 0.2
-   jit-lock-stealth-verbose nil)
-  ;; Prefer vertical splits
-  ;; https://www.emacswiki.org/emacs/HorizontalSplitting
-  (setq-default split-width-threshold 160)
-  (setq-default use-dialog-box nil)
-  (setq frame-title-format '(
-                             (:eval (or (buffer-file-name) (buffer-name))) vc-mode)
-        )
   (use-package ace-window)
   (global-set-key (kbd "C-c p") #'ace-window)
   ;;(require 'transpose-frame)
