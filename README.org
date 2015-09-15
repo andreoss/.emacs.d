@@ -1979,12 +1979,13 @@ C-w handles windows in all states
 
 ** Emacs Lisp
 #+begin_src emacs-lisp
-  (use-package general)
+  (use-package general
+  :config
   (general-define-key
    :states 'normal
    :keymaps 'emacs-lisp-mode-map
    ;; or xref equivalent
-   "K" 'elisp-slime-nav-describe-elisp-thing-at-point)
+   "K" 'elisp-slime-nav-describe-elisp-thing-at-point))
   (use-package helpful
     :bind (([remap describe-function] . helpful-callable)
            ([remap describe-variable] . helpful-variable)
