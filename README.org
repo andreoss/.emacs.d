@@ -93,7 +93,6 @@ Start server unless it is already running
             (message
              (format "* %.1f s\n"
                      (emacs-init-time-in-seconds)))))
-
 #+end_src
 
 ** Default shell
@@ -132,11 +131,10 @@ Misc scripts inside [[~/.emacs.d/bin]]
 * Appearance
 ** Theme
 #+begin_src emacs-lisp
-(use-package jc-theme
-  :straight (jc-theme :type git :host gitlab :repo "andreoss/jc-theme")
+(use-package jc-themes
+  :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
   :config
-  (load-theme 'jc t)
-  )
+  (load-theme 'jc-obscure t))
 #+end_src
 ** Frames
 #+begin_src emacs-lisp
