@@ -1060,31 +1060,33 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 
 * Org
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+  (use-package org-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
-   ;; by convention: "C-c a" opens agenda
-   ;; by convention: "C-c c" captures stuff
-   ;; by convention: "C-c l" stores a link to this heading
-  (define-key global-map "\C-ca" 'org-agenda)
-  (define-key global-map "\C-cc" 'org-capture)
-  (define-key global-map "\C-cl" 'org-store-link)
-  (setq-default org-log-done t)
+    ;; by convention: "C-c a" opens agenda
+    ;; by convention: "C-c c" captures stuff
+    ;; by convention: "C-c l" stores a link to this heading
+    (define-key global-map "\C-ca" 'org-agenda)
+    (define-key global-map "\C-cc" 'org-capture)
+    (define-key global-map "\C-cl" 'org-store-link)
+    (setq-default org-log-done t))
 
-  (use-package org-bullets :hook (org-mode . org-bullets-mode))
-  (use-package ob-restclient)
+  (use-package org-bullets :after (org-mode) :hook (org-mode . org-bullets-mode))
+  (use-package ob-restclient :after (org-mode) :config
 
-  (require 'org-indent)
-  (hook! org-mode-hook org-indent-mode)
+               (require 'org-indent)
+               (hook! org-mode-hook org-indent-mode)
 
-  (org-babel-do-load-languages 'org-babel-load-languages
-                               '((perl          . t)
-                                 (java          . t)
-                                 (sql           . t)
-                                 (python        . t)
-                                 (js            . t)
-                                 (scheme        . t)
-                                 (restclient    . t)
-                                 (clojure       . t)))
+               (org-babel-do-load-languages 'org-babel-load-languages
+                                            '((perl          . t)
+                                              (java          . t)
+                                              (sql           . t)
+                                              (python        . t)
+                                              (js            . t)
+                                              (scheme        . t)
+                                              (restclient    . t)
+                                              (clojure       . t))))
 
   (setq org-confirm-babel-evaluate nil)
 
