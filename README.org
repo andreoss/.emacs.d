@@ -823,6 +823,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 * LSP
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
+    :after (evil)
     :config
     (setq lsp-completion-enable-additional-text-edit nil)
     (setq lsp-java-code-generation-use-blocks t)
@@ -833,6 +834,13 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
           lsp-eldoc-render-all nil
           lsp-enable-file-watchers nil
           lsp-highlight-symbol-at-point nil)
+    (hook! lsp-mode-hook (lsp-lens-mode +1))
+
+    (evil-leader/set-key "l R" 'lsp-workspace-restart)
+    (evil-leader/set-key "l f" 'lsp-format-buffer)
+    (evil-leader/set-key "l r" 'lsp-rename)
+    (evil-leader/set-key "l t" 'lsp-jt-browser)
+    (evil-leader/set-key "r" 'lsp-rename)
     :hook
     (lsp-mode . lsp-enable-which-key-integration)
     (lsp-mode . lsp-lens-mode)
@@ -844,16 +852,23 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     (c-mode . lsp)
     :commands (lsp lsp-deferred))
   (use-package helm :config (helm-mode -1))
-  (use-package helm-lsp :after (helm))
+  (use-package helm-lsp :after (helm lsp-mode))
   (use-package lsp-treemacs)
   (use-package lsp-python-ms
+    :after (lsp-mode)
     :hook (python-mode . (lambda ()
-                            (require 'lsp-python-ms)
-                            (lsp-deferred))))
-  (setq lsp-python-ms-executable "pyls")
+                           (require 'lsp-python-ms)
+                           (lsp-deferred)))
+    :config
+    (setq lsp-python-ms-executable "pyls"))
 
   (use-package lsp-ui
+    :after (lsp-mode)
     :config
+    (define-key lsp-ui-mode-map
+      [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map
+      [remap xref-find-references] #'lsp-ui-peek-find-references)
     (setq lsp-prefer-flymake nil
           lsp-ui-doc-delay 5.0
           lsp-ui-sideline-enable nil
@@ -864,7 +879,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     :config
     (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
   (use-package dap-mode
-    :after lsp-mode
+    :after (lsp-mode)
     :config
     (dap-mode 1)
     (dap-ui-mode 1)
@@ -878,17 +893,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     (evil-define-key 'normal lsp-mode-map (kbd "<f8>") 'dap-next)
     (evil-define-key 'normal lsp-mode-map (kbd "<f9>") 'dap-continue)
     )
-  (hook! lsp-mode-hook (lsp-lens-mode +1))
-
-  (evil-leader/set-key "l R" 'lsp-workspace-restart)
-  (evil-leader/set-key "l f" 'lsp-format-buffer)
-  (evil-leader/set-key "l r" 'lsp-rename)
-  (evil-leader/set-key "l t" 'lsp-jt-browser)
-  (evil-leader/set-key "r" 'lsp-rename)
-  (define-key lsp-ui-mode-map
-    [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map
-    [remap xref-find-references] #'lsp-ui-peek-find-references)
 #+END_SRC
 
 * Dired
