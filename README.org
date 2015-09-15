@@ -283,6 +283,25 @@ Activate [[https://github.com/emacs-evil/evil][Evil]]
     (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
     (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
     (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
+    (defun kill-or-bury-buffer ()
+      "Kill saved or bury unsaved buffer."
+      (interactive)
+      (if (and (buffer-file-name) (buffer-modified-p))
+          (progn
+            (message "buffer burried: %s" (current-buffer))
+            (bury-buffer))
+        (progn
+          (message "buffer killed: %s" (current-buffer))
+          (kill-buffer))))
+
+    (evil-global-set-key 'normal (kbd "q")   'kill-or-bury-buffer)
+    (evil-global-set-key 'normal (kbd "C-s") 'save-buffer)
+    (evil-global-set-key 'normal (kbd "C-s") 'save-buffer)
+
+    (global-set-key (kbd "C-x k")   'kill-or-bury-buffer)
+    (global-set-key (kbd "C-x C-k") 'kill-buffer)
+    (global-set-key (kbd "C-<tab>") 'other-window)
+    (global-set-key (kbd "C-c C-f") 'find-file-other-window)
     )
 #+END_SRC
 Bring some standard keybindings back
@@ -1460,25 +1479,6 @@ C-w handles windows in all states
           do
           (add-hook (symbol-concat mode '-mode-hook) text-dec)))
 
-  (defun kill-or-bury-buffer ()
-    "Kill saved or bury unsaved buffer."
-    (interactive)
-    (if (and (buffer-file-name) (buffer-modified-p))
-        (progn
-          (message "buffer burried: %s" (current-buffer))
-          (bury-buffer))
-      (progn
-        (message "buffer killed: %s" (current-buffer))
-        (kill-buffer))))
-
-  (evil-global-set-key 'normal (kbd "q")   'kill-or-bury-buffer)
-  (evil-global-set-key 'normal (kbd "C-s") 'save-buffer)
-  (evil-global-set-key 'normal (kbd "C-s") 'save-buffer)
-
-  (global-set-key (kbd "C-x k")   'kill-or-bury-buffer)
-  (global-set-key (kbd "C-x C-k") 'kill-buffer)
-  (global-set-key (kbd "C-<tab>") 'other-window)
-  (global-set-key (kbd "C-c C-f") 'find-file-other-window)
 
 
   (use-package which-key
