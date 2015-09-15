@@ -1656,7 +1656,7 @@ C-w handles windows in all states
 
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-ui
-    :afrer (evil)
+   :after (evil)
     :config
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
