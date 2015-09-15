@@ -9,6 +9,42 @@ mv ~/.emacs.d{,_}
 git clone https://github.com/andreoss/.emacs.d
 #+end_src
 * Startup
+** Package manager
+*** Package.el
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (package-initialize)
+#+END_SRC
+*** Straight.el
+#+begin_src emacs-lisp
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage))
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default nil)
+  (straight-use-package 'use-package)
+  (setq use-package-always-ensure t)
+#+end_src
+*** [#A] Package manager
+ Update Emacs's GPG keyring for GNU ELPA
+#+begin_src emacs-lisp
+  (straight-use-package 'gnu-elpa-keyring-update)
+#+end_src
+
+*** Upgrading packages
+**** TODO Run automatic upgrade
+#+begin_src emacs-lisp
+#+end_src
+
 ** Tweaks
 Disable GC at startup, and re-enable after the init is done.
 Gives about 1s speed up.
@@ -44,33 +80,6 @@ Enable debug
   (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
   (add-to-loadpath (</> dotfiles-directory-name "vendor"))
 #+END_SRC
-** Package manager
-Basic package configuration
- #+BEGIN_SRC emacs-lisp
-   (require 'package)
-   (package-initialize)
- #+END_SRC
- #+END_SRC
- Update Emacs's GPG keyring for GNU ELPA
-#+begin_src emacs-lisp
-  (unless (package-installed-p 'gnu-elpa-keyring-update)
-    (progn
-      (package-refresh-contents)
-      (package-install 'gnu-elpa-keyring-update)
-      )
-    )
-#+end_src
- Enable [[https://github.com/jwiegley/use-package][use-package]]
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'use-package)
-    (progn
-      (package-refresh-contents)
-      (package-install 'use-package)
-      )
-    )
-   (setq use-package-always-ensure nil)
- #+END_SRC
-
 ** Server
 Start server unless it is already running
 #+BEGIN_SRC emacs-lisp
@@ -82,11 +91,6 @@ Start server unless it is already running
                     (message "Starting server")
                     (server-start)))))
 #+END_SRC
-
-** Upgrading packages
-*** TODO Run automatic upgrade
-#+begin_src emacs-lisp
-#+end_src
 
 ** Post-init message
 #+begin_src emacs-lisp
@@ -106,23 +110,6 @@ Start server unless it is already running
     (setq explicit-shell-file-name bash-file-name)
     (setq shell-file-name explicit-shell-file-name)
     (setenv "SHELL" explicit-shell-file-name))
-#+end_src
-** Package manager
-#+begin_src emacs-lisp
-    (defvar bootstrap-version)
-    (let ((bootstrap-file
-           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-          (bootstrap-version 5))
-      (unless (file-exists-p bootstrap-file)
-        (with-current-buffer
-            (url-retrieve-synchronously
-             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-             'silent 'inhibit-cookies)
-          (goto-char (point-max))
-          (eval-print-last-sexp)))
-      (load bootstrap-file nil 'nomessage))
-  (straight-use-package 'use-package)
-  (setq straight-use-package-by-default nil)
 #+end_src
 * Environment
 Misc scripts inside [[~/.emacs.d/bin]]
