@@ -2,4 +2,4 @@
 ;;; Commentary:
 ;;;
 ;;; Code:
-nil
+(setq package-enable-at-startup nil)

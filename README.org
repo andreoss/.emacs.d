@@ -30,9 +30,9 @@ git clone https://github.com/andreoss/.emacs.d
           (eval-print-last-sexp)))
       (load bootstrap-file nil 'nomessage))
   (straight-use-package 'use-package)
-  (setq straight-use-package-by-default nil)
-  (straight-use-package 'use-package)
-  (setq use-package-always-ensure t)
+  (setq straight-use-package-by-default t)
+(setq straight-vc-git-default-clone-depth 1)
+
 #+end_src
 *** [#A] Package manager
  Update Emacs's GPG keyring for GNU ELPA
@@ -1083,7 +1083,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 
 * Org
 #+BEGIN_SRC emacs-lisp
-  (use-package org-mode
+  (use-package org
     :config
     (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
