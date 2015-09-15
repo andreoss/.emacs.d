@@ -423,14 +423,18 @@ https://git.sr.ht/~technomancy/better-defaults
 ** Spelling
 Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+begin_src emacs-lisp
-  (setq ispell-program-name
-        (or (executable-find "aspell")
-            (executable-find "ispell")
-            "ispell"))
-  (use-package flyspell :config (ispell-change-dictionary "english"))
-  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
-  (add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
-  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
+  (use-package flyspell :config
+               (require 'ispell)
+               (setq auto-revert-verbose nil)
+               (setq ispell-program-name
+                     (or (executable-find "aspell")
+                         (executable-find "ispell")
+                         "ispell"))
+               (ispell-change-dictionary "english")
+
+               (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+               (add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
+               (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
 #+end_src
 ** Key binding
 #+begin_src emacs-lisp
@@ -654,10 +658,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
           :diminish
           :custom
           (company-show-numbers t)
-          :config
           (global-company-mode +1)
-          )
-        (use-package company-prescient)
         (defun *company-active-return ()
           (interactive)
           (if (company-explicit-action-p)
@@ -667,6 +668,8 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
                  (key-binding (kbd "RET"))))))
         (define-key company-active-map (kbd "<return>") #'*company-active-return)
         (define-key company-active-map (kbd "RET") #'*company-active-return)
+          )
+        (use-package company-prescient :eval (company))
         (use-package expand-region)
         (require 'recentf)
         (recentf-mode +1)
@@ -788,9 +791,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
         (use-package vlf
           :config
           (require 'vlf-setup))
-        (require 'ispell)
-        (setq auto-revert-verbose nil)
-        (setq-default ispell-program-name "aspell")
         (mouse-avoidance-mode 'exile)
         (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1)))
 #+end_src
