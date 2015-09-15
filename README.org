@@ -2160,14 +2160,15 @@ See https://github.com/quicklisp/quicklisp-slime-helper
 #+end_src
 ** Shell
 #+begin_src emacs-lisp
-(use-package flymake-shell
-  :config
-  (hook! sh-mode-hook flymake-shell-load)
-  )
-(hook! sh-mode-hook (font-lock-mode -1))
-(evil-define-key 'normal sh-mode-map (kbd "g d")  'man-follow)
-(evil-define-key 'normal sh-mode-map (kbd "RET")  'sh-execute-region)
-(evil-define-key 'visual sh-mode-map (kbd "RET")  'sh-execute-region)
+  (use-package flymake-shell
+    :after (evil)
+    :config
+    (hook! sh-mode-hook flymake-shell-load)
+
+  (hook! sh-mode-hook (font-lock-mode -1))
+  (evil-define-key 'normal sh-mode-map (kbd "g d")  'man-follow)
+  (evil-define-key 'normal sh-mode-map (kbd "RET")  'sh-execute-region)
+  (evil-define-key 'visual sh-mode-map (kbd "RET")  'sh-execute-region))
 #+end_src
 ** Python
 #+begin_src emacs-lisp
