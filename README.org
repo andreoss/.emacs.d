@@ -1656,77 +1656,77 @@ C-w handles windows in all states
 
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-ui
+    :afrer (evil)
     :config
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
-  (setq lsp-ui-doc-use-childframe nil)
-  (setq lsp-ui-doc-use-webkit nil)
-  (evil-define-key   'normal lsp-mode-map
-    (kbd "g d")        'lsp-find-definition
-    (kbd "C-M-b")      'lsp-find-definition
-    (kbd "g r")        'lsp-find-references
-    )
-  (evil-define-key   'normal lsp-mode-map
-    (kbd "g d")        'lsp-find-definition
-    (kbd "C-M-b")      'lsp-find-definition
-    (kbd "g r")        'lsp-find-references
-    )
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+    (setq lsp-ui-doc-use-childframe nil)
+    (setq lsp-ui-doc-use-webkit nil)
+    (evil-define-key   'normal lsp-mode-map
+      (kbd "g d")        'lsp-find-definition
+      (kbd "C-M-b")      'lsp-find-definition
+      (kbd "g r")        'lsp-find-references
+      )
+    (evil-define-key   'normal lsp-mode-map
+      (kbd "g d")        'lsp-find-definition
+      (kbd "C-M-b")      'lsp-find-definition
+      (kbd "g r")        'lsp-find-references
+      )
+    (setq lsp-java-content-provider-preferred "fernflower")
+    (setq lsp-ui-sideline-update-mode 'point)
+    (setq lsp-ui-doc-enable nil)
+    (setq ai:lombok-jar
+          (expand-file-name (concat user-emacs-directory "lombok.jar")))
+    (if (not (file-exists-p ai:lombok-jar))
+        (shell-command (concat "mvn dependency:get -Dartifact=org.projectlombok:lombok:LATEST -Ddest=" ai:lombok-jar)))
+    (setq ai:java-format-settings-file
+          (expand-file-name
+           (concat user-emacs-directory "java.xml")
+           )
+          )
+    (setq lsp-java-vmargs
+          (list "-noverify"
+                "-Xmx2G"
+                "-XX:+UseG1GC"
+                "-XX:+UseStringDeduplication"
+                (concat "-javaagent:" ai:lombok-jar)
+                (concat "-Xbootclasspath/a:" ai:lombok-jar)
+                )
+          lsp-file-watch-ignored
+          '(".idea" ".ensime_cache" ".eunit" "node_modules" ".git" ".hg" ".fslckout" "_FOSSIL_"
+            ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "build")
 
-  (evil-define-key     'normal java-mode-map
-    (kbd "C-c c")      'dap-java-run-test-method
-    (kbd "C-c C-c")    'dap-java-run-test-class
-    )
-  (setq lsp-java-content-provider-preferred "fernflower")
+          lsp-java-import-order '["" "java" "javax" "#"]
+          ;; Don't organize imports on save
+          lsp-java-save-action-organize-imports nil
+
+          ;; Formatter profile
+          lsp-java-format-settings-url (concat "file://" ai:java-format-settings-file)
+          lsp-enable-on-type-formatting t
+          lsp-enable-indentation t)
+    (defun ai:lsp-thing-at-point ()
+      "Return symbol at point."
+      (interactive)
+      (let ((contents (-some->>
+                          (lsp--text-document-position-params)
+                        (lsp--make-request "textDocument/hover")
+                        (lsp--send-request)
+                        (gethash "contents")
+                        )
+                      ))
+        (message (format "%s %s" (type-of contents) contents))
+        (cond
+         ((hash-table-p contents) (gethash "value" contents))
+         ((vectorp contents)
+          (let ((mt (aref contents 0)))
+            (gethash "value" mt)
+            ))
+         (t nil))))
+
+    (evil-define-key     'normal java-mode-map
+      (kbd "C-c c")      'dap-java-run-test-method
+      (kbd "C-c C-c")    'dap-java-run-test-class))
   (use-package lsp-treemacs)
-  (setq lsp-ui-sideline-update-mode 'point)
-  (setq lsp-ui-doc-enable nil)
-  (setq ai:lombok-jar
-        (expand-file-name (concat user-emacs-directory "lombok.jar")))
-  (if (not (file-exists-p ai:lombok-jar))
-      (shell-command (concat "mvn dependency:get -Dartifact=org.projectlombok:lombok:LATEST -Ddest=" ai:lombok-jar)))
-  (setq ai:java-format-settings-file
-        (expand-file-name
-         (concat user-emacs-directory "java.xml")
-         )
-        )
-  (setq lsp-java-vmargs
-        (list "-noverify"
-              "-Xmx2G"
-              "-XX:+UseG1GC"
-              "-XX:+UseStringDeduplication"
-              (concat "-javaagent:" ai:lombok-jar)
-              (concat "-Xbootclasspath/a:" ai:lombok-jar)
-              )
-        lsp-file-watch-ignored
-        '(".idea" ".ensime_cache" ".eunit" "node_modules" ".git" ".hg" ".fslckout" "_FOSSIL_"
-          ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "build")
-
-        lsp-java-import-order '["" "java" "javax" "#"]
-        ;; Don't organize imports on save
-        lsp-java-save-action-organize-imports nil
-
-        ;; Formatter profile
-        lsp-java-format-settings-url (concat "file://" ai:java-format-settings-file)
-        lsp-enable-on-type-formatting t
-        lsp-enable-indentation t)
-  (defun ai:lsp-thing-at-point ()
-    "Return symbol at point."
-    (interactive)
-    (let ((contents (-some->>
-                        (lsp--text-document-position-params)
-                      (lsp--make-request "textDocument/hover")
-                      (lsp--send-request)
-                      (gethash "contents")
-                      )
-                    ))
-      (message (format "%s %s" (type-of contents) contents))
-      (cond
-       ((hash-table-p contents) (gethash "value" contents))
-       ((vectorp contents)
-        (let ((mt (aref contents 0)))
-          (gethash "value" mt)
-          ))
-       (t nil))))
 #+end_src
 
 *** Misc
