@@ -260,6 +260,8 @@ Activate [[https://github.com/emacs-evil/evil][Evil]]
       (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
       (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
       (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
+    (add-function
+     :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
 
       (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
             evil-normal-state-cursor     '("#33A050" (hbar . 4))
@@ -317,89 +319,88 @@ Universal ESC
                ))
   #+end_src
   #+BEGIN_SRC emacs-lisp
-      (use-package evil-collection :after (evil) :config (evil-collection-init))
+    (use-package evil-collection :after (evil) :config (evil-collection-init))
 
-      (use-package evil-matchit
+    (use-package evil-matchit
+    :after (evil)
+    :commands (evilmi-inner-text-object
+                 evilmi-outer-text-object)
+      :config
+      ;; evil matchit, jump between matching tags and keywords
+      (define-key evil-normal-state-map "%" #'evilmi-jump-items)
+      (define-key evil-visual-state-map "%" #'evilmi-jump-items)
+      (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
+      (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
+
+      :config
+      (evilmi-init-plugins))
+
+    (defun e-top ()
+      (interactive)
+      (eshell-command "top"))
+    (defun linum-cycle ()
+      (interactive)
+      (cond ((not display-line-numbers)
+             (setq display-line-numbers 'relative))
+            ((equal display-line-numbers 'relative)
+             (setq display-line-numbers t))
+            ((equal display-line-numbers t)
+             (setq display-line-numbers nil))))
+    (use-package hydra)
+    (use-package evil-leader
+      :after  (hydra evil)
+      :config
+      (global-evil-leader-mode +1)
+    (evil-leader/set-leader "<SPC>")
+    (evil-leader/set-key
+      "<SPC>" 'save-buffer
+      "s"  'shell
+      "x"  'eshell-here
+      "g"  'magit
+      "d"  'dired
+      "f"  'projectile-find-file-dwim
+      "b"  'switch-to-buffer
+      "k"  'kill-buffer
+      "i"  'indent-buffer
+      "&"  'async-shell-command
+      "/"  'swiper
+      "S g" 'guix
+      "S t" 'e-top
+      "S v" 'vterm
+      "j r" 'nodejs-repl-switch-to-repl
+      "j j" 'nodejs-repl-send-buffer
+      )
+    (defhydra visuals-control nil
+      "visual-control"
+      ("m" menu-bar-mode)
+      ("w" whitespace-mode)
+      ("c" font-lock-mode)
+      ("n" linum-cycle))
+    (evil-leader/set-key "v" 'visuals-control/body))
+
+    (use-package undo-tree
+      :config (global-undo-tree-mode +1))
+    (use-package evil-commentary
       :after (evil)
-      :commands (evilmi-inner-text-object
-                   evilmi-outer-text-object)
-        :config
-        ;; evil matchit, jump between matching tags and keywords
-        (define-key evil-normal-state-map "%" #'evilmi-jump-items)
-        (define-key evil-visual-state-map "%" #'evilmi-jump-items)
-        (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
-        (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
+      :config (evil-commentary-mode +1))
 
-        :config
-        (evilmi-init-plugins))
-
-      (defun e-top ()
-        (interactive)
-        (eshell-command "top"))
-      (defun linum-cycle ()
-        (interactive)
-        (cond ((not display-line-numbers)
-               (setq display-line-numbers 'relative))
-              ((equal display-line-numbers 'relative)
-               (setq display-line-numbers t))
-              ((equal display-line-numbers t)
-               (setq display-line-numbers nil))))
-      (use-package evil-leader
-        :config
-        (global-evil-leader-mode +1))
-      (evil-leader/set-leader "<SPC>")
-      (evil-leader/set-key
-        "<SPC>" 'save-buffer
-        "s"  'shell
-        "x"  'eshell-here
-        "g"  'magit
-        "d"  'dired
-        "f"  'projectile-find-file-dwim
-        "b"  'switch-to-buffer
-        "k"  'kill-buffer
-        "i"  'indent-buffer
-        "&"  'async-shell-command
-        "/"  'swiper
-        "S g" 'guix
-        "S t" 'e-top
-        "S v" 'vterm
-        "j r" 'nodejs-repl-switch-to-repl
-        "j j" 'nodejs-repl-send-buffer
-        )
-      (use-package hydra)
-      (defhydra visuals-control nil
-        "visual-control"
-        ("m" menu-bar-mode)
-        ("w" whitespace-mode)
-        ("c" font-lock-mode)
-        ("n" linum-cycle))
-      (evil-leader/set-key "v" 'visuals-control/body)
-
-      (use-package undo-tree
-        :config (global-undo-tree-mode +1))
-      (use-package evil-commentary
-        :after evil
-        :config (evil-commentary-mode +1))
-
-      (use-package avy
-        :after evil
-        :config
-        (global-set-key (kbd "M-t") 'avy-goto-word-1)
-        (setq avy-style 'words)
-        (evil-global-set-key 'normal (kbd "g h") 'avy-goto-char)
-        (evil-global-set-key 'normal (kbd "g b") 'avy-goto-word-1)
-        (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
-        (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
-        )
-      (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
-      (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
-      (add-function
-       :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
-      (use-package evil-snipe
-        :after evil
-        :config
-        (evil-snipe-mode +1)
-        (evil-snipe-override-mode +1))
+    (use-package avy
+      :after (evil)
+      :config
+      (global-set-key (kbd "M-t") 'avy-goto-word-1)
+      (setq avy-style 'words)
+      (evil-global-set-key 'normal (kbd "g h") 'avy-goto-char)
+      (evil-global-set-key 'normal (kbd "g b") 'avy-goto-word-1)
+      (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
+      (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
+    (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
+    (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
+      )
+    (use-package evil-snipe
+      :after evil
+      :config
+      (evil-snipe-mode +1)
+      (evil-snipe-override-mode +1))
 #+END_SRC
 * Editor
 ** "Better" defaults
