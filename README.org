@@ -214,83 +214,8 @@ https://github.com/tautologyclub/feebleline
 #+end_src
 ** Minibuffer
 #+begin_src emacs-lisp
-  ;; Enable richer annotations using the Marginalia package
   (use-package marginalia
-    ;; The :init configuration is always executed (Not lazy!)
-    :init
-    ;; Must be in the :init section of use-package such that the mode gets
-    ;; enabled right away. Note that this forces loading the package.
-    (marginalia-mode))
-
-  ;; Universal Esc
-  (define-key minibuffer-local-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
-
-
-  (use-package selectrum
     :config
-    (setq enable-recursive-minibuffers t)
-    (selectrum-mode +1)
-    )
-
-  (defun stop-using-minibuffer ()
-    "kill the minibuffer"
-    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
-      (abort-recursive-edit)))
-
-  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-#+end_src
-* Vi
-Activate [[https://github.com/emacs-evil/evil][Evil]]
-#+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :preface
-    (viper-go-away)
-    (setq-default evil-want-minibuffer t)
-    (setq-default evil-want-keybinding nil)
-    :init
-    (evil-mode +1)
-    (evil-global-set-key 'normal (kbd ";") 'evil-ex)
-    (setq async-shell-command-buffer nil)
-    (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
-    (loop for (mode . state) in
-          '((sbt-mode                 . insert)
-            (shell-mode               . insert)
-            (eshell-mode              . insert))
-          do (evil-set-initial-state mode state))
-    :config
-    (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
-          evil-normal-state-cursor     '("#33A050" (hbar . 4))
-          evil-operator-state-cursor   '(box)
-          evil-emacs-state-cursor      '(bar)
-          evil-motion-state-cursor     '(bar)
-          evil-visual-state-cursor     '("#11312F" hbar . hollow)))
-#+END_SRC
-Bring some standard keybindings back
-#+begin_src emacs-lisp
-  (loop for state in '(insert normal)
-    do
-    (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
-    (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
-    (evil-global-set-key state (kbd "C-e") 'end-of-line)
-    (evil-global-set-key state (kbd "C-k") 'kill-line)
-  )
-#+end_src
-Disable mode switching
-#+begin_src emacs-lisp
-  (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
-  (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
-  (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
-#+end_src
-Easily swap two things
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-exchange
-    :commands (evil-exchange
-               evil-exchange-cancel)
-    :init
     (define-key evil-normal-state-map "gx" #'evil-exchange)
     (define-key evil-visual-state-map "gx" #'evil-exchange)
     (define-key evil-normal-state-map "gX" #'evil-exchange-cancel)
@@ -308,7 +233,7 @@ Universal ESC
   [[https://github.com/edkolev/evil-goggles][Goggles]]
   #+begin_src  emacs-lisp
         (use-package evil-goggles
-              :init
+              :config
               (evil-goggles-mode +1)
               (setq-default evil-goggles-duration 0.5)
               (custom-set-faces
@@ -324,14 +249,12 @@ Universal ESC
     (use-package evil-matchit
       :commands (evilmi-inner-text-object
                  evilmi-outer-text-object)
-      :init
+      :config
       ;; evil matchit, jump between matching tags and keywords
       (define-key evil-normal-state-map "%" #'evilmi-jump-items)
       (define-key evil-visual-state-map "%" #'evilmi-jump-items)
       (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
       (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
-
-      :config
       (evilmi-init-plugins))
 
     (defun e-top ()
@@ -380,11 +303,11 @@ Universal ESC
       :config (global-undo-tree-mode +1))
     (use-package evil-commentary
       :after evil
-      :init (evil-commentary-mode +1))
+      :config (evil-commentary-mode +1))
 
     (use-package avy
       :after evil
-      :init
+      :config
       (global-set-key (kbd "M-t") 'avy-goto-word-1)
       (setq avy-style 'words)
       (evil-global-set-key 'normal (kbd "g h") 'avy-goto-char)
@@ -501,7 +424,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (use-package browse-kill-ring)
   (use-package counsel
     :diminish
-    :init
+    :config
     (counsel-mode +1))
   (use-package rainbow-mode
     :config
@@ -549,7 +472,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (delete-selection-mode   -1)
   (global-prettify-symbols-mode +1)
   (use-package flycheck
-    :init
+    :config
     (define-fringe-bitmap 'flycheck-fringe-indicator
       (vector #b0000000000000000
               #b0000000000000000
@@ -673,19 +596,19 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     (global-undo-tree-mode +1))
   (global-reveal-mode +1)
   (use-package hl-todo
-    :init
+    :config
     (global-hl-todo-mode))
   (use-package bug-reference
     :commands bug-reference-prog-mode
-    :init (add-hook 'prog-mode-hook 'bug-reference-prog-mode)
     :config
+    (add-hook 'prog-mode-hook 'bug-reference-prog-mode)
     (setq bug-reference-bug-regexp
           "\\([Bb]ug ?#?\\|[Pp]atch ?#\\|RFE ?#\\|todo ?#?\\|PR [a-z+-]+/\\)\\([0-9]+\\(?:#[0-9]+\\)?\\)"
           )
     )
   (use-package bug-reference-github
     :commands bug-reference-github-set-url-format
-    :init (add-hook 'prog-mode-hook 'bug-reference-github-set-url-format))
+    :config (add-hook 'prog-mode-hook 'bug-reference-github-set-url-format))
   ;; Borrowed from
   ;; http://endlessparentheses.com/ispell-and-abbrev-the-perfect-auto-correct.html
   (define-key ctl-x-map "\C-i"
@@ -730,18 +653,18 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
   (hook! prog-mode-hook        (font-lock-mode -1))
   (use-package backup-each-save
-    :init
+    :config
     (add-hook
      (make-local-variable 'after-save-hook)
      'backup-each-save))
   (use-package keyfreq
-    :init
+    :config
     (keyfreq-mode +1))
   (setq vc-follow-symlinks nil)
   (add-hook
    'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
   (use-package paren
-    :init
+    :config
     (setq-default show-paren-style 'parenthesis)
     (show-paren-mode +1))
   (use-package dumb-jump
@@ -972,7 +895,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 
 ** PDF Tools
 #+begin_src emacs-lisp
-  (use-package pdf-tools :init (pdf-tools-install))
+  (use-package pdf-tools :config (pdf-tools-install))
 #+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
@@ -1468,9 +1391,9 @@ C-w handles windows in all states
 
 
   (use-package which-key
-    :init (which-key-mode +1)
     :diminish which-key-mode
     :config
+    (which-key-mode +1)
     (setq which-key-sort-order nil
           which-key-side-window-max-height 0.33)
     )
@@ -2026,7 +1949,7 @@ If the region is active and `transient-mark-mode' is on, call
     )
   ;; Autocompile Emacs Lisp code
   (use-package auto-compile
-    :init
+    :config
     (setq load-prefer-newer t)
     (auto-compile-on-load-mode)
     (auto-compile-on-save-mode)
@@ -2059,7 +1982,7 @@ See https://github.com/quicklisp/quicklisp-slime-helper
                    ("\\.cl'"      . lisp-mode)
                    ("\\.asd'"     . lisp-mode)
                    ("\\.fasl'"    . lisp-mode))
-            :init (setq slime-contribs '(slime-fancy)))
+            :config (setq slime-contribs '(slime-fancy)))
           (setq-default inferior-lisp-program "sbcl")
           (use-package slime-company
             :after (slime company)
