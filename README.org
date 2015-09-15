@@ -2135,27 +2135,28 @@ See https://github.com/quicklisp/quicklisp-slime-helper
 #+end_src
 ** Rust
 #+begin_src emacs-lisp
-    (use-package company
-    :config
+      (use-package company
+      :config
 
-  (define-key company-active-map (kbd "\C-n") 'company-select-next)
-  (define-key company-active-map (kbd "\C-p") 'company-select-previous)
-  (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
-  (define-key company-active-map (kbd "M-.") 'company-show-location)
+    (define-key company-active-map (kbd "\C-n") 'company-select-next)
+    (define-key company-active-map (kbd "\C-p") 'company-select-previous)
+    (define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+    (define-key company-active-map (kbd "M-.") 'company-show-location)
+      (push 'company-lsp company-backends)
 
-  )
-    (use-package rustic)
-    (use-package cargo)
-    (push 'company-lsp company-backends)
-    (setq lsp-rust-server 'rust-analyzer)
-    (add-hook 'rust-mode-hook '(lambda () (setq tab-width 4)))
-    (add-hook 'rust-mode-hook 'company-mode)
-    (add-hook 'rust-mode-hook 'cargo-minor-mode)
-    (evil-define-key     'normal rust-mode-map
-      (kbd "C-c C-c")    'cargo-process-run
-      (kbd "C-c C-t")    'cargo-process-test
-      (kbd "C-c C-f")    'lsp-format-buffer
-      )
+    )
+      (use-package rustic)
+      (use-package cargo
+  :config
+      (setq lsp-rust-server 'rust-analyzer)
+      (add-hook 'rust-mode-hook '(lambda () (setq tab-width 4)))
+      (add-hook 'rust-mode-hook 'company-mode)
+      (add-hook 'rust-mode-hook 'cargo-minor-mode)
+      (evil-define-key     'normal rust-mode-map
+        (kbd "C-c C-c")    'cargo-process-run
+        (kbd "C-c C-t")    'cargo-process-test
+        (kbd "C-c C-f")    'lsp-format-buffer
+        ))
 #+end_src
 ** Shell
 #+begin_src emacs-lisp
