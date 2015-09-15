@@ -62,10 +62,12 @@ Basic package configuration
 #+end_src
  Enable [[https://github.com/jwiegley/use-package][use-package]]
  #+BEGIN_SRC emacs-lisp
-   (unless (require 'use-package t)
-     (package-refresh-contents)
-     (package-install 'use-package)
-     )
+   (unless (package-installed-p 'use-package)
+    (progn
+      (package-refresh-contents)
+      (package-install 'use-package)
+      )
+    )
    (setq use-package-always-ensure nil)
  #+END_SRC
 
