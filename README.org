@@ -988,7 +988,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 ** Rest
 #+BEGIN_SRC emacs-lisp
   (require 'saveplace)
-  (require 's)
   (setq-default
    save-place-file "~/.emacs.d/saveplace"
    save-place t)
