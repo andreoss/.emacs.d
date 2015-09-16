@@ -921,6 +921,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 * Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired
+    :ensure nil
     :after (evil)
     :config
     (defun kill-all-dired-buffers ()
