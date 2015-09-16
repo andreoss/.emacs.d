@@ -38,7 +38,7 @@ git clone https://github.com/andreoss/.emacs.d
   (setq straight-vc-git-default-clone-depth 1)
 
 #+end_src
-*** [#A] Package manager
+*** Package manager
  Update Emacs's GPG keyring for GNU ELPA
 #+begin_src emacs-lisp
   (straight-use-package 'gnu-elpa-keyring-update)
@@ -129,9 +129,8 @@ Misc scripts inside [[~/.emacs.d/bin]]
 ** Theme
 #+begin_src emacs-lisp
   (use-package jc-themes
-               :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
-    :config
-    (load-theme 'jc-obscure t))
+    :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
+    :init (load-theme 'jc-obscure t))
 #+end_src
 ** Frames
 #+begin_src emacs-lisp
@@ -147,9 +146,7 @@ Misc scripts inside [[~/.emacs.d/bin]]
     (if (>= emacs-major-version 27)
         (set-fontset-font t '(#x1f000 . #x1faff)
                           (font-spec :family "Noto Color Emoji"))))
-  (add-hook 'after-init-hook
-            (lambda ()
-              (ai:setup-frame nil)) t)
+  (add-hook 'after-init-hook (lambda () (ai:setup-frame nil)) t)
   (add-to-list 'after-make-frame-functions #'ai:setup-frame)
 #+end_src
 ** Scratch buffer
@@ -159,11 +156,14 @@ Unkillable & presistant scratch buffer
   (setq-default initial-major-mode 'org-mode)
   (setq-default initial-scratch-message nil)
   (use-package unkillable-scratch
-    :config
+    :init
     (unkillable-scratch +1)
-    (setq-default unkillable-scratch-behavior 'bury)
-    (setq-default unkillable-scratch-do-not-reset-scratch-buffer t))
+    :custom
+    (unkillable-scratch-behavior 'bury)
+    (unkillable-scratch-do-not-reset-scratch-buffer t))
   (use-package persistent-scratch
+    :init
+    (persistent-scratch-mode +1)
     :config
     (persistent-scratch-setup-default)
     (persistent-scratch-autosave-mode +1))
@@ -171,37 +171,37 @@ Unkillable & presistant scratch buffer
 ** Dashboard
 #+begin_src emacs-lisp
 (use-package dashboard
-    :config
-    (dashboard-setup-startup-hook)
-    (setq dashboard-banner-official-png nil)
-    (setq dashboard-startup-banner nil)
-    (setq dashboard-banner-logo-png nil)
-    (setq dashboard-footer-messages nil)
-    (setq dashboard-items '((recents  . 20)
-                            (projects . 20)))
-    (setq dashboard-banner-logo-title ""))
+    :hook (after-init . dashboard-setup-startup-hook)
+    :custom
+    (dashboard-banner-official-png nil)
+    (dashboard-startup-banner nil)
+    (dashboard-banner-logo-png nil)
+    (dashboard-footer-messages nil)
+    (dashboard-items '((recents  . 20) (projects . 20)))
+    (dashboard-banner-logo-title ""))
 #+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
-  (minibuffer-electric-default-mode +1)
-  (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
-  (hook! prog-mode-hook (font-lock-mode -1))
-  (set-display-table-slot standard-display-table 'truncation
-                          (make-glyph-code ?… 'default))
-  (set-display-table-slot standard-display-table 'wrap
-                          (make-glyph-code ?↩ 'default))
-  (custom-set-faces
-   '(header-line ((t (:background "#f7f7da")))))
-  (use-package fringe-current-line
-    :config
-    (setq-default fcl-fringe-bitmap 'vertical-bar)
-    (global-fringe-current-line-mode +1))
-  (use-package digit-groups
-    :config (digit-groups-global-mode +1))
-  ;; Pop-up windows when display-buffer
-  (setq pop-up-windows t)
-  ;; Indicate buffer boundaries
-  (setq-default indicate-buffer-boundaries '((top . left) (t . right)))
+    (hook! prog-mode-hook (font-lock-mode -1))
+    (minibuffer-electric-default-mode +1)
+    (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
+    (set-display-table-slot standard-display-table 'truncation
+                            (make-glyph-code ?… 'default))
+    (set-display-table-slot standard-display-table 'wrap
+                            (make-glyph-code ?↩ 'default))
+    (custom-set-faces
+     '(header-line ((t (:background "#f7f7da")))))
+    (use-package fringe-current-line
+      :hook (after-init . global-fringe-current-line-mode)
+      :custom
+      (fcl-fringe-bitmap 'vertical-bar)
+  )
+    (use-package digit-groups
+      :hook (after-init . digit-groups-global-mode))
+    ;; Pop-up windows when display-buffer
+    (setq pop-up-windows t)
+    ;; Indicate buffer boundaries
+    (setq-default indicate-buffer-boundaries '((top . left) (t . right)))
 #+END_SRC
 
 ** Disable mode-line
@@ -221,17 +221,14 @@ https://github.com/tautologyclub/feebleline
 #+begin_src emacs-lisp
   ;; Enable richer annotations using the Marginalia package
   (use-package marginalia
-    ;; The :config configuration is always executed (Not lazy!)
-    :config
-    ;; Must be in the :config section of use-package such that the mode gets
-    ;; enabled right away. Note that this forces loading the package.
-    (marginalia-mode))
+    :hook
+    (after-init . marginalia-mode))
 
 
   (use-package selectrum
-    :config
-    (setq enable-recursive-minibuffers t)
-    (selectrum-mode +1)
+    :hook (after-init . selectrum-mode)
+    :custom
+    (enable-recursive-minibuffers t)
     )
 
   (defun stop-using-minibuffer ()
@@ -242,15 +239,16 @@ https://github.com/tautologyclub/feebleline
   (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 #+end_src
 * Vi
-Activate [[https://github.com/emacs-evil/evil][Evil]]
+  Activate [[https://github.com/emacs-evil/evil][Evil]]
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :preface
     (viper-go-away)
     (setq-default evil-want-minibuffer t)
     (setq-default evil-want-keybinding nil)
-    :config
+    :init
     (evil-mode +1)
+    :config
     (evil-global-set-key 'normal (kbd ";") 'evil-ex)
     (setq async-shell-command-buffer nil)
     (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
@@ -306,8 +304,7 @@ Activate [[https://github.com/emacs-evil/evil][Evil]]
     (global-set-key (kbd "C-x k")   'kill-or-bury-buffer)
     (global-set-key (kbd "C-x C-k") 'kill-buffer)
     (global-set-key (kbd "C-<tab>") 'other-window)
-    (global-set-key (kbd "C-c C-f") 'find-file-other-window)
-    )
+    (global-set-key (kbd "C-c C-f") 'find-file-other-window))
 #+END_SRC
 Bring some standard keybindings back
 #+begin_src emacs-lisp
@@ -333,34 +330,34 @@ Universal ESC
   #+end_src
   [[https://github.com/edkolev/evil-goggles][Goggles]]
   #+begin_src  emacs-lisp
-        (use-package evil-goggles
-    :after (evil)
-              :config
-              (evil-goggles-mode +1)
-              (setq-default evil-goggles-duration 0.5)
-              (custom-set-faces
-               '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
-               '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
-               '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
-               '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
-               '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
-               ))
+    (use-package evil-goggles
+      :after (evil)
+      :init (evil-goggles-mode +1)
+      :custom
+      (evil-goggles-duration 0.5)
+      :config
+      (custom-set-faces
+       '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
+       '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
+       '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
+       '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
+       '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
+       ))
   #+end_src
   #+BEGIN_SRC emacs-lisp
-    (use-package evil-collection :after (evil) :config (evil-collection-init))
+    (use-package evil-collection :after (evil) :hook (after-init . evil-collection-init))
 
     (use-package evil-matchit
-    :after (evil)
-    :commands (evilmi-inner-text-object
+      :after (evil)
+      :commands (evilmi-inner-text-object
                  evilmi-outer-text-object)
       :config
-      ;; evil matchit, jump between matching tags and keywords
       (define-key evil-normal-state-map "%" #'evilmi-jump-items)
       (define-key evil-visual-state-map "%" #'evilmi-jump-items)
       (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
       (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
 
-      :config
+      :init
       (evilmi-init-plugins))
 
     (defun e-top ()
@@ -379,32 +376,32 @@ Universal ESC
       :after  (hydra evil)
       :config
       (global-evil-leader-mode +1)
-    (evil-leader/set-leader "<SPC>")
-    (evil-leader/set-key
-      "<SPC>" 'save-buffer
-      "s"  'shell
-      "x"  'eshell-here
-      "g"  'magit
-      "d"  'dired
-      "f"  'projectile-find-file-dwim
-      "b"  'switch-to-buffer
-      "k"  'kill-buffer
-      "i"  'indent-buffer
-      "&"  'async-shell-command
-      "/"  'swiper
-      "S g" 'guix
-      "S t" 'e-top
-      "S v" 'vterm
-      "j r" 'nodejs-repl-switch-to-repl
-      "j j" 'nodejs-repl-send-buffer
-      )
-    (defhydra visuals-control nil
-      "visual-control"
-      ("m" menu-bar-mode)
-      ("w" whitespace-mode)
-      ("c" font-lock-mode)
-      ("n" linum-cycle))
-    (evil-leader/set-key "v" 'visuals-control/body))
+      (evil-leader/set-leader "<SPC>")
+      (evil-leader/set-key
+        "<SPC>" 'save-buffer
+        "s"  'shell
+        "x"  'eshell-here
+        "g"  'magit
+        "d"  'dired
+        "f"  'projectile-find-file-dwim
+        "b"  'switch-to-buffer
+        "k"  'kill-buffer
+        "i"  'indent-buffer
+        "&"  'async-shell-command
+        "/"  'swiper
+        "S g" 'guix
+        "S t" 'e-top
+        "S v" 'vterm
+        "j r" 'nodejs-repl-switch-to-repl
+        "j j" 'nodejs-repl-send-buffer
+        )
+      (defhydra visuals-control nil
+        "visual-control"
+        ("m" menu-bar-mode)
+        ("w" whitespace-mode)
+        ("c" font-lock-mode)
+        ("n" linum-cycle))
+      (evil-leader/set-key "v" 'visuals-control/body))
 
     (use-package undo-tree
       :config (global-undo-tree-mode +1))
@@ -421,8 +418,8 @@ Universal ESC
       (evil-global-set-key 'normal (kbd "g b") 'avy-goto-word-1)
       (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
       (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
-    (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
-    (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
+      (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
+      (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
       )
     (use-package evil-snipe
       :after evil
@@ -829,11 +826,11 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (use-package nix-mode)
   (use-package restart-emacs
     :after (evil-leader)
-    :config
+    :init
     (evil-leader/set-key "S r" 'restart-emacs)
     )
   (use-package notmuch
-    :config
+    :init
     (evil-leader/set-key "m i"
       '(lambda () (interactive) (notmuch-tree "is:inbox")))
     (evil-leader/set-key "m m p"
@@ -843,8 +840,8 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     (evil-leader/set-key "m s"
       '(lambda () (interactive) (notmuch-tree)))
     )
-  (use-package org)
   (use-package telega
+    :straight nil
     :config
     (telega-notifications-mode 1))
 #+END_SRC
@@ -852,17 +849,15 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode
     :after (evil)
-    :config
+    :init
+    (lsp-ensure-server 'xmlls)
     (setq lsp-completion-enable-additional-text-edit nil)
-    (setq lsp-java-code-generation-use-blocks t)
-    (setq lsp-java-implementations-code-lens-enabled t)
     (setq lsp-server-trace "verbose")
     (setq lsp-prefer-flymake nil)
     (setq lsp-inhibit-message t
           lsp-eldoc-render-all nil
           lsp-enable-file-watchers nil
           lsp-highlight-symbol-at-point nil)
-    (hook! lsp-mode-hook (lsp-lens-mode +1))
 
     (evil-leader/set-key "l R" 'lsp-workspace-restart)
     (evil-leader/set-key "l f" 'lsp-format-buffer)
@@ -872,12 +867,12 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     :hook
     (lsp-mode . lsp-enable-which-key-integration)
     (lsp-mode . lsp-lens-mode)
-    (java-mode . lsp-deferred)
     (xml-mode . lsp-deferred)
-    (scala-mode . lsp)
-    (rust-mode . lsp)
-    (c++-mode . lsp)
-    (c-mode . lsp)
+    (java-mode . lsp-deferred)
+    (scala-mode . lsp-deferred)
+    (rust-mode . lsp-deferred)
+    (c++-mode . lsp-deferred)
+    (c-mode . lsp-deferred)
     :commands (lsp lsp-deferred))
   (use-package helm :config (helm-mode -1))
   (use-package helm-lsp :after (helm lsp-mode))
@@ -887,6 +882,8 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     :hook (python-mode . (lambda ()
                            (require 'lsp-python-ms)
                            (lsp-deferred)))
+    :init
+    (lsp-ensure-server 'pyls)
     :config
     (setq lsp-python-ms-executable "pyls"))
 
@@ -928,6 +925,8 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (use-package dired
     :straight nil
     :after (evil)
+    :init
+    (require' dired-x)
     :config
     (defun kill-all-dired-buffers ()
       "Kill all dired buffers."
@@ -940,7 +939,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
               (setq count (1+ count))
               (kill-buffer buffer)))
           (message "Killed %i dired buffer(s)." count))))
-    (require' dired-x)
     (setq dired-omit-files "^.$\\|^#\\|~$\\|^.#")
     (add-hook 'dired-mode-hook 'hl-line-mode)
     (add-hook 'dired-mode-hook 'dired-omit-mode)
@@ -963,25 +961,23 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
       "SPC" 'dired-subtree-subdir
       "SPC" 'dired-insert-subdir
       )
-    (eval-after-load "dired"
-      '(progn
-         (define-key dired-mode-map "v" 'dired-x-find-file)
-         (define-key dired-mode-map "V" 'dired-view-file)
-         (define-key dired-mode-map "j" 'dired-next-line)
-         (define-key dired-mode-map "J" 'dired-goto-file)
-         (define-key dired-mode-map "k" 'dired-previous-line)
-         (define-key dired-mode-map "K" 'dired-do-kill-lines)))
+    (define-key dired-mode-map "v" 'dired-x-find-file)
+    (define-key dired-mode-map "V" 'dired-view-file)
+    (define-key dired-mode-map "j" 'dired-next-line)
+    (define-key dired-mode-map "J" 'dired-goto-file)
+    (define-key dired-mode-map "k" 'dired-previous-line)
+    (define-key dired-mode-map "K" 'dired-do-kill-lines)
     (setq dired-dwim-target t))
   (use-package dired-narrow
-    :after dired
-    :config
+    :after (dired)
+    :init
     (bind-key "C-c C-n" #'dired-narrow)
     (bind-key "C-c C-f" #'dired-narrow-fuzzy)
     (bind-key "C-x C-N" #'dired-narrow-regexp)
     )
   (use-package dired-subtree
-    :after dired
-    :config
+    :after (dired)
+    :init
     (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
     (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
   (define-key global-map "\C-x\C-d" 'dired-jump)
@@ -1009,10 +1005,9 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+END_SRC
 
 * Miscellaneous
-
 ** PDF Tools
 #+begin_src emacs-lisp
-  (use-package pdf-tools :config (pdf-tools-install))
+  (use-package pdf-tools :hook (after-init . pdf-tools-install))
 #+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
@@ -1090,7 +1085,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 * Org
 #+BEGIN_SRC emacs-lisp
   (use-package org
-    :straight '(org :type git :host github :repo "emacs-straight/org-mode")
+    :straight nil
     :config
     (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
@@ -1552,8 +1547,8 @@ C-w handles windows in all states
 ** Emms
 #+begin_src emacs-lisp
     (use-package emms
-      :after hydra
-      :config
+      :after (hydra evil dired)
+      :init
       (require 'emms-setup)
       (require 'emms-player-mpv)
       (add-to-list 'emms-player-list 'emms-player-mpv)
@@ -1601,18 +1596,21 @@ C-w handles windows in all states
 ** Java
 #+begin_src emacs-lisp
   (require 'cc-mode)
-  (setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz")
-  (setq lsp-java-server-install-dir (concat user-emacs-directory "eclipse.jdt.ls/server"))
-  (setq lsp-java-configuration-runtimes
-        '[
-          (:name "java-8" :path "/home/a/.jdk/8" :default t)
-          (:name "java-11" :path "/home/a/.jdk/11")
-          ])
   (use-package lsp-java
-    :after lsp-mode
     :bind (("C-M-b" . lsp-find-implementation))
-    :config
-    (add-hook 'java-mode-hook 'lsp-jt-lens-mode)
+    :init
+    (require 'lsp-java)
+    (setq lsp-java-code-generation-use-blocks t)
+    (setq lsp-java-implementations-code-lens-enabled t)
+    (hook! java-mode-hook  lsp-deferred)
+    (setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz")
+    (setq lsp-java-server-install-dir (concat user-emacs-directory "eclipse.jdt.ls/server"))
+    (setq lsp-java-configuration-runtimes
+          '[
+            (:name "java-8" :path "/home/a/.jdk/8" :default t)
+            (:name "java-11" :path "/home/a/.jdk/11")
+            ])
+
     )
 #+END_SRC
 *** Code style
@@ -1940,7 +1938,7 @@ C-w handles windows in all states
 ** Scheme
 #+begin_src emacs-lisp
   (use-package geiser
-    :after (evil)
+    :after (evil eros)
     :config
     (require 'geiser)
     (setq geiser-active-implementations '(guile))
@@ -1987,12 +1985,12 @@ C-w handles windows in all states
 ** Emacs Lisp
 #+begin_src emacs-lisp
   (use-package general
-  :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'emacs-lisp-mode-map
-   ;; or xref equivalent
-   "K" 'elisp-slime-nav-describe-elisp-thing-at-point))
+    :config
+    (general-define-key
+     :states 'normal
+     :keymaps 'emacs-lisp-mode-map
+     ;; or xref equivalent
+     "K" 'elisp-slime-nav-describe-elisp-thing-at-point))
   (use-package helpful
     :bind (([remap describe-function] . helpful-callable)
            ([remap describe-variable] . helpful-variable)
@@ -2001,24 +1999,25 @@ C-w handles windows in all states
   (defun turn-on-page-break-lines-mode (&rest _))
   (use-package elisp-slime-nav :diminish)
   (use-package elisp-lint)
-  ;; Overlays
-  (advice-add 'eval-region :around
-              (lambda (f beg end &rest r)
-                (eros--eval-overlay
-                 (apply f beg end r)
-                 end)))
-  (advice-add 'eval-last-sexp :filter-return
-              (lambda (r) (eros--eval-overlay r (point))))
-  (advice-add 'eval-defun :filter-return
-              (lambda (r) (eros--eval-overlay
-                           r
-                           (save-excursion
-                             (end-of-defun)
-                             (point)))))
 
   (use-package eros
     :after (evil)
+    :hook (emacs-lisp-mode . eros-mode)
     :config
+    ;; Overlays
+    (advice-add 'eval-region :around
+                (lambda (f beg end &rest r)
+                  (eros--eval-overlay
+                   (apply f beg end r)
+                   end)))
+    (advice-add 'eval-last-sexp :filter-return
+                (lambda (r) (eros--eval-overlay r (point))))
+    (advice-add 'eval-defun :filter-return
+                (lambda (r) (eros--eval-overlay
+                             r
+                             (save-excursion
+                               (end-of-defun)
+                               (point)))))
     (evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'eval-buffer)
     (hook! emacs-lisp-mode-hook eros-mode)
 
