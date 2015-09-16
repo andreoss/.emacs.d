@@ -17,21 +17,25 @@ git clone https://github.com/andreoss/.emacs.d
 #+END_SRC
 *** Straight.el
 #+begin_src emacs-lisp
-    (defvar bootstrap-version)
-    (let ((bootstrap-file
-           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-          (bootstrap-version 5))
-      (unless (file-exists-p bootstrap-file)
-        (with-current-buffer
-            (url-retrieve-synchronously
-             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-             'silent 'inhibit-cookies)
-          (goto-char (point-max))
-          (eval-print-last-sexp)))
-      (load bootstrap-file nil 'nomessage))
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
   (straight-use-package 'use-package)
+  (setq use-package-ensure-function 'straight-use-package)
   (setq straight-use-package-by-default t)
-(setq straight-vc-git-default-clone-depth 1)
+  (setq use-package-always-defer t)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-demand t)
+  (setq straight-vc-git-default-clone-depth 1)
 
 #+end_src
 *** [#A] Package manager
@@ -107,9 +111,10 @@ Start server unless it is already running
 ** Default shell
 #+begin_src emacs-lisp
   (if-let ((bash-file-name (string-trim (shell-command-to-string "which bash"))))
-    (setq explicit-shell-file-name bash-file-name)
+      (setq explicit-shell-file-name bash-file-name)
     (setq shell-file-name explicit-shell-file-name)
     (setenv "SHELL" explicit-shell-file-name))
+  (use-package dash :init (require 'dash))
 #+end_src
 * Environment
 Misc scripts inside [[~/.emacs.d/bin]]
@@ -921,7 +926,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 * Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired
-    :ensure nil
+    :straight nil
     :after (evil)
     :config
     (defun kill-all-dired-buffers ()
@@ -1819,36 +1824,38 @@ C-w handles windows in all states
 
 ** Go
 #+begin_src emacs-lisp
-(use-package go-mode)
-(use-package go-guru)
-(use-package golint)
-(use-package go-autocomplete)
-(use-package go-eldoc)
+  (use-package go-mode
+    :after (evil)
+    :config
+    (hook! go-mode-hook
+           (setq-local gofmt-command "goimports")
+           (local-set-key (kbd "M-.") 'godef-jump)
+           )
 
-(defun my/go-mode-hook ()
-  "Go mode hook."
-  (go-eldoc-setup)
-  (setq-local gofmt-command "goimports")
-  (local-set-key (kbd "M-.") 'godef-jump)
-  (add-hook 'before-save-hook 'gofmt-before-save nil 'local))
+    (hook! go-mode-hook
+           (add-hook 'before-save-hook 'gofmt-before-save nil 'local))
 
-(hook! go-mode-hook (go-eldoc-setup))
-(hook! go-mode-hook
-     (setq-local gofmt-command "goimports")
-     (local-set-key (kbd "M-.") 'godef-jump)
-     )
+    (hook! go-mode-hook auto-complete-mode)
 
-(hook! go-mode-hook
-     (add-hook 'before-save-hook 'gofmt-before-save nil 'local))
+    (evil-define-key 'normal go-mode-map
+      (kbd "M-.") 'godef-jump
+      (kbd "g d") 'godef-jump
+      (kbd "g D") 'godef-jump-other-window))
 
-(hook! go-mode-hook auto-complete-mode)
+  (use-package go-guru)
+  (use-package golint)
+  (use-package go-autocomplete)
+  (use-package go-eldoc
+    :after (go-mode)
+    :config
+    (defun my/go-mode-hook ()
+      "Go mode hook."
+      (go-eldoc-setup)
+      (setq-local gofmt-command "goimports")
+      (local-set-key (kbd "M-.") 'godef-jump)
+      (add-hook 'before-save-hook 'gofmt-before-save nil 'local))
 
-(if-bound evil-mode
-  (evil-define-key 'normal go-mode-map
-    (kbd "M-.") 'godef-jump
-    (kbd "g d") 'godef-jump
-    (kbd "g D") 'godef-jump-other-window))
-
+    (hook! go-mode-hook (go-eldoc-setup)))
 #+end_src
 
 ** Lisp
@@ -2082,23 +2089,24 @@ See https://github.com/quicklisp/quicklisp-slime-helper
                    ("\\.cl'"      . lisp-mode)
                    ("\\.asd'"     . lisp-mode)
                    ("\\.fasl'"    . lisp-mode))
-            :config (setq slime-contribs '(slime-fancy)))
-          (setq-default inferior-lisp-program "sbcl")
+            :config (setq slime-contribs '(slime-fancy))
+          (setq-default inferior-lisp-program "sbcl"))
           (use-package slime-company
             :after (slime company)
-            :config (setq slime-company-completion 'fuzzy
-                          slime-company-after-completion 'slime-company-just-one-space))
+            :config
+            (setq slime-company-completion 'fuzzy
+                  slime-company-after-completion 'slime-company-just-one-space)
 
-          (setq slime-contribs '(slime-fancy))
-          (defun slime-eval-last-expression-eros ()
-            ""
-            (interactive)
-            (destructuring-bind (output value)
-                (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
-              (eros--make-result-overlay (concat output value)
-                :where (point)
-                :duration eros-eval-result-duration)))
-          )
+            (setq slime-contribs '(slime-fancy))
+            (defun slime-eval-last-expression-eros ()
+              ""
+              (interactive)
+              (destructuring-bind (output value)
+                  (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
+                (eros--make-result-overlay (concat output value)
+                                           :where (point)
+                                           :duration eros-eval-result-duration)))
+            ))
       )
     )
 #+end_src
