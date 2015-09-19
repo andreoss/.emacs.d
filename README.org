@@ -1090,6 +1090,9 @@
         (kbd "SPC '") 'org-edit-special)
       (evil-define-key 'normal org-src-mode-map
         (kbd "SPC '") 'org-edit-src-exit)
+      (defun my-setup-org-edit-src-exit ()
+        (evil-local-set-key 'normal (kbd "SPC '") 'org-edit-src-exit))
+      (add-hook 'org-src-mode-hook #'my-setup-org-edit-src-exit)
       (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
       ;; by convention: "C-c a" opens agenda
