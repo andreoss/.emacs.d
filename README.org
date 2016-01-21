@@ -740,7 +740,7 @@
    #+begin_src emacs-lisp
      (use-package jc-themes
        :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
-       :config (load-theme 'jc-sepia t))
+       :config (load-theme 'jc-random t))
    #+end_src
 ** Frames
    #+begin_src emacs-lisp
