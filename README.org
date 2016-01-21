@@ -4,7 +4,7 @@
 #+PROPERTY: header-args :comments yes :results silent
 
 * Installation
-  #+begin_src shell
+  #+begin_src shell :eval no
     mv ~/.emacs.d{,_}
     git clone https://github.com/andreoss/.emacs.d
   #+end_src
@@ -2084,7 +2084,7 @@
 ** Common Lisp
    See https://github.com/quicklisp/quicklisp-slime-helper
    #+begin_src emacs-lisp
-     (let ((slime-helper "~/.quicklisp/slime-helper.el"))
+     (let ((slime-helper "~/.roswell/helper.el"))
        (if (file-exists-p slime-helper)
            (progn
              (load (expand-file-name slime-helper))
