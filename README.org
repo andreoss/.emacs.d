@@ -1590,7 +1590,10 @@
      (require 'elide-head)
      (use-package c-eldoc)
      (use-package company-c-headers)
-     (use-package ccls)
+     (use-package ccls
+       :custom
+       (c-basic-offset  4)
+       )
      (add-hook 'c-mode-hook        'c-turn-on-eldoc-mode)
      (add-hook 'c-mode-common-hook 'elide-head)
    #+end_src
