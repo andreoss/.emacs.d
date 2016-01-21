@@ -797,8 +797,6 @@
                              (make-glyph-code ?… 'default))
      (set-display-table-slot standard-display-table 'wrap
                              (make-glyph-code ?↩ 'default))
-     (custom-set-faces
-      '(header-line ((t (:background "#f7f7da")))))
      (use-package fringe-current-line
        :hook (after-init . global-fringe-current-line-mode)
        :custom
@@ -822,6 +820,7 @@
        (feebleline-show-dir               t)
        (feebleline-show-time              nil)
        (feebleline-show-previous-buffer   nil)
+       (mode-line-modes                   nil)
        :hook
        (after-init . feebleline-mode))
    #+end_src
