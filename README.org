@@ -319,7 +319,8 @@
 
      (setq select-active-regions t)
      (setq select-enable-clipboard t) ; as above
-     (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+     (if (fboundp 'x-cut-buffer-or-selection-value)
+         (setq interprogram-paste-function 'x-cut-buffer-or-selection-value))
      (setq default-input-method 'russian-computer)
      (defun untabify-buffer ()
        "Replace tabs by spaces."
@@ -1534,14 +1535,6 @@
              ("/git/config\\'"        . gitconfig-mode)
              ("/\\.gitmodules\\'"     . gitconfig-mode)
              ("/etc/gitconfig\\'"     . gitconfig-mode)))
-    (use-package gitattributes-mode
-      :mode (("/\\.gitattributes\\'"  . gitattributes-mode)
-             ("/info/attributes\\'"   . gitattributes-mode)
-             ("/git/attributes\\'"    . gitattributes-mode)))
-    (use-package gitignore-mode
-      :mode (("/\\.gitignore\\'"      . gitignore-mode)
-             ("/info/exclude\\'"      . gitignore-mode)
-             ("/git/ignore\\'"        . gitignore-mode)))
     (use-package fullframe
       :config
       (fullframe magit-status magit-mode-quit-window nil))
