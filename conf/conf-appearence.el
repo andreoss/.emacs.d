@@ -1,6 +1,7 @@
 ;;; conf-appearance --- Look and feel
 ;;; Commentary:
 ;;; Code:
+(use-package better-defaults)
 (scroll-bar-mode +1)
 (use-package doom-themes)
 (load-theme 'doom-opera-light t)
