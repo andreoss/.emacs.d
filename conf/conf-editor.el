@@ -43,6 +43,7 @@
 (hook! prog-mode-hook rainbow-mode)
 (hook! prog-mode-hook hs-minor-mode)
 (use-package ivy)
+(use-package swiper :after ivy)
 (use-package flx)
 (use-package flx-ido)
 (flx-ido-mode +1)
