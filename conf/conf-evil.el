@@ -140,9 +140,8 @@
  :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
 
 (use-package evil-snipe
-  :diminish
   :after evil
-  :init
+  :config
   (evil-snipe-mode +1)
   (evil-snipe-override-mode +1)
   )
