@@ -62,11 +62,12 @@
   (evil-define-key 'normal lsp-mode-map (kbd "<f8>") 'dap-next)
   (evil-define-key 'normal lsp-mode-map (kbd "<f9>") 'dap-continue)
   )
-(when (require 'ansi-color nil t)
-  (defun my-colorize-compilation-buffer ()
-    (when (eq major-mode 'compilation-mode)
-      (ansi-color-apply-on-region compilation-filter-start (point-max))))
-  (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 (use-package lsp-ui
   :config
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
@@ -86,6 +87,7 @@
   )
 
 (evil-define-key     'normal java-mode-map
+  (kbd "C-c c")      'dap-java-run-test-method
   (kbd "C-c C-c")    'dap-java-run-test-class
   )
 (setq lsp-java-content-provider-preferred "fernflower")
@@ -117,7 +119,23 @@
         lsp-java-format-settings-url (concat "file://" ai:java-format-settings-file)
         lsp-enable-on-type-formatting t
         lsp-enable-indentation t)
-
-
+(defun ai:lsp-thing-at-point ()
+  "Return symbol at point."
+  (interactive)
+  (let ((contents (-some->>
+                   (lsp--text-document-position-params)
+                   (lsp--make-request "textDocument/hover")
+                   (lsp--send-request)
+                   (gethash "contents")
+                  )
+        ))
+    (message (format "%s %s" (type-of contents) contents))
+    (cond
+     ((hash-table-p contents) (gethash "value" contents))
+     ((vectorp contents)
+      (let ((mt (aref contents 0)))
+        (gethash "value" mt)
+        ))
+     (t nil))))
 (provide 'lang-java-lsp)
 ;;; lang-java-lsp.el ends here
