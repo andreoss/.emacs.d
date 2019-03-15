@@ -2,10 +2,27 @@
 #+TITLE: Emacs configuration
 #+PROPERTY: header-args :comments yes :results silent
 
-* Load paths
+* Installation
+#+begin_src shell
+mv ~/.emacs.d{,_}
+git clone https://github.com/andreoss/.emacs.d
+#+end_src
+* Startup
+** GC Tweaks
+Disable GC at startup, and re-enable after the init is done.
+Gives about 1s speed up.
+https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
+#+BEGIN_SRC emacs-lisp
+  (setq gc-cons-threshold  most-positive-fixnum
+        gc-cons-percentage 0.6)
+  (add-hook 'after-init-hook
+            (lambda ()
+              (setq gc-cons-threshold (* 80 (expt 2 20)))
+              (setq gc-cons-percentage 0.1)
+              (garbage-collect)))
+#+END_SRC
 ** Package manager
 Basic package configuration required by straight.el
-
  #+BEGIN_SRC emacs-lisp
    (require 'package)
    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -31,20 +48,6 @@ Basic package configuration required by straight.el
    (straight-use-package 'use-package)
  #+END_SRC
 
-
-** GC Tweaks
-Disable GC at startup, and re-enable after the init is done.
-Gives about 1s speed up.
-https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
-#+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold  most-positive-fixnum
-        gc-cons-percentage 0.6)
-  (add-hook 'after-init-hook
-            (lambda ()
-              (setq gc-cons-threshold (* 80 (expt 2 20)))
-              (setq gc-cons-percentage 0.1)
-              (garbage-collect)))
-#+END_SRC
 ** Server
 Start server unless it is already running
 #+BEGIN_SRC emacs-lisp
@@ -57,22 +60,17 @@ Start server unless it is already running
                     (server-start)))))
 
 #+END_SRC
-** Scratch buffer
-Unkillable & presistant scratch buffer
-#+begin_src emacs-lisp
-(setq-default inhibit-startup-screen t)
-(setq-default initial-major-mode 'org-mode)
-(setq-default initial-scratch-message nil)
-(use-package unkillable-scratch
-  :init
-  (unkillable-scratch +1))
-(setq-default unkillable-scratch-behavior 'bury)
-(setq-default unkillable-scratch-do-not-reset-scratch-buffer t)
-(use-package persistent-scratch
-  :init
-  (persistent-scratch-setup-default)
-  (persistent-scratch-autosave-mode +1))
-#+end_src
+** Load pats
+#+BEGIN_SRC emacs-lisp
+  (defconst dotfiles-directory-name
+    (file-name-directory (or (buffer-file-name) load-file-name))
+    "Location of main Emacs configuration files.")
+  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
+  (require 'macros         (concat dotfiles-directory-name "macros.el"))
+  (require 'helpers        (concat dotfiles-directory-name "helpers.el"))
+  (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
+  (add-to-loadpath vendor-dir)
+#+END_SRC
 ** Post-init message
 #+begin_src emacs-lisp
 (defvar emacs-init-time-in-seconds
@@ -86,22 +84,11 @@ Unkillable & presistant scratch buffer
 
 #+end_src
 
-#+BEGIN_SRC emacs-lisp
-  (defconst dotfiles-directory-name
-    (file-name-directory (or (buffer-file-name) load-file-name))
-    "Location of main Emacs configuration files.")
-  (require 'viper-fallback (concat dotfiles-directory-name "viper-fallback.el"))
-  (require 'macros         (concat dotfiles-directory-name "macros.el"))
-  (require 'helpers        (concat dotfiles-directory-name "helpers.el"))
-  (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
-  (add-to-loadpath vendor-dir)
-#+END_SRC
-
 * Environment
 #+BEGIN_SRC emacs-lisp
-  (setq debug-on-error t)
-  (set-language-environment "UTF-8")
-  (update-env-var "PATH"
+(setq debug-on-error t)
+(set-language-environment "UTF-8")
+(update-env-var "PATH"
                   (expand-file-name (concat dotfiles-directory-name "bin")))
 #+END_SRC
 * Appearance
@@ -118,15 +105,32 @@ Unkillable & presistant scratch buffer
     (setq frame (or frame (selected-frame)))
     (if-any-window-system
      (when (display-graphic-p)
-       (set-frame-parameter frame 'internal-border-width 32)
+       (set-frame-parameter frame 'internal-border-width 2)
        (set-frame-width frame 80)
        (set-frame-height frame 40)
        (fringe-mode '(14 . 7)))
      )
     )
-    (add-hook 'after-init-hook
-              (lambda ()
-                (ai:setup-frame nil)) t)
+  (add-hook 'after-init-hook
+            (lambda ()
+              (ai:setup-frame nil)) t)
+  (add-to-list 'after-make-frame-functions #'ai:setup-frame)
+#+end_src
+** Scratch buffer
+Unkillable & presistant scratch buffer
+#+begin_src emacs-lisp
+(setq-default inhibit-startup-screen t)
+(setq-default initial-major-mode 'org-mode)
+(setq-default initial-scratch-message nil)
+(use-package unkillable-scratch
+  :init
+  (unkillable-scratch +1))
+(setq-default unkillable-scratch-behavior 'bury)
+(setq-default unkillable-scratch-do-not-reset-scratch-buffer t)
+(use-package persistent-scratch
+  :init
+  (persistent-scratch-setup-default)
+  (persistent-scratch-autosave-mode +1))
 #+end_src
 ** Dashboard
 #+begin_src emacs-lisp
@@ -142,21 +146,20 @@ Unkillable & presistant scratch buffer
                             (projects . 20)))
     (setq dashboard-banner-logo-title ""))
 #+end_src
+** Transparency
+#+begin_src emacs-lisp
+  ;;(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+#+end_src
+** Frame size
+#+begin_src emacs-lisp
+  (setq initial-frame-alist
+        '((width . 80) (height . 20)))
+#+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
-  (add-to-list 'after-make-frame-functions #'ai:setup-frame)
-
   (minibuffer-electric-default-mode +1)
-  (add-hook 'minibuffer-setup-hook
-            (lambda ()
-              (toggle-truncate-lines +1)
-              ))
-
-
-  (add-hook 'minibuffer-setup-hook
-            (lambda () (setq truncate-lines nil)))
-
+  (add-hook 'minibuffer-setup-hook (lambda () (toggle-truncate-lines +1)))
+  (add-hook 'minibuffer-setup-hook (lambda () (setq truncate-lines nil)))
   (add-hook 'whitespace-mode-hook (lambda () (font-lock-mode +1)))
   (hook! prog-mode-hook (font-lock-mode -1))
   (set-display-table-slot standard-display-table 'truncation
@@ -174,7 +177,6 @@ Unkillable & presistant scratch buffer
   (setq pop-up-windows t)
   ;; Indicate buffer boundaries
   (setq-default indicate-buffer-boundaries '((top . left) (t . right)))
-  (set-scroll-bar-mode 'left)
 #+END_SRC
 
 ** Disable mode-line
@@ -213,7 +215,7 @@ Unkillable & presistant scratch buffer
           evil-motion-state-cursor     '(bar)
           evil-visual-state-cursor     '("#11312F" hbar . hollow))
 #+END_SRC
-Bring some standard keybiding back
+Bring some standard keybindings back
 #+begin_src emacs-lisp
   (evil-global-set-key 'insert (kbd "C-a") 'beginning-of-line)
   (evil-global-set-key 'normal (kbd "C-h") 'delete-backward-char)
@@ -240,7 +242,6 @@ Easily swap two things
     (define-key evil-visual-state-map "gX" #'evil-exchange-cancel))
 
   #+END_SRC
-
 Universal ESC
   #+begin_src emacs-lisp
     (define-key evil-normal-state-map [escape] #'keyboard-quit)
@@ -255,72 +256,71 @@ Universal ESC
     (define-key minibuffer-local-isearch-map [escape] #'minibuffer-keyboard-quit)
   #+end_src
   #+BEGIN_SRC emacs-lisp
-      (use-package evil-matchit
-        :commands (evilmi-inner-text-object
-                   evilmi-outer-text-object)
-        :init
-        ;; evil matchit, jump between matching tags and keywords
-        (define-key evil-normal-state-map "%" #'evilmi-jump-items)
-        (define-key evil-visual-state-map "%" #'evilmi-jump-items)
-        (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
-        (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
+    (use-package evil-matchit
+      :commands (evilmi-inner-text-object
+                 evilmi-outer-text-object)
+      :init
+      ;; evil matchit, jump between matching tags and keywords
+      (define-key evil-normal-state-map "%" #'evilmi-jump-items)
+      (define-key evil-visual-state-map "%" #'evilmi-jump-items)
+      (define-key evil-inner-text-objects-map "%" #'evilmi-inner-text-object)
+      (define-key evil-outer-text-objects-map "%" #'evilmi-outer-text-object)
 
-        :config
-        (evilmi-init-plugins))
-      (use-package evil-collection :config (try (evil-collection-init)))
-      (use-package evil-goggles
-        :init
-        (evil-goggles-mode +1)
-        (setq-default evil-goggles-duration 0.5)
-        (custom-set-faces
-         '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
-         '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
-         '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
-         '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
-         '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
-         '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
-         ))
-      (use-package evil-leader
-        :config
-        (defun e-top ()
-          (interactive)
-          (eshell-command "top")
-          )
-        (global-evil-leader-mode +1)
-        (evil-leader/set-leader "<SPC>")
-        (evil-leader/set-key
-          "<SPC>" 'save-buffer
-          "s"  'better-shell-shell
-          "x"  'eshell-here
-          "g"  'magit
-          "d" 'dired
-          "f"  'projectile-find-file-dwim
-          "b"  'switch-to-buffer
-          "k"  'kill-buffer
-          "i"  'indent-buffer
-          "&"  'async-shell-command
-          "/"  'swiper
-          "S g" 'guix
-          "S t" 'e-top
-          "j r" 'nodejs-repl-switch-to-repl
-          "j j" 'nodejs-repl-send-buffer
-          )
-        (evil-leader/set-key "v m" 'menu-bar-mode)
-        (evil-leader/set-key "v w" 'whitespace-mode)
-        (evil-leader/set-key "v c" 'font-lock-mode)
-        (evil-leader/set-key "v n" 'linum-mode))
-      )
+      :config
+      (evilmi-init-plugins))
+    (use-package evil-collection :config (try (evil-collection-init)))
+    (use-package evil-goggles
+      :init
+      (evil-goggles-mode +1)
+      (setq-default evil-goggles-duration 0.5)
+      (custom-set-faces
+       '(evil-goggles-delete-face ((t (:inherit magit-diff-removed))))
+       '(evil-goggles-yank-face   ((t (:inherit magit-diff-base-highlight))))
+       '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
+       '(evil-goggles-paste-face  ((t (:inherit magit-diff-added))))
+       '(evil-goggles-commentary-face ((t (:inherit magit-diff-context-highlight))))
+       '(evil-goggles-indent-face ((t (:inherit magit-diff-added-highlight))))
+       ))
+    (use-package evil-leader
+      :config
+      (defun e-top ()
+        (interactive)
+        (eshell-command "top")
+        )
 
-    (hook! server-after-make-frame-hook
-           (if-x-window-system
-            (setq-default evil-emacs-state-tag    nil
-                          evil-motion-state-tag   nil
-                          evil-normal-state-tag   nil
-                          evil-operator-state-tag nil
-                          evil-replace-state-tag  nil
-                          evil-visual-state-tag   nil
-                          evil-insert-state-tag   nil)))
+      (defun linum-cycle ()
+        (interactive)
+        (cond ((not display-line-numbers)
+               (setq display-line-numbers 'relative))
+              ((equal display-line-numbers 'relative)
+               (setq display-line-numbers t))
+              ((equal display-line-numbers t)
+               (setq display-line-numbers nil))))
 
+      (global-evil-leader-mode +1)
+      (evil-leader/set-leader "<SPC>")
+      (evil-leader/set-key
+        "<SPC>" 'save-buffer
+        "s"  'shell
+        "x"  'eshell-here
+        "g"  'magit
+        "d" 'dired
+        "f"  'projectile-find-file-dwim
+        "b"  'switch-to-buffer
+        "k"  'kill-buffer
+        "i"  'indent-buffer
+        "&"  'async-shell-command
+        "/"  'swiper
+        "S g" 'guix
+        "S t" 'e-top
+        "j r" 'nodejs-repl-switch-to-repl
+        "j j" 'nodejs-repl-send-buffer
+        )
+      (evil-leader/set-key "v m" 'menu-bar-mode)
+      (evil-leader/set-key "v w" 'whitespace-mode)
+      (evil-leader/set-key "v c" 'font-lock-mode)
+      (evil-leader/set-key "v n" 'linum-cycle))
+    )
     (use-package undo-tree)
     (use-package evil-commentary
       :after evil
@@ -336,13 +336,10 @@ Universal ESC
       (evil-global-set-key 'normal (kbd "g t") 'avy-goto-line)
       (evil-global-set-key 'normal (kbd "g :") 'avy-goto-line)
       )
-
     (evil-global-set-key 'normal (kbd "M-i") 'company-complete)
     (evil-global-set-key 'insert (kbd "M-i") 'company-complete)
-
     (add-function
      :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
-
     (use-package evil-snipe
       :after evil
       :config
@@ -356,6 +353,7 @@ https://git.sr.ht/~technomancy/better-defaults
 #+begin_src emacs-lisp
   (use-package better-defaults)
   (scroll-bar-mode t)
+  (set-scroll-bar-mode 'left)
 #+end_src
 ** Spelling
 Switch to using enchant as our spell-checking backend (fallback to ispell)
@@ -366,6 +364,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
           "ispell"))
 (use-package flyspell)
 (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+(add-hook 'org-mode-hook  (lambda () (flyspell-mode 1)))
 (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
 #+end_src
 ** Key binding
@@ -718,6 +717,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (mouse-avoidance-mode 'exile)
   (use-package selectrum
     :config
+    (setq enable-recursive-minibuffers t)
     (selectrum-mode +1)
     )
   (use-package org-pdfview :ensure t)
@@ -753,70 +753,73 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 #+END_SRC
 * LSP
 #+BEGIN_SRC emacs-lisp
-   (use-package lsp-mode
-     :config
-     (setq lsp-completion-enable-additional-text-edit nil)
-     (setq lsp-java-code-generation-use-blocks t)
-     (setq lsp-java-implementations-code-lens-enabled t)
-     (setq lsp-server-trace "verbose")
-     (setq lsp-prefer-flymake nil)
-     (setq lsp-inhibit-message t
-           lsp-eldoc-render-all nil
-           lsp-enable-file-watchers nil
-           lsp-highlight-symbol-at-point nil)
-     :hook
-     (lsp-mode . lsp-enable-which-key-integration)
-     (java-mode . lsp-deferred)
-     (xml-mode . lsp-deferred)
-     (scala-mode . lsp)
-     (rust-mode . lsp)
-     (c++-mode . lsp)
-     (c-mode . lsp)
-     :commands (lsp lsp-deferred))
-   (use-package helm :config (helm-mode -1))
-   (use-package helm-lsp :after (helm))
-   (use-package lsp-treemacs)
-   (use-package lsp-python-ms
-     :hook (python-mode . (lambda ()
-                             (require 'lsp-python-ms)
-                             (lsp-deferred))))
-   (setq lsp-python-ms-executable "pyls")
+  (use-package lsp-mode
+    :config
+    (setq lsp-completion-enable-additional-text-edit nil)
+    (setq lsp-java-code-generation-use-blocks t)
+    (setq lsp-java-implementations-code-lens-enabled t)
+    (setq lsp-server-trace "verbose")
+    (setq lsp-prefer-flymake nil)
+    (setq lsp-inhibit-message t
+          lsp-eldoc-render-all nil
+          lsp-enable-file-watchers nil
+          lsp-highlight-symbol-at-point nil)
+    :hook
+    (lsp-mode . lsp-enable-which-key-integration)
+    (lsp-mode . lsp-lens-mode)
+    (java-mode . lsp-deferred)
+    (xml-mode . lsp-deferred)
+    (scala-mode . lsp)
+    (rust-mode . lsp)
+    (c++-mode . lsp)
+    (c-mode . lsp)
+    :commands (lsp lsp-deferred))
+  (use-package helm :config (helm-mode -1))
+  (use-package helm-lsp :after (helm))
+  (use-package lsp-treemacs)
+  (use-package lsp-python-ms
+    :hook (python-mode . (lambda ()
+                            (require 'lsp-python-ms)
+                            (lsp-deferred))))
+  (setq lsp-python-ms-executable "pyls")
 
-   (use-package lsp-ui
-     :config
-     (setq lsp-prefer-flymake nil
-           lsp-ui-doc-delay 5.0
-           lsp-ui-sideline-enable nil
-           lsp-ui-sideline-show-symbol nil))
-   (use-package lsp-ivy)
-   (use-package lsp-treemacs)
-   (use-package treemacs
-     :config
-     (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
-   (use-package dap-mode
-     :after lsp-mode
-     :config
-     (dap-mode 1)
-     (dap-ui-mode 1)
-     ;; enables mouse hover support
-     (dap-auto-configure-mode)
-     (dap-tooltip-mode 1)
-     ;; use tooltips for mouse hover
-     ;; if it is not enabled `dap-mode' will use the minibuffer.
-     (tooltip-mode 1)
-     (evil-define-key 'normal lsp-mode-map (kbd "<f7>") 'dap-step-in)
-     (evil-define-key 'normal lsp-mode-map (kbd "<f8>") 'dap-next)
-     (evil-define-key 'normal lsp-mode-map (kbd "<f9>") 'dap-continue)
-     )
-   (hook! lsp-mode-hook (lsp-lens-mode +1))
+  (use-package lsp-ui
+    :config
+    (setq lsp-prefer-flymake nil
+          lsp-ui-doc-delay 5.0
+          lsp-ui-sideline-enable nil
+          lsp-ui-sideline-show-symbol nil))
+  (use-package lsp-ivy)
+  (use-package lsp-treemacs)
+  (use-package treemacs
+    :config
+    (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
+  (use-package dap-mode
+    :after lsp-mode
+    :config
+    (dap-mode 1)
+    (dap-ui-mode 1)
+    ;; enables mouse hover support
+    (dap-auto-configure-mode)
+    (dap-tooltip-mode 1)
+    ;; use tooltips for mouse hover
+    ;; if it is not enabled `dap-mode' will use the minibuffer.
+    (tooltip-mode 1)
+    (evil-define-key 'normal lsp-mode-map (kbd "<f7>") 'dap-step-in)
+    (evil-define-key 'normal lsp-mode-map (kbd "<f8>") 'dap-next)
+    (evil-define-key 'normal lsp-mode-map (kbd "<f9>") 'dap-continue)
+    )
+  (hook! lsp-mode-hook (lsp-lens-mode +1))
 
-   (evil-leader/set-key "l R" 'lsp-workspace-restart)
-   (evil-leader/set-key "l f" 'lsp-format-buffer)
-   (evil-leader/set-key "r" 'lsp-rename)
-   (define-key lsp-ui-mode-map
-     [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-   (define-key lsp-ui-mode-map
-     [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (evil-leader/set-key "l R" 'lsp-workspace-restart)
+  (evil-leader/set-key "l f" 'lsp-format-buffer)
+  (evil-leader/set-key "l r" 'lsp-rename)
+  (evil-leader/set-key "l t" 'lsp-jt-browser)
+  (evil-leader/set-key "r" 'lsp-rename)
+  (define-key lsp-ui-mode-map
+    [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map
+    [remap xref-find-references] #'lsp-ui-peek-find-references)
 #+END_SRC
 
 * Dired
@@ -904,27 +907,27 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 
 * Miscellaneous
 #+BEGIN_SRC emacs-lisp
-(require 'saveplace)
-(require 's)
-(setq-default
- save-place-file "~/.emacs.d/saveplace"
- save-place t)
+  (require 'saveplace)
+  (require 's)
+  (setq-default
+   save-place-file "~/.emacs.d/saveplace"
+   save-place t)
 
-(setq-default initial-buffer-choice      t
-              visible-bell               t
-              echo-keystrokes        0.001)
+  (setq-default initial-buffer-choice      t
+                visible-bell               t
+                echo-keystrokes        0.001)
 
-;; y/n
-(defalias 'yes-or-no-p 'y-or-n-p)
-(setq kill-buffer-query-functions nil)
-(setq kill-emacs-query-functions nil)
+  ;; y/n
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq kill-buffer-query-functions nil)
+  (setq kill-emacs-query-functions nil)
 
-;; Docker
-(use-package dockerfile-mode
-  :mode "Dockerfile")
+  ;; Docker
+  (use-package dockerfile-mode
+    :mode "Dockerfile")
 
-(add-to-list
- 'auto-mode-alist '("cron\\(tab\\)?\\." . crontab-mode))
+  (add-to-list
+   'auto-mode-alist '("cron\\(tab\\)?\\." . crontab-mode))
 #+END_SRC
 
 * Mouse
@@ -1207,48 +1210,60 @@ STDERR with `org-babel-eval-error-notify'."
 #+END_SRC
 
 * Window management
-#+BEGIN_SRC emacs-lisp
-  (require 'centered-cursor-mode)
-  (require 'uniquify)
-  ;; C-w handles windows in all states
+
+** C-w behavior
+C-w handles windows in all states
+#+begin_src emacs-lisp
   (global-set-key (key C-w) 'evil-window-map)
   (evil-global-set-key 'insert (key C-w) 'evil-window-map)
   (evil-global-set-key 'emacs  (key C-w) 'evil-window-map)
   (evil-global-set-key 'normal (key C-w) 'evil-window-map)
+#+end_src
+
+** Text scale
+#+begin_src emacs-lisp
+  (use-package default-text-scale)
+  (define-key global-map [(control +)] (function default-text-scale-increase))
+  (define-key global-map [(control -)] (function default-text-scale-decrease))
+  (define-key global-map [(control mouse-4)] (function default-text-scale-increase))
+  (define-key global-map [(control mouse-5)] (function default-text-scale-decrease))
+#+end_src
+** Rest
+#+BEGIN_SRC emacs-lisp
+  (require 'centered-cursor-mode)
+  (require 'uniquify)
   (use-package winum)
-(require 'winner)
-(require 'winum)
-(winum-mode +1)
-(defconst evil-winner-key
-  (kbd "C-w")
-  "Evil winner prefix"
-  )
-(evil-global-set-key 'insert evil-winner-key 'evil-window-map)
-(evil-global-set-key 'emacs  evil-winner-key 'evil-window-map)
-(evil-global-set-key 'normal evil-winner-key 'evil-window-map)
-(define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
-(define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
-(define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
-(define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
-(define-key 'evil-window-map (kbd "5") 'winum-select-window-5)
-(define-key 'evil-window-map (kbd "6") 'winum-select-window-6)
-(define-key 'evil-window-map (kbd "7") 'winum-select-window-7)
-(define-key 'evil-window-map (kbd "8") 'winum-select-window-8)
-(define-key 'evil-window-map (kbd "9") 'winum-select-window-9)
-(define-key 'evil-window-map (kbd "0") 'winum-select-window-0-or-10)
-(winner-mode +1)
-(define-key 'evil-window-map (kbd "s") 'split-window-vertically)
-(define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
-(define-key 'evil-window-map (kbd "u") 'winner-undo)
-(define-key 'evil-window-map (kbd "l") 'winner-undo)
-(define-key 'evil-window-map (kbd "<left>") 'shrink-window-horizontally)
-(define-key 'evil-window-map (kbd "<right>") 'enlarge-window-horizontally)
-(define-key 'evil-window-map (kbd "<down>") 'shrink-window)
-(define-key 'evil-window-map (kbd "<up>") 'enlarge-window)
-(setq-default windmove-wrap-around t)
-(windmove-default-keybindings)
-  (setq initial-frame-alist
-        '((width . 80) (height . 20)))
+  (require 'winner)
+  (require 'winum)
+  (winum-mode +1)
+  (defconst evil-winner-key
+    (kbd "C-w")
+    "Evil winner prefix"
+    )
+  (evil-global-set-key 'insert evil-winner-key 'evil-window-map)
+  (evil-global-set-key 'emacs  evil-winner-key 'evil-window-map)
+  (evil-global-set-key 'normal evil-winner-key 'evil-window-map)
+  (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
+  (define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
+  (define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
+  (define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
+  (define-key 'evil-window-map (kbd "5") 'winum-select-window-5)
+  (define-key 'evil-window-map (kbd "6") 'winum-select-window-6)
+  (define-key 'evil-window-map (kbd "7") 'winum-select-window-7)
+  (define-key 'evil-window-map (kbd "8") 'winum-select-window-8)
+  (define-key 'evil-window-map (kbd "9") 'winum-select-window-9)
+  (define-key 'evil-window-map (kbd "0") 'winum-select-window-0-or-10)
+  (winner-mode +1)
+  (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
+  (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
+  (define-key 'evil-window-map (kbd "u") 'winner-undo)
+  (define-key 'evil-window-map (kbd "l") 'winner-undo)
+  (define-key 'evil-window-map (kbd "<left>") 'shrink-window-horizontally)
+  (define-key 'evil-window-map (kbd "<right>") 'enlarge-window-horizontally)
+  (define-key 'evil-window-map (kbd "<down>") 'shrink-window)
+  (define-key 'evil-window-map (kbd "<up>") 'enlarge-window)
+  (setq-default windmove-wrap-around t)
+  (windmove-default-keybindings)
   (setq
    idle-update-delay 2
    jit-lock-defer-time 0
@@ -1333,31 +1348,6 @@ STDERR with `org-babel-eval-error-notify'."
   (global-set-key (kbd "C-<tab>") 'other-window)
   (global-set-key (kbd "C-c C-f") 'find-file-other-window)
 
-  (use-package follow-mouse)
-  (turn-on-follow-mouse)
-
-  ;; (use-package nav-flash)
-  ;; (defun nav-flash-show* (&rest xs) (nav-flash-show))
-  ;; (add-function :after (symbol-function 'other-window) #'nav-flash-show*)
-  ;; (add-function :after (symbol-function 'select-window) #'nav-flash-show*)
-  ;; (add-hook 'imenu-after-jump-hook 'nav-flash-show nil t)
-  ;;; Zoom
-  (use-package default-text-scale)
-  (define-key global-map [(control +)] (function default-text-scale-increase))
-  (define-key global-map [(control -)] (function default-text-scale-decrease))
-  (define-key global-map [(control mouse-4)] (function default-text-scale-increase))
-  (define-key global-map [(control mouse-5)] (function default-text-scale-decrease))
-  (defun linum-cycle ()
-    (interactive)
-    (cond ((not display-line-numbers)
-           (setq display-line-numbers 'relative))
-          ((equal display-line-numbers 'relative)
-           (setq display-line-numbers t))
-          ((equal display-line-numbers t)
-           (setq display-line-numbers nil))))
-
-  (global-set-key (kbd "C-c L") #'linum-cycle)
-  (global-set-key (kbd "C-c C-l") #'linum-cycle)
 
   (use-package which-key
     :init (which-key-mode +1)
@@ -1387,46 +1377,46 @@ STDERR with `org-babel-eval-error-notify'."
 
 * Version control
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
-(use-package magit-gitflow :after magit)
-(use-package evil-magit
-  :after (magit evil)
-  :config (evil-magit-init))
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode +1))
-(use-package git-commit
-  :hook ((git-commit-mode . flyspell-mode)
-         (git-commit-mode . git-commit-save-message)
-         (git-commit-mode . turn-on-auto-fill))
-  :config
-  (custom-set-faces
-   '(git-gutter:added ((t (:inherit default :foreground "medium sea green" :weight bold))))
-   '(git-gutter:deleted ((t (:inherit default :foreground "sienna" :weight bold))))
-   '(git-gutter:modified ((t (:inherit default :foreground "dark orchid" :weight bold))))
-   '(git-gutter:unchanged ((t (:inherit default :background "LemonChiffon4"))))
-   )
-  )
-(use-package gitconfig
-  :mode (("/\\.gitconfig\\'"      . gitconfig-mode)
-         ("/\\.git/config\\'"     . gitconfig-mode)
-         ("/modules/.*/config\\'" . gitconfig-mode)
-         ("/git/config\\'"        . gitconfig-mode)
-         ("/\\.gitmodules\\'"     . gitconfig-mode)
-         ("/etc/gitconfig\\'"     . gitconfig-mode)))
-(use-package gitattributes-mode
-  :mode (("/\\.gitattributes\\'"  . gitattributes-mode)
-         ("/info/attributes\\'"   . gitattributes-mode)
-         ("/git/attributes\\'"    . gitattributes-mode)))
-(use-package gitignore-mode
-  :mode (("/\\.gitignore\\'"      . gitignore-mode)
-         ("/info/exclude\\'"      . gitignore-mode)
-         ("/git/ignore\\'"        . gitignore-mode)))
-(use-package fullframe
-  :config
-  (fullframe magit-status magit-mode-quit-window nil))
+  (use-package magit
+    :ensure t
+    :bind ("C-x g" . magit-status))
+  (use-package magit-gitflow :after magit)
+  (use-package evil-magit
+    :after (magit evil)
+    :config (evil-magit-init))
+  (use-package git-gutter
+    :config
+    (global-git-gutter-mode +1))
+  (use-package git-commit
+    :hook ((git-commit-mode . flyspell-mode)
+           (git-commit-mode . git-commit-save-message)
+           (git-commit-mode . turn-on-auto-fill))
+    :config
+    (custom-set-faces
+     '(git-gutter:added ((t (:inherit default :foreground "medium sea green" :weight bold))))
+     '(git-gutter:deleted ((t (:inherit default :foreground "sienna" :weight bold))))
+     '(git-gutter:modified ((t (:inherit default :foreground "dark orchid" :weight bold))))
+     '(git-gutter:unchanged ((t (:inherit default :background "LemonChiffon4"))))
+     )
+    )
+  (use-package gitconfig
+    :mode (("/\\.gitconfig\\'"      . gitconfig-mode)
+           ("/\\.git/config\\'"     . gitconfig-mode)
+           ("/modules/.*/config\\'" . gitconfig-mode)
+           ("/git/config\\'"        . gitconfig-mode)
+           ("/\\.gitmodules\\'"     . gitconfig-mode)
+           ("/etc/gitconfig\\'"     . gitconfig-mode)))
+  (use-package gitattributes-mode
+    :mode (("/\\.gitattributes\\'"  . gitattributes-mode)
+           ("/info/attributes\\'"   . gitattributes-mode)
+           ("/git/attributes\\'"    . gitattributes-mode)))
+  (use-package gitignore-mode
+    :mode (("/\\.gitignore\\'"      . gitignore-mode)
+           ("/info/exclude\\'"      . gitignore-mode)
+           ("/git/ignore\\'"        . gitignore-mode)))
+  (use-package fullframe
+    :config
+    (fullframe magit-status magit-mode-quit-window nil))
 #+END_SRC
 
 * Languages
@@ -1463,7 +1453,6 @@ STDERR with `org-babel-eval-error-notify'."
     (add-hook 'java-mode-hook 'lsp-jt-lens-mode)
     )
 #+END_SRC
-
 *** Code style
 #+BEGIN_SRC emacs-lisp
   ;; eclipse-java-style is the same as the "java" style (copied from
