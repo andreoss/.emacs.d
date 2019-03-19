@@ -988,7 +988,7 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 (define-key global-map "\C-cl" 'org-store-link)
 (setq-default org-log-done t)
 
-(use-package org-bullets)
+(use-package org-bullets :hook (org-mode . org-bullets-mode))
 (use-package ob-restclient)
 
 (require 'org-indent)
