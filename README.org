@@ -1,4 +1,5 @@
 #+STARTUP: overview
+#+OPTIONS: toc:2
 #+TITLE: Emacs configuration
 #+PROPERTY: header-args :comments yes :results silent
 
