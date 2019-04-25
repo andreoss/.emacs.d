@@ -1820,126 +1820,122 @@ If the region is active and `transient-mark-mode' is on, call
 #+end_src
 ** Emacs Lisp
 #+begin_src emacs-lisp
-(use-package helpful
-  :bind (([remap describe-function] . helpful-callable)
-         ([remap describe-variable] . helpful-variable)
-         ([remap describe-key] . helpful-key)
-         ("C-h ." . helpful-at-point)))
-(use-package emr
-  :init
-  (autoload 'emr-show-refactor-menu "emr")
-  (define-key prog-mode-map (kbd "M-RET")
-    'emr-show-refactor-menu)
-  (eval-after-load "emr" '(emr-initialize))
-  )
-(use-package elisp-slime-nav :diminish)
-(use-package elisp-lint)
-;; Overlays
-(advice-add 'eval-region :around
-            (lambda (f beg end &rest r)
-              (eros--eval-overlay
-               (apply f beg end r)
-               end)))
-(advice-add 'eval-last-sexp :filter-return
-            (lambda (r) (eros--eval-overlay r (point))))
-(advice-add 'eval-defun :filter-return
-            (lambda (r) (eros--eval-overlay
-                         r
-                         (save-excursion
-                           (end-of-defun)
-                           (point)))))
-(evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'eval-buffer)
+  (use-package helpful
+    :bind (([remap describe-function] . helpful-callable)
+           ([remap describe-variable] . helpful-variable)
+           ([remap describe-key] . helpful-key)
+           ("<f1> ." . helpful-at-point)))
+  (defun turn-on-page-break-lines-mode (&rest _))
+  (use-package elisp-slime-nav :diminish)
+  (use-package elisp-lint)
+  ;; Overlays
+  (advice-add 'eval-region :around
+              (lambda (f beg end &rest r)
+                (eros--eval-overlay
+                 (apply f beg end r)
+                 end)))
+  (advice-add 'eval-last-sexp :filter-return
+              (lambda (r) (eros--eval-overlay r (point))))
+  (advice-add 'eval-defun :filter-return
+              (lambda (r) (eros--eval-overlay
+                           r
+                           (save-excursion
+                             (end-of-defun)
+                             (point)))))
+  (evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'eval-buffer)
 
-(use-package eros)
-(hook! emacs-lisp-mode-hook eros-mode)
+  (use-package eros)
+  (hook! emacs-lisp-mode-hook eros-mode)
 
-(defun eval-dwim (arg)
-  "Call eval command you want (Do What I Mean).
-If the region is active and `transient-mark-mode' is on, call
-`eval-region'. Else, call `eval-last-sexp'."
-  (interactive "P")
-  (if (and transient-mark-mode mark-active)
-      (eval-region (region-beginning) (region-end))
-    (eval-defun arg)))
-(setq-default flycheck-emacs-lisp-load-path 'inherit)
-(hook! emacs-lisp-mode-hook paredit-mode)
-(hook! emacs-lisp-mode-hook elisp-slime-nav-mode)
-(hook! emacs-lisp-mode-hook eldoc-mode)
-(hook! emacs-lisp-mode-hook
-       (setq-local prettify-symbols-alist
-                   (pairs "<="          ?≤
-                          ">="          ?≥
-                          "funcall"     ?φ
-                          "lambda"      ?λ
-                          "eval"        ?ε
-                          "&rest"       ?…
-                          "&optional"   ?¿
-                          )))
-(evil-define-key   'normal emacs-lisp-mode-map
-  (key g s)        'elisp-slime-nav-find-elisp-thing-at-point
-  (key M-.)        'elisp-slime-nav-find-elisp-thing-at-point
-  (key g l)        'elisp-slime-nav-describe-elisp-thing-at-point
-  (key g RET)      'elisp-slime-nav-describe-elisp-thing-at-point
-  (key <return>)   'eval-dwim
-  (key C-c C-c)    'eval-dwim
-  (key C-c C-b)    'eval-buffer
-  (key C-c r f)    'emr-el-inline-function
-  (key C-c r v)    'emr-el-inline-variable
-  (key C-<return>) 'emr-el-eval-and-replace
-  )
-;; Autocompile Emacs Lisp code
-(use-package auto-compile
-  :init
-  (setq load-prefer-newer t)
-  (auto-compile-on-load-mode)
-  (auto-compile-on-save-mode)
-  (setq auto-compile-display-buffer nil)
-  (setq auto-compile-mode-line-counter t))
+  (defun eval-dwim (arg)
+    "Call eval command you want (Do What I Mean).
+  If the region is active and `transient-mark-mode' is on, call
+  `eval-region'. Else, call `eval-last-sexp'."
+    (interactive "P")
+    (if (and transient-mark-mode mark-active)
+        (eval-region (region-beginning) (region-end))
+      (eval-defun arg)))
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
+  (hook! emacs-lisp-mode-hook paredit-mode)
+  (hook! emacs-lisp-mode-hook elisp-slime-nav-mode)
+  (hook! emacs-lisp-mode-hook eldoc-mode)
+  (hook! emacs-lisp-mode-hook
+         (setq-local prettify-symbols-alist
+                     (pairs "<="          ?≤
+                            ">="          ?≥
+                            "funcall"     ?φ
+                            "lambda"      ?λ
+                            "eval"        ?ε
+                            "&rest"       ?…
+                            "&optional"   ?¿
+                            )))
+  (evil-define-key   'normal emacs-lisp-mode-map
+    (key g s)        'elisp-slime-nav-find-elisp-thing-at-point
+    (key M-.)        'elisp-slime-nav-find-elisp-thing-at-point
+    (key g l)        'elisp-slime-nav-describe-elisp-thing-at-point
+    (key g RET)      'elisp-slime-nav-describe-elisp-thing-at-point
+    (key <return>)   'eval-dwim
+    (key C-c C-c)    'eval-dwim
+    (key C-c C-b)    'eval-buffer
+    (key C-c r f)    'emr-el-inline-function
+    (key C-c r v)    'emr-el-inline-variable
+    (key C-<return>) 'emr-el-eval-and-replace
+    )
+  ;; Autocompile Emacs Lisp code
+  (use-package auto-compile
+    :init
+    (setq load-prefer-newer t)
+    (auto-compile-on-load-mode)
+    (auto-compile-on-save-mode)
+    (setq auto-compile-display-buffer nil)
+    (setq auto-compile-mode-line-counter t))
 
-(define-key emacs-lisp-mode-map [(meta .)] 'find-function)
+  (define-key emacs-lisp-mode-map [(meta .)] 'find-function)
 
-;;; Display page breaks with an horizontal line instead of ^L.
-;;; Note: To insert a page break: C-q C-l
-;;;       To jump to the previous/next page break: C-x [ and C-x ]
-(use-package page-break-lines)
-(add-hook 'emacs-lisp-mode-hook #'turn-on-page-break-lines-mode)
+  ;;; Display page breaks with an horizontal line instead of ^L.
+  ;;; Note: To insert a page break: C-q C-l
+  ;;;       To jump to the previous/next page break: C-x [ and C-x ]
+  (use-package page-break-lines)
+  (add-hook 'emacs-lisp-mode-hook #'turn-on-page-break-lines-mode)
 
-;;; Animation when evaluating a defun or a region:
-(use-package highlight)
-(use-package eval-sexp-fu)
+  ;;; Animation when evaluating a defun or a region:
+  (use-package highlight)
+  (use-package eval-sexp-fu)
 
 #+end_src
 ** Common Lisp
 See https://github.com/quicklisp/quicklisp-slime-helper
 #+begin_src emacs-lisp
-(use-package slime-company :straight (:host github :repo "emacsmirror/slime-company"))
-(use-package slime
-  :mode (("\\.lisp'"    . lisp-mode)
-         ("\\.lsp'"     . lisp-mode)
-         ("\\.cl'"      . lisp-mode)
-         ("\\.asd'"     . lisp-mode)
-         ("\\.fasl'"    . lisp-mode))
-  :config (slime-setup '(slime-company))
-  :init (setq slime-contribs '(slime-fancy)))
+  (let ((slime-helper "~/.quicklisp/slime-helper.el"))
+    (if (file-exists-p slime-helper)
+        (progn
+          (load (expand-file-name slime-helper))
+          (use-package slime-company)
+          (use-package slime
+            :mode (("\\.lisp'"    . lisp-mode)
+                   ("\\.lsp'"     . lisp-mode)
+                   ("\\.cl'"      . lisp-mode)
+                   ("\\.asd'"     . lisp-mode)
+                   ("\\.fasl'"    . lisp-mode))
+            :config (slime-setup '(slime-company))
+            :init (setq slime-contribs '(slime-fancy)))
 
-(setq-default inferior-lisp-program "sbcl")
-(let ((slime-helper "~/.quicklisp/slime-helper.el"))
-  (if (file-exists-p slime-helper)
-      (load (expand-file-name slime-helper))))
-(setq slime-contribs '(slime-fancy))
+          (setq-default inferior-lisp-program "sbcl")
 
-(defun slime-eval-last-expression-eros ()
-  ""
-  (interactive)
-  (destructuring-bind (output value)
-      (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
-    (eros--make-result-overlay (concat output value)
-      :where (point)
-      :duration eros-eval-result-duration)))
+          (setq slime-contribs '(slime-fancy))
 
+          (defun slime-eval-last-expression-eros ()
+            ""
+            (interactive)
+            (destructuring-bind (output value)
+                (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
+              (eros--make-result-overlay (concat output value)
+                :where (point)
+                :duration eros-eval-result-duration))))))
 #+end_src
 ** Clojure
 #+begin_src emacs-lisp
+  (use-package aggressive-indent)
   (use-package clojure-mode
     :mode "\\.clj\\'"
     :config
