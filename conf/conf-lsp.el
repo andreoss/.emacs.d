@@ -32,7 +32,6 @@
         lsp-enable-file-watchers nil
         lsp-highlight-symbol-at-point nil)
   )
-
 (use-package lsp-ui
   :config
   (setq lsp-prefer-flymake nil
@@ -61,4 +60,7 @@
 (require 'evil)
 
 (global-set-key (kbd "M-2") 'lsp-treemacs-symbols)
+(evil-leader/set-key "l R" 'lsp-workspace-restart)
+(evil-leader/set-key "l f" 'lsp-format-buffer)
+(evil-leader/set-key "r" 'lsp-rename)
 (provide 'conf-lsp)
