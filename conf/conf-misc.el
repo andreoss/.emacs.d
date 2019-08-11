@@ -1,4 +1,6 @@
 ;;; conf-misc -- Miscellaneous
+;;; Commentary:
+;;; Code:
 (require 'saveplace)
 (require 's)
 (setq-default
@@ -20,9 +22,24 @@
     (float-time
      (time-subtract after-init-time before-init-time)))
 ;; Scratch buffer
-(setq-default initial-scratch-message
-              (format ";; %.1f s\n"
-                      emacs-init-time-in-seconds))
+(setq-default initial-major-mode 'org-mode)
+(setq-default initial-scratch-message nil)
+(use-package unkillable-scratch
+  :init
+  (unkillable-scratch +1))
+(setq-default unkillable-scratch-behavior 'bury)
+(setq-default unkillable-scratch-do-not-reset-scratch-buffer t)
+(use-package persistent-scratch
+  :init
+  (persistent-scratch-setup-default)
+  (persistent-scratch-autosave-mode +1))
+
+(add-hook 'after-init-hook
+          (lambda ()
+            (message
+             (format "* %.1f s\n"
+                     emacs-init-time-in-seconds))))
+
 
 ;; Docker
 (use-package dockerfile-mode
