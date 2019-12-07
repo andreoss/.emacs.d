@@ -48,8 +48,6 @@
 (add-to-loadpath lang-dir)
 (add-to-loadpath vendor-dir)
 ;;;
-;; Set PATH
-(set-exec-path)
 ;; Enable packages
 (require 'conf-straight)
 (if (and exwm-enable? (eq (window-system) 'x))
