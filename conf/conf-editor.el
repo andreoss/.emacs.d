@@ -301,5 +301,8 @@ abort completely with `C-g'."
         ".svn"
         )
       )
+(use-package vlf
+  :config
+  (require 'vlf-setup))
 (provide 'conf-editor)
 ;;; conf-editor.el ends here
