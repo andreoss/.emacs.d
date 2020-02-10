@@ -79,5 +79,11 @@
 (add-hook 'eshell-mode-hook 'ansi-color-for-comint-mode-on)
 (use-package bash-completion)
 (bash-completion-setup)
+(require 'em-tramp)
+(setq eshell-prefer-lisp-functions t)
+(setq eshell-prefer-lisp-variables t)
+(add-to-list 'eshell-modules-list 'eshell-tramp)
+(setq password-cache t)
+(setq password-cache-expiry 3600)
 (provide 'conf-eshell)
 ;;; conf-eshell.el ends here
