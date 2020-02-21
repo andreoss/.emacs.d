@@ -19,11 +19,12 @@
 (defun perltidy-buffer ()
   "Run perltidy on the current buffer."
   (interactive)
-  (save-current-point
-   (shell-command-on-buffer
-    "perltidy -q"
-    (not :output-buffer)
-    :replace)))
+  (if (eshell-search-path "perltidy")
+      (save-current-point
+       (shell-command-on-buffer
+        "perltidy -q"
+        (not :output-buffer)
+        :replace))))
 
 (setq-default cperl-indent-level 4)
 (setq-default cperl-continued-statement-offset 0)
