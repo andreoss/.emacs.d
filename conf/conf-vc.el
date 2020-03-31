@@ -10,7 +10,7 @@
 (ignore-errors
   (use-package forge
     :after magit))
-(global-key-binding (kbd "C-x g") 'magit)
+(global-set-key (kbd "C-x g") 'magit-status)
 (use-package git-gutter
   :diminish
   :init
