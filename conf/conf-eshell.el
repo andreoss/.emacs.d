@@ -24,11 +24,8 @@
     (eshell-kill-input)
     (eshell-send-input)))
 (setq-default eshell-banner-message "")
-(use-package better-shell
-  :init
-  (global-set-key (kbd "C-c s") 'better-shell-shell)
-  (global-set-key (kbd "C-c C-s") 'better-shell-for-projectile-root)
-  )
+(global-set-key (kbd "C-c s") 'shell)
+(global-set-key (kbd "C-c C-s") 'projectile-run-shell)
 (eval-after-load 'em-ls
   '(progn
      (defun ted-eshell-ls-find-file-at-point (point)
