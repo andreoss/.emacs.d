@@ -6,10 +6,13 @@
   :preface
   (viper-go-away)
   (setq-default evil-want-keybinding nil)
+  (setq-default evil-want-minibuffer t)
   :init
   (evil-mode +1)
   (evil-global-set-key 'normal (kbd ";") 'evil-ex)
   (evil-global-set-key 'insert (kbd "C-a") 'beginning-of-line)
+  (evil-global-set-key 'insert (kbd "C-h") 'delete-backward-char)
+  (evil-global-set-key 'normal (kbd "C-h") 'delete-backward-char)
   (evil-global-set-key 'insert (kbd "C-e") 'end-of-line)
   (evil-global-set-key 'insert (kbd "C-k") 'kill-line)
   (loop for (mode . state) in
