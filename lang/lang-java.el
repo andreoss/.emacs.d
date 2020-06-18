@@ -1,14 +1,10 @@
 (use autodisass-java-bytecode)
 (use google-c-style)
-
 (use gradle-mode)
 (add-hook 'java-mode-hook '(lambda() (gradle-mode 1)))
-
 (setq-default gradle-executable-path "/usr/bin/gradle")
 (require 'company)
 (global-company-mode t)
-
-
 (require 'eclim)
 (add-hook 'java-mode-hook 'eclim-mode)
 (require 'eclimd)
