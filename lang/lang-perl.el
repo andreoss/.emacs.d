@@ -1,7 +1,7 @@
 ;;; lang-perl --- Perl
 ;;; Commentary:
 ;;; Code:
-(use-package perl6-mode)
+(use-package raku-mode)
 
 ;; https://raw.github.com/illusori/emacs-flymake-perlcritic/master/flymake-perlcritic.el
 (setq flymake-perlcritic-severity 5)
