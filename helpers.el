@@ -31,6 +31,7 @@ E.g: (update-env-var \"PATH\" \"/usr/local/bin\")"
             (setq retval (cons 'exception (list ex)))))
          retval)
      ,@clean-up))
+(defalias 'try 'safe-wrap)
 
 (defun save-all-buffers ()
   "Save all the buffers."
