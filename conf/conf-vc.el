@@ -19,6 +19,12 @@
   :hook ((git-commit-mode . flyspell-mode)
          (git-commit-mode . git-commit-save-message)
          (git-commit-mode . turn-on-auto-fill)))
+(custom-set-faces
+ '(git-gutter:added ((t (:inherit default :foreground "medium sea green" :weight bold))))
+ '(git-gutter:deleted ((t (:inherit default :foreground "sienna" :weight bold))))
+ '(git-gutter:modified ((t (:inherit default :foreground "dark orchid" :weight bold))))
+ '(git-gutter:unchanged ((t (:inherit default :background "LemonChiffon4"))))
+ )
 (use-package gitconfig-mode
   :mode (("/\\.gitconfig\\'"      . gitconfig-mode)
          ("/\\.git/config\\'"     . gitconfig-mode)
