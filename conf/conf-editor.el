@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (use-package midnight)
+(use-package projectile)
 ;; Use Emacs session management
 (use-package session
   :config
