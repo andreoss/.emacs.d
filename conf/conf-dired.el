@@ -45,37 +45,6 @@
     (define-key dired-mode-map "J" 'dired-goto-file)
     (define-key dired-mode-map "k" 'dired-previous-line)
     (define-key dired-mode-map "K" 'dired-do-kill-lines)))
-(use-package openwith)
-(openwith-mode +1)
-(setq-default openwith-associations nil)
-(let (
-      (pdf-files (rx "." (| "epub")))
-      (image-files
-       (rx "."
-           (| "jpeg" "jpg" "gif" "png")))
-      (chm-files (rx ".chm"))
-      (epub-files
-       (rx "."
-           (| "mobi" "fb2")
-           (? ".part")))
-      (media-files
-       (rx "."
-           (| "mp4" "flac" "mkv"
-              "flv" "webm" "avi"
-              "ogg" "mp3" "wmv"
-              "wav"
-              )
-           (? ".part"))))
-  (add-to-list 'openwith-associations
-               (list image-files "sxiv" '(file)))
-  (add-to-list 'openwith-associations
-               (list chm-files "xchm" '(file)))
-  (add-to-list 'openwith-associations
-               (list pdf-files "mupdf" '(file)))
-  (add-to-list 'openwith-associations
-               (list epub-files "FBReader" '(file)))
-  (add-to-list 'openwith-associations
-               (list media-files "mpv" '(file))))
 (setq dired-dwim-target t)
 (use-package dired-narrow
   :after dired
