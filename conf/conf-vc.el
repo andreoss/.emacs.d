@@ -7,9 +7,6 @@
 (use-package evil-magit
   :after magit
   :init (evil-magit-init))
-(ignore-errors
-  (use-package forge
-    :after magit))
 (global-set-key (kbd "C-x g") 'magit-status)
 (use-package git-gutter
   :diminish
