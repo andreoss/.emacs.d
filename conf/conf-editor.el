@@ -73,6 +73,7 @@
                            "\\*Completions\\*"))
 (setq ido-enable-flex-matching t)
 (setq make-backup-files nil)
+(setq create-lockfiles nil)
 
 (hook! prog-mode-hook
        (setq-local show-trailing-whitespace t))
