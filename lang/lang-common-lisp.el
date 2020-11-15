@@ -14,7 +14,7 @@
   :init (setq slime-contribs '(slime-fancy)))
 
 (setq-default inferior-lisp-program "sbcl")
-(let ((slime-helper "~/quicklisp/slime-helper.el"))
+(let ((slime-helper "~/.quicklisp/slime-helper.el"))
   (if (file-exists-p slime-helper)
       (load (expand-file-name slime-helper))))
 (setq slime-contribs '(slime-fancy))
