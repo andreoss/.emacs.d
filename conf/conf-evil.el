@@ -67,7 +67,7 @@
 
     :config
     (evilmi-init-plugins))
-  (use-package evil-collection :init (evil-collection-init))
+  (use-package evil-collection :config (try (evil-collection-init)))
   (use-package evil-goggles
     :init
     (evil-goggles-mode +1)
