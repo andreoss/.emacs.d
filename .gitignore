@@ -1,6 +1,5 @@
 /*
 /*/
-!/lib
 !/.gitignore
 !/.gitmodules
 !/lang/*.el
