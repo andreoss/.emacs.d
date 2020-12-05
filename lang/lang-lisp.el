@@ -1,7 +1,7 @@
 ;;; lang-lisp --- lisp
 ;;; Code:
 ;;; Commentary:
-(use-package paredit)
+(use-package paredit :straight (:host github :repo "emacsmirror/paredit") :ensure t)
 (hook! lisp-mode-hook paredit-mode)
 (hook! lisp-mode-hook prettify-symbols-mode)
 (use-package lispy)
