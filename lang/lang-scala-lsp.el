@@ -27,7 +27,6 @@
   :config (setq lsp-prefer-flymake nil))
 
 (use-package lsp-ui)
-(use-package lsp-scala)
 
 ;; Add company-lsp backend for metals
 (use-package company-lsp)
