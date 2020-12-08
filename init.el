@@ -665,8 +665,6 @@
 (use-package sly-macrostep)
 ;; TeX
 (use-package xenops :hook (latex-mode . xenops-mode))
-
-
 ;;; Dired
 (use-package
  dired
@@ -762,8 +760,6 @@
 ;;   ("9" emms-volume-lower  "v")
 ;;   ("i" emms-show "v"))
 ;; (lead-def "a" 'emms-control/body)
-
-
 ;; Text
 (use-package
  prettify-greek
@@ -810,7 +806,6 @@
  (add-hook
   'exwm-mode-hook
   #'(lambda () (local-set-key (kbd "C-w") 'evil-window-map)))
-
  (define-key 'evil-window-map (kbd "C-q") 'exwm-input-send-next-key)
  (defun exwm-rename-buffer ()
    (interactive)
@@ -856,12 +851,10 @@
     (start-process-shell-command command nil command)))
  (exwm-enable)
  (exwm-init))
-
 (use-package
  olivetti
  :after (evil)
  :config (define-key 'evil-window-map (kbd "z") 'olivetti-mode))
-
 (use-package
  emacs
  ;builtin
