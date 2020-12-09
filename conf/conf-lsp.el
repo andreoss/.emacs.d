@@ -6,26 +6,6 @@
   (use-package ag)
   (global-set-key (kbd "C-S-t")
                   'projectile-toggle-between-implementation-and-test))
-;; Helm:
-(use-package helm
-  :init
-  ;; Fuzzy matches everywhere!
-  (setq helm-mode-fuzzy-match t
-        helm-completion-in-region-fuzzy-match t
-        helm-M-x-fuzzy-match t
-        helm-apropos-fuzzy-match t
-        helm-buffers-fuzzy-matching t)
-
-  ;; Adopted from sachac's config
-  ;; http://pages.sachachua.com/.emacs.d/Sacha.html
-  (setq helm-ff-skip-boring-files t)
-
-  ;; Use the same buffer as where invoked
-  (setq helm-split-window-default-side 'same
-        helm-split-window-inside-p nil
-        helm-reuse-last-window-split-state nil)
-
-  )
 (use-package lsp-mode
   :config
   (setq lsp-java-code-generation-use-blocks t)
@@ -35,7 +15,11 @@
         lsp-eldoc-render-all nil
         lsp-enable-file-watchers nil
         lsp-highlight-symbol-at-point nil)
-  )
+  :hook
+  (java-mode . lsp-deferred)
+  (xml-mode . lsp-deferred)
+  :commands (lsp lsp-deferred))
+
 (use-package lsp-ui
   :config
   (setq lsp-prefer-flymake nil
@@ -43,13 +27,11 @@
         lsp-ui-sideline-enable nil
         lsp-ui-sideline-show-symbol nil))
 
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+(use-package lsp-ivy)
 (use-package lsp-treemacs)
 (use-package treemacs
   :config
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
-(hook! java-mode-hook lsp)
-(hook! xml-mode-hook lsp)
 (use-package dap-mode
   :after lsp-mode
   :config
@@ -61,8 +43,7 @@
   ;; if it is not enabled `dap-mode' will use the minibuffer.
   (tooltip-mode 1))
 (hook! lsp-mode-hook (lsp-lens-mode +1))
-(require 'evil)
-(global-set-key (kbd "M-2") 'lsp-treemacs-symbols)
+
 (evil-leader/set-key "l R" 'lsp-workspace-restart)
 (evil-leader/set-key "l f" 'lsp-format-buffer)
 (evil-leader/set-key "r" 'lsp-rename)
