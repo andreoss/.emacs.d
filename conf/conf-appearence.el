@@ -19,8 +19,8 @@
   "Setup a FRAME."
   (setq frame (or frame (selected-frame)))
   (if-any-window-system
-   (use-package almost-mono-themes)
-   (load-theme 'almost-mono-cream)
+   (use-package plan9-theme)
+   (load-theme 'plan9 t)
    (when (display-graphic-p)
      (set-frame-parameter frame 'internal-border-width 16)
      (set-frame-width frame 80)
