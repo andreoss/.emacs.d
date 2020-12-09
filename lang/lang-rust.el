@@ -16,7 +16,6 @@
 (setq lsp-rust-server 'rust-analyzer)
 
 (add-hook 'rust-mode-hook '(lambda () (setq tab-width 4)))
-(add-hook 'rust-mode-hook 'lsp)
 (add-hook 'rust-mode-hook 'company-mode)
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
 (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
