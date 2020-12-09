@@ -21,8 +21,9 @@
 (use-package lsp-ui)
 (use-package which-key :config (which-key-mode))
 (use-package dap-mode :after lsp-mode :config (dap-auto-configure-mode))
-(use-package helm-lsp)
-(use-package helm :config (helm-mode))
+(use-package helm :config (helm-mode -1))
+(use-package helm-lsp
+  :after (helm))
 (use-package lsp-treemacs)
 (use-package treemacs)
 (use-package yasnippet)
