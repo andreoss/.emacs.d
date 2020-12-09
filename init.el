@@ -37,9 +37,6 @@
 (ignore-errors
    (require 'guix)
    (guix-prettify-global-mode +1))
-(ignore-errors
-  (require 'pdf-tools)
-  (pdf-tools-install))
 ;; Setup load-path
 (defvar vendor-dir (</> dotfiles-directory-name "vendor") "Non-ELPA packages.")
 (defvar conf-dir   (</> dotfiles-directory-name "conf")
@@ -48,8 +45,6 @@
 (add-to-loadpath conf-dir)
 (add-to-loadpath lang-dir)
 (add-to-loadpath vendor-dir)
-;;;
-;; Enable packages
 (require 'conf-straight)
 (require 'conf-evil)
 (require 'conf-editor)
@@ -62,21 +57,7 @@
 (require 'conf-org)
 (require 'conf-eshell)
 (require 'conf-wm)
-(require 'lang-lisp)
-(require 'lang-elisp)
-(require 'lang-common-lisp)
-(require 'lang-c)
-(require 'lang-java-lsp)
-(require 'lang-scala-lsp)
-(require 'lang-clojure)
-(require 'lang-javascript)
-(require 'lang-haskell)
-(require 'lang-go)
-(require 'lang-perl)
-(require 'lang-python)
-(require 'lang-scheme)
-(require 'lang-sh)
-(require 'lang-rust)
 (require 'conf-vc)
+(require 'lang)
 (provide 'init)
 ;;; init.el ends here
