@@ -383,7 +383,9 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
 
   ;; Enable nice rendering of diagnostics like compile errors.
   (use-package flycheck
-    :init (global-flycheck-mode))
+    :config (global-flycheck-mode))
+  (use-package flycheck-inline
+    :config (global-flycheck-inline-mode))
 
 (use-package company)
 (add-hook 'after-init-hook 'global-company-mode)
