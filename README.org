@@ -1581,6 +1581,16 @@ C-w handles windows in all states
 (use-package groovy-mode)
 (use-package kotlin-mode)
 #+end_src
+** Haskell
+#+BEGIN_SRC emacs-lisp
+(use-package haskell-mode
+  :config
+  (setq haskell-font-lock-symbols t)
+  :hook ((haskell-mode . turn-on-haskell-doc-mode)
+         (haskell-mode . turn-on-haskell-indent)
+         (haskell-mode . interactive-haskell-mode)))
+#+END_SRC
+
 ** Perl & Raku
 #+BEGIN_SRC emacs-lisp
 (use-package raku-mode)
@@ -1623,25 +1633,10 @@ C-w handles windows in all states
   (flymake-mode   +1))
 
 (add-hook 'perl-mode-hook  'my/perl-mode-hook)
-
-(use-package ffap-perl-module)
-(eval-after-load 'ffap
-  '(require 'ffap-perl-module))
-
 (hook! perl-mode (font-lock-mode -1))
 
 (evil-define-key 'normal perl-mode-map
   (kbd "g d")        'cperl-perldoc-at-point)
-#+END_SRC
-
-** Haskell
-#+BEGIN_SRC emacs-lisp
-(use-package haskell-mode
-  :config
-  (setq haskell-font-lock-symbols t)
-  :hook ((haskell-mode . turn-on-haskell-doc-mode)
-         (haskell-mode . turn-on-haskell-indent)
-         (haskell-mode . interactive-haskell-mode)))
 #+END_SRC
 
 ** Scala
