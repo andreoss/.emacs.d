@@ -1256,7 +1256,6 @@ C-w handles windows in all states
 #+end_src
 ** Rest
 #+BEGIN_SRC emacs-lisp
-  (require 'centered-cursor-mode)
   (require 'uniquify)
   (use-package winum)
   (require 'winner)
