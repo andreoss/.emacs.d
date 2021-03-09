@@ -106,7 +106,7 @@ Misc scripts inside [[~/.emacs.d/bin]]
 #+begin_src emacs-lisp
   (use-package jc-theme
     :quelpa
-    ((jc-theme :fetcher gitlab :repo "andreoss/jc-theme"))
+    (jc-theme :fetcher gitlab :repo "andreoss/jc-theme")
     :config
     (load-theme 'jc t)
     )
