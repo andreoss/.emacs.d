@@ -1,0 +1,30 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  linux-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs-version:
+          - 25.1
+          - 25.2
+          - 25.3
+          - 26.1
+          - 26.2
+          - 26.3
+          - 27.1
+          - snapshot
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: purcell/setup-emacs@master
+        with:
+          version: ${{ matrix.emacs-version }}
+
+      - name: test
+        run: |
+           mv -f ../.emacs.d $HOME/.emacs.d;
+           emacs ---no-init-file -batch --eval --load=$HOME/.emacs.d/test/init.el
