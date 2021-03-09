@@ -364,9 +364,11 @@ Universal ESC
 ** "Better" defaults
 https://git.sr.ht/~technomancy/better-defaults
 #+begin_src emacs-lisp
-  (use-package better-defaults)
-  (scroll-bar-mode t)
-  (set-scroll-bar-mode 'left)
+  (use-package better-defaults
+    :config
+    (when (fboundp 'scroll-bar-mode)
+      (scroll-bar-mode t)
+      (set-scroll-bar-mode 'left)))
 #+end_src
 ** Spelling
 Switch to using enchant as our spell-checking backend (fallback to ispell)
