@@ -332,7 +332,9 @@ Universal ESC
       (evil-leader/set-key "v c" 'font-lock-mode)
       (evil-leader/set-key "v n" 'linum-cycle))
     )
-    (use-package undo-tree)
+    (use-package undo-tree
+      :quelpa (undo-tree :fetcher github :repo "apchamberlain/undo-tree.el")
+      :config (global-undo-tree-mode +1))
     (use-package evil-commentary
       :after evil
       :init (evil-commentary-mode +1))
@@ -449,13 +451,14 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
     :diminish
     :init
     (counsel-mode +1))
-  (use-package rainbow-mode)
-  (hook! prog-mode-hook rainbow-mode)
+  (use-package rainbow-mode
+    :quelpa (rainbow-mode :fetcher github :repo "emacsmirror/rainbow-mode")
+    :config
+    (hook! prog-mode-hook rainbow-mode))
   (hook! prog-mode-hook hs-minor-mode)
   (use-package ivy)
   (use-package prescient)
   (use-package ivy-prescient)
-  (use-package company-prescient)
   (ivy-prescient-mode +1)
   (use-package swiper :after ivy)
   (use-package flx)
