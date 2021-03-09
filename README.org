@@ -63,6 +63,8 @@ Boostrap [[https://github.com/quelpa/quelpa][Quelpa]]
    (quelpa 'use-package)
    (require 'use-package)
    (setq use-package-always-ensure t)
+   (setq use-package-ensure-function 'quelpa)
+   (setq quelpa-git-clone-depth nil)
    (use-package quelpa-use-package)
  #+END_SRC
 
