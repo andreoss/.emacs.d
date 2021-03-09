@@ -542,7 +542,6 @@ Switch to using enchant as our spell-checking backend (fallback to ispell)
   (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
   (setq default-input-method 'russian-computer)
   (use-package reverse-im
-    :ensure t
     :custom
     (reverse-im-input-methods '("russian-computer"))
     :config
