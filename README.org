@@ -175,7 +175,8 @@ Unkillable & presistant scratch buffer
     :config
     (setq-default fcl-fringe-bitmap 'vertical-bar)
     (global-fringe-current-line-mode +1))
-  (use-package digit-groups)
+  (use-package digit-groups
+    :config (digit-groups-global-mode +1))
   ;; Pop-up windows when display-buffer
   (setq pop-up-windows t)
   ;; Indicate buffer boundaries
