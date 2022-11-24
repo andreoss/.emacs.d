@@ -716,14 +716,18 @@
 ** Other
    #+BEGIN_SRC emacs-lisp
      (use-package guix
+       :when (file-exists-p "/gnu")
        :config (guix-prettify-global-mode +1))
-     (use-package nix-mode)
+     (use-package nix-mode
+       :when (file-exists-p "/nix")
+       )
      (use-package restart-emacs
        :after (evil-leader)
        :init
        (evil-leader/set-key "S r" 'restart-emacs)
        )
      (use-package notmuch
+       :when (file-exists-p "~/Maildir")
        :after (evil-leader)
        :init
        (evil-leader/set-key "m i"
@@ -754,10 +758,10 @@
       (setq async-shell-command-buffer nil)
       (evil-global-set-key 'normal (kbd "!") 'async-shell-command)
       (loop for (mode . state) in
-	    '((sbt-mode                 . insert)
-	      (shell-mode               . insert)
-	      (eshell-mode              . insert))
-	    do (evil-set-initial-state mode state))
+            '((sbt-mode                 . insert)
+              (shell-mode               . insert)
+              (eshell-mode              . insert))
+            do (evil-set-initial-state mode state))
       ;; Universal Esc
       (global-set-key (key C-w) 'evil-window-map)
       (evil-global-set-key 'insert (key C-w) 'evil-window-map)
@@ -772,31 +776,31 @@
        :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
 
       (setq evil-insert-state-cursor     '("#952111" (bar  . 3))
-	    evil-normal-state-cursor     '("#33A050" (hbar . 4))
-	    evil-operator-state-cursor   '(box)
-	    evil-emacs-state-cursor      '(bar)
-	    evil-motion-state-cursor     '(bar)
-	    evil-visual-state-cursor     '("#11312F" hbar . hollow))
+            evil-normal-state-cursor     '("#33A050" (hbar . 4))
+            evil-operator-state-cursor   '(box)
+            evil-emacs-state-cursor      '(bar)
+            evil-motion-state-cursor     '(bar)
+            evil-visual-state-cursor     '("#11312F" hbar . hollow))
       (loop for state in '(insert normal)
-	    do
-	    (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
-	    (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
-	    (evil-global-set-key state (kbd "C-e") 'end-of-line)
-	    (evil-global-set-key state (kbd "C-k") 'kill-line)
-	    )
+            do
+            (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
+            (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
+            (evil-global-set-key state (kbd "C-e") 'end-of-line)
+            (evil-global-set-key state (kbd "C-k") 'kill-line)
+            )
       (define-key evil-normal-state-map   (kbd "C-z") 'evil-normal-state)
       (define-key evil-emacs-state-map    (kbd "C-z") 'evil-emacs-state)
       (define-key evil-insert-state-map   (kbd "C-z") 'evil-normal-state)
       (defun kill-or-bury-buffer ()
-	"Kill saved or bury unsaved buffer."
-	(interactive)
-	(if (and (buffer-file-name) (buffer-modified-p))
-	    (progn
-	      (message "buffer burried: %s" (current-buffer))
-	      (bury-buffer))
-	  (progn
-	    (message "buffer killed: %s" (current-buffer))
-	    (kill-buffer))))
+        "Kill saved or bury unsaved buffer."
+        (interactive)
+        (if (and (buffer-file-name) (buffer-modified-p))
+            (progn
+              (message "buffer burried: %s" (current-buffer))
+              (bury-buffer))
+          (progn
+            (message "buffer killed: %s" (current-buffer))
+            (kill-buffer))))
 
       (evil-global-set-key 'normal (kbd "q")   'kill-or-bury-buffer)
       (evil-global-set-key 'normal (kbd "C-s") 'save-buffer)
@@ -965,9 +969,6 @@
 ** Scratch buffer
    Unkillable & presistant scratch buffer
    #+begin_src emacs-lisp
-     (setq-default inhibit-startup-screen t)
-     (setq-default initial-major-mode 'org-mode)
-     (setq-default initial-scratch-message nil)
      (use-package unkillable-scratch
        :init
        (unkillable-scratch +1)
