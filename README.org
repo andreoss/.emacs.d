@@ -1208,7 +1208,7 @@
 * Miscellaneous
 ** PDF Tools
    #+begin_src emacs-lisp
-     (use-package pdf-tools :hook (after-init . pdf-tools-install))
+     ;;(use-package pdf-tools :hook (after-init . pdf-tools-install))
    #+end_src
 ** Rest
    #+BEGIN_SRC emacs-lisp
