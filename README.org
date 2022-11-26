@@ -426,28 +426,13 @@
        :config
        (editorconfig-mode +1))
      (use-package browse-kill-ring)
-     (use-package counsel
-       :diminish
-       :config
-       (counsel-mode +1))
+
      (use-package rainbow-mode
        :config
        (hook! prog-mode-hook rainbow-mode)
        (hook! prog-mode-hook hs-minor-mode))
-     (use-package ivy
-       :config
-       (setq ivy-re-builders-alist
-             '((ivy-switch-buffer . ivy--regex-plus)
-               (t . ivy--regex-or-literal)))
 
-       )
-     (use-package prescient)
-     (use-package ivy-prescient
-       :after (prescient ivy)
-       :config
 
-       (ivy-prescient-mode +1)
-       )
      (use-package swiper :after ivy)
      (use-package flx)
      (use-package flx-ido  :config (flx-ido-mode +1))
