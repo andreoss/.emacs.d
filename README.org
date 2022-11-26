@@ -701,8 +701,11 @@
 ** Other
    #+BEGIN_SRC emacs-lisp
      (use-package guix
+       :when (file-exists-p "/gnu")
        :config (guix-prettify-global-mode +1))
-     (use-package nix-mode)
+     (use-package nix-mode
+       :when (file-exists-p "/nix")
+       )
      (use-package restart-emacs
        :after (evil-leader)
        :init
@@ -711,6 +714,7 @@
        (evil-leader/set-key "S r" 'restart-emacs)
        )
      (use-package notmuch
+       :when (file-exists-p "~/Maildir")
        :after (evil-leader)
        :init
        (evil-leader/set-key "m i"
@@ -952,9 +956,6 @@
 ** Scratch buffer
    Unkillable & presistant scratch buffer
    #+begin_src emacs-lisp
-     (setq-default inhibit-startup-screen t)
-     (setq-default initial-major-mode 'org-mode)
-     (setq-default initial-scratch-message nil)
      (use-package unkillable-scratch
        :init
        (unkillable-scratch +1)
@@ -1194,7 +1195,7 @@
 * Miscellaneous
 ** PDF Tools
    #+begin_src emacs-lisp
-     (use-package pdf-tools :hook (after-init . pdf-tools-install))
+     ;;(use-package pdf-tools :hook (after-init . pdf-tools-install))
    #+end_src
 ** Rest
    #+BEGIN_SRC emacs-lisp
