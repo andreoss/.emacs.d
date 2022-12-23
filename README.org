@@ -709,8 +709,6 @@
      (use-package restart-emacs
        :after (evil-leader)
        :init
-       (if (symbolp 'viper-go-away)
-         (viper-go-away))
        (evil-leader/set-key "S r" 'restart-emacs)
        )
      (use-package notmuch
