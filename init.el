@@ -132,6 +132,7 @@
   (vertico-posframe-mode 1))
 (use-package 
   company 
+  :after (evil) 
   :config (global-company-mode 1) 
   (evil-global-set-key 'normal (kbd "M-i") 'company-complete) 
   (evil-global-set-key 'insert (kbd "M-i") 'company-complete))
