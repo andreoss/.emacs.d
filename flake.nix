@@ -15,7 +15,11 @@
   description = "emacs";
   outputs = { self, nixpkgs, flake-utils, emacs-overlay, jc-themes
     , elisp-autofmt, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+    {
+      overlays.default = final: prev: {
+        emacs = self.outputs.packages.${prev.system}.emacs;
+      };
+    } // flake-utils.lib.eachDefaultSystem (system:
       let
         systems = lib.systems.flakeExposed;
         lib = nixpkgs.lib;
@@ -24,9 +28,6 @@
         legacyPackages = import nixpkgs {
           inherit system;
           overlays = [ emacs-overlay.overlays.default ];
-        };
-        overlays.default = final: prev: {
-          emacs = self.outputs.packages.${system}.emacs;
         };
         packages = {
           emacs = let pkgs = self.legacyPackages.${system};
@@ -39,6 +40,8 @@
               autofmt = elisp-autofmt;
             });
             package = pkgs.emacs;
+          } // {
+            name = "emacs";
           };
         };
       });
