@@ -1,21 +1,25 @@
-name: CI
-
-on: [push, pull_request]
-
+name: ci
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
 jobs:
-  linux-test:
-    runs-on: ubuntu-latest
+  build-kernel:
     strategy:
-      matrix:
-        emacs-version:
-          - 27.1
-
+        matrix:
+           package:
+           - emacs
+           channel:
+           - nixos-unstable
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: purcell/setup-emacs@master
-        with:
-          version: ${{ matrix.emacs-version }}
-      - name: test
-        run: |
-           mv -f ../.emacs.d $HOME/.emacs.d;
-           emacs --no-init-file -batch --script $HOME/.emacs.d/test/init.el
+    - uses: actions/checkout@v2
+    - name: Install Nix
+      uses: cachix/install-nix-action@v13
+      with:
+        nix_path: nixpkgs=channel:${{matrix.channel}}
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+    - name: Build
+      run: nix build '.#${{matrix.package}}'
