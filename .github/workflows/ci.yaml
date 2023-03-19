@@ -5,7 +5,7 @@ on:
   push:
     branches: [ master ]
 jobs:
-  build-kernel:
+  build:
     strategy:
         matrix:
            package:
