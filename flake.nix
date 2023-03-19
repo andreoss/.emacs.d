@@ -29,20 +29,29 @@
           inherit system;
           overlays = [ emacs-overlay.overlays.default ];
         };
-        packages = {
-          emacs = let pkgs = self.legacyPackages.${system};
-          in pkgs.emacsWithPackagesFromUsePackage {
-            alwaysEnsure = true;
-            defaultInitFile = true;
-            config = builtins.readFile (pkgs.substituteAll {
-              src = ./init.el;
-              jc = jc-themes;
-              autofmt = elisp-autofmt;
-            });
-            package = pkgs.emacs;
-          } // {
-            name = "emacs";
-          };
+        packages = let
+          pkgs = self.legacyPackages.${system};
+          mkEmacs = emacsPkg:
+            pkgs.emacsWithPackagesFromUsePackage {
+              alwaysEnsure = true;
+              defaultInitFile = true;
+              config = builtins.readFile (pkgs.substituteAll {
+                src = ./init.el;
+                jc = jc-themes;
+                autofmt = elisp-autofmt;
+              });
+              package = emacsPkg.overrideAttrs (old: {
+                configureFlags = old.configureFlags
+                  ++ [ "--without-toolkit-scroll-bars" ];
+              });
+            } // {
+              name = "emacs";
+            };
+        in {
+          emacs = mkEmacs pkgs.emacs;
+          emacs-nox = mkEmacs pkgs.emacs-nox;
+          emacs-pgtk = mkEmacs pkgs.emacsPgtk;
+          emacs-git = mkEmacs pkgs.emacsGit;
         };
       });
 }

@@ -10,6 +10,9 @@ jobs:
         matrix:
            package:
            - emacs
+           - emacs-nox
+           - emacs-git
+           - emacs-pgtk
            channel:
            - nixos-unstable
     runs-on: ubuntu-latest
