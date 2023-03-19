@@ -40,18 +40,21 @@
                 jc = jc-themes;
                 autofmt = elisp-autofmt;
               });
-              package = emacsPkg.overrideAttrs (old: {
-                configureFlags = old.configureFlags
-                  ++ [ "--without-toolkit-scroll-bars" ];
-              });
+              package = emacsPkg;
             } // {
               name = "emacs";
             };
         in {
-          emacs = mkEmacs pkgs.emacs;
+          emacs = mkEmacs (pkgs.emacs.overrideAttrs (old: {
+            configureFlags = old.configureFlags
+              ++ [ "--without-toolkit-scroll-bars" ];
+          }));
           emacs-nox = mkEmacs pkgs.emacs-nox;
           emacs-pgtk = mkEmacs pkgs.emacsPgtk;
-          emacs-git = mkEmacs pkgs.emacsGit;
+          emacs-git = mkEmacs (pkgs.emacsGit.overrideAttrs (old: {
+            configureFlags = old.configureFlags
+              ++ [ "--without-toolkit-scroll-bars" ];
+          }));
         };
       });
 }
