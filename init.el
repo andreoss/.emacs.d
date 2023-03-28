@@ -320,6 +320,8 @@
 (use-package
  jc-themes
  ;builtin
+ :straight
+ (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
  :when (file-exists-p "@jc@")
  :after (dired dired-subtree evil)
  :load-path "@jc@"
@@ -513,6 +515,7 @@
   `(shell-command-on-region (point-min) (point-max) ,@args))
 (use-package
  font-lock
+  :straight (:type built-in)
  ;builtin
  :config
  (add-hook
@@ -522,6 +525,7 @@
     (hs-hide-initial-comment-block))))
 (use-package
  cperl-mode
+  :straight (:type built-in)
  ;builtin
  :after (evil)
  :mode "\\.pl\\'"
