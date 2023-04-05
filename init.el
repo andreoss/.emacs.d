@@ -31,6 +31,8 @@
 (global-visual-line-mode -1)
 (global-eldoc-mode +1)
 (global-reveal-mode +1)
+(setq global-hl-line-sticky-flag nil)
+(global-hl-line-mode +1)
 (toggle-truncate-lines +1)
 (visual-line-mode -1)
 (use-package
