@@ -22,11 +22,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1681009521,
-        "narHash": "sha256-CoxF0OcipRC3p64XnMecGEnWywZMMgRxOCCZtw9GmYA=",
+        "lastModified": 1681036684,
+        "narHash": "sha256-zun/b14VTsA2QytRPBfmIJeixERNaUIBkLIE9DYEheQ=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "48c44fe806d73dbe376be665250659cffaef3610",
+        "rev": "20c47d24ebe8fa16d4c2ac79286631cf92101781",
         "type": "github"
       },
       "original": {
@@ -51,12 +51,15 @@
       }
     },
     "flake-utils_2": {
+      "inputs": {
+        "systems": "systems"
+      },
       "locked": {
-        "lastModified": 1680946745,
-        "narHash": "sha256-KqGlwg9UTDsFBZZB8wzXgMnc8XQm95LtSbFvBsnqkPI=",
+        "lastModified": 1681037374,
+        "narHash": "sha256-XL6X3VGbEFJZDUouv2xpKg2Aljzu/etPLv5e1FPt1q0=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "946da791763db1c306b86a8bd3828bf5814a1247",
+        "rev": "033b9f258ca96a10e543d4442071f614dc3f8412",
         "type": "github"
       },
       "original": {
@@ -121,6 +124,21 @@
         "flake-utils": "flake-utils_2",
         "jc-themes": "jc-themes",
         "nixpkgs": "nixpkgs_2"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
       }
     }
   },
