@@ -319,12 +319,9 @@
        (font-spec :family "Noto Color Emoji"))))
 (add-hook 'after-init-hook (lambda () (ai:setup-frame nil)) t)
 (add-to-list 'after-make-frame-functions #'ai:setup-frame)
-(if (fboundp 'straight-use-package)
-    (straight-use-package '(jc-themes :type git :host gitlab :repo "andreoss/jc-themes")))
 (use-package
  jc-themes
  ;builtin
- :straight (:type built-in)
  :when (file-exists-p "@jc@")
  :after (dired dired-subtree evil)
  :load-path "@jc@"
@@ -518,7 +515,6 @@
   `(shell-command-on-region (point-min) (point-max) ,@args))
 (use-package
  font-lock
-  :straight (:type built-in)
  ;builtin
  :config
  (add-hook
@@ -528,7 +524,6 @@
     (hs-hide-initial-comment-block))))
 (use-package
  cperl-mode
-  :straight (:type built-in)
  ;builtin
  :after (evil)
  :mode "\\.pl\\'"
