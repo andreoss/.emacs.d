@@ -33,5 +33,7 @@ jobs:
       run: cachix use emacs-d
     - name: Build
       run: nix build '.#${{matrix.package}}'
+    - name: Run
+      run: nix run '.#${{matrix.package}}' -- --batch --load init.el
     - name: Push
       run:  nix path-info --all | cachix push emacs-d
