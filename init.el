@@ -11,7 +11,8 @@
 (setq use-package-always-demand t)
 (setq use-package-always-ensure nil)
 (use-package better-defaults)
-(scroll-bar-mode +1)
+(if (eq window-system 'x)
+    (scroll-bar-mode +1))
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq frame-title-format
       '((:eval
