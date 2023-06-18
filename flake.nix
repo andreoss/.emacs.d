@@ -18,6 +18,7 @@
     {
       overlays.default = final: prev: {
         emacs = self.outputs.packages.${prev.system}.emacs;
+        notmuch = self.outputs.packages.${prev.system}.notmuch;
       };
     } // flake-utils.lib.eachDefaultSystem (system:
       let
@@ -45,6 +46,7 @@
               name = "emacs";
             };
         in {
+          notmuch = (pkgs.notmuch.override {}).overrideAttrs (_ : { doCheck = false; withEmacs = true; withRuby =false;} );
           emacs = mkEmacs (pkgs.emacs.overrideAttrs (old: {
             configureFlags = old.configureFlags
               ++ [ "--without-toolkit-scroll-bars" ];
