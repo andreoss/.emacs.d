@@ -46,7 +46,11 @@
               name = "emacs";
             };
         in {
-          notmuch = (pkgs.notmuch.override {}).overrideAttrs (_ : { doCheck = false; withEmacs = true; withRuby =false;} );
+          notmuch = (pkgs.notmuch.override { }).overrideAttrs (_: {
+            doCheck = false;
+            withEmacs = true;
+            withRuby = false;
+          });
           emacs = mkEmacs (pkgs.emacs.overrideAttrs (old: {
             configureFlags = old.configureFlags
               ++ [ "--without-toolkit-scroll-bars" ];
