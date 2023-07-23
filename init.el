@@ -467,7 +467,7 @@
  :hook
  (c-mode-hook . c-turn-on-eldoc-mode)
  (c-mode-common-hook . elide-head))
-(use-package lsp-mode :hook (cpp-mode . lsp) (java-mode . lsp))
+(use-package lsp-mode :hook (cpp-mode . lsp) (java-mode . lsp) (scala-mode . lsp))
 (use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
@@ -475,7 +475,8 @@
  :custom
  (lsp-metals-server-args
   '("-J-Dmetals.allow-multiline-string-formatting=off"))
- :hook (scala-mode . lsp))
+ )
+
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :config
