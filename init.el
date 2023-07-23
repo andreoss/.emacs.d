@@ -476,12 +476,26 @@
  (lsp-metals-server-args
   '("-J-Dmetals.allow-multiline-string-formatting=off"))
  :hook (scala-mode . lsp))
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+  )
+
 (use-package
  lsp-java
  :after (lsp)
  :hook
  (java-mode . lsp)
  (java-mode . lsp-java-lens-mode))
+(use-package
+  lsp-ui
+  :after (lsp))
 (use-package
  ansi-color
  ;builtin
@@ -786,7 +800,9 @@
 (use-package
  calendar ;builtin
  :config (require 'holidays))
-(use-package vterm)
+(use-package vterm
+  :config
+  (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state))))
 (use-package ag :config (lead-def "tg" 'ag))
 (use-package wgrep :after ag)
 (use-package wgrep-ag :after wgrep)
@@ -873,8 +889,6 @@
 (use-package bufler)
 (use-package perspective-exwm :after (exwm))
 (use-package exwm-mff :after (exwm) :hook (exwm-init . exwm-mff-mode))
-(add-hook
- 'vterm-mode-hook (lambda () (setq evil-default-state 'emacs)))
 (use-package fringe-current-line
   :init
  (define-fringe-bitmap 'wave
