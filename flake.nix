@@ -40,9 +40,13 @@
                 src = ./init.el;
                 jc = jc-themes;
                 autofmt = elisp-autofmt;
+                lein = pkgs.leiningen.out;
+                mysql_jdbc = pkgs.mysql_jdbc.out;
+                psql_jdbc = pkgs.postgresql_jdbc.out;
+                sqlite_jdbc = pkgs.sqlite-jdbc.out;
               });
               package = emacsPkg;
-            } // {
+             // {
               name = "emacs";
             };
         in {
@@ -58,6 +62,7 @@
           emacs-nox = mkEmacs pkgs.emacs-nox;
           emacs-pgtk = mkEmacs pkgs.emacsPgtk;
           emacs-git = mkEmacs (pkgs.emacsGit.overrideAttrs (old: {
+            builtInput = old.buildInput ++ [ pkgs.lein ];
             configureFlags = old.configureFlags
               ++ [ "--without-toolkit-scroll-bars" ];
           }));
