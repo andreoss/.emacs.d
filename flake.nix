@@ -46,7 +46,7 @@
                 sqlite_jdbc = pkgs.sqlite-jdbc.out;
               });
               package = emacsPkg;
-             // {
+            } // {
               name = "emacs";
             };
         in {
