@@ -158,9 +158,9 @@
  (dashboard-items '((recents . 20) (projects . 20) (agenda . 20)))
  (dashboard-banner-logo-title ""))
 (use-package
- undo-tree
+ vundo
  :after (evil)
- :hook (after-init . global-undo-tree-mode))
+ :bind ("C-x u" . vundo))
 (use-package centered-cursor-mode :config (centered-cursor-mode +1))
 (use-package magit :bind ("C-x g" . magit-status))
 (use-package
