@@ -62,7 +62,6 @@
           emacs-nox = mkEmacs pkgs.emacs-nox;
           emacs-pgtk = mkEmacs pkgs.emacsPgtk;
           emacs-git = mkEmacs (pkgs.emacsGit.overrideAttrs (old: {
-            builtInput = old.buildInput ++ [ pkgs.lein ];
             configureFlags = old.configureFlags
               ++ [ "--without-toolkit-scroll-bars" ];
           }));
