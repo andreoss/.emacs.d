@@ -461,12 +461,13 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
-(use-package
- ccls
- :custom (c-basic-offset 4)
- :hook
- (c-mode-hook . c-turn-on-eldoc-mode)
- (c-mode-common-hook . elide-head))
+(use-package eglot)
+(use-package dumb-jump)
+(use-package modern-cpp-font-lock
+  :config
+  (modern-c++-font-lock-global-mode))
+
+(use-package cmake-mode)
 (use-package lsp-mode :hook (cpp-mode . lsp) (java-mode . lsp) (scala-mode . lsp))
 (use-package dap-mode :after (lsp))
 (use-package
@@ -476,6 +477,7 @@
  (lsp-metals-server-args
   '("-J-Dmetals.allow-multiline-string-formatting=off"))
  )
+
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -663,6 +665,7 @@
  :hook (emacs-lisp-mode . elisp-autofmt-mode))
 (use-package elisp-lint)
 (use-package elisp-refs)
+(use-package elsa)
 (use-package
  eros
  :hook (lisp-mode . eros-mode) (emacs-lisp-mode . eros-mode))
@@ -982,6 +985,11 @@
               (ejc-set-column-width-limit 25)
               (ejc-set-use-unicode t)))
   )
+
+(use-package yaml-mode)
+(use-package json-mode)
+(use-package protobuf-mode)
+
 (provide 'init.el)
 
 ;;; init.el ends here
