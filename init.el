@@ -970,7 +970,7 @@
 (use-package ejc-sql
   :config
   (setq ejc-leiningen-home "@lein@")
-  (setq ejc-jdbc-drivers
+  (setq ejc-jdbc-drivers-classpath
         '(
           (mysql . "@mysql_jdbc@")
           (psql . "@psql_jdbc@")
