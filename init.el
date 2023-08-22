@@ -323,7 +323,7 @@
 (use-package
  jc-themes
  ;builtin
- :when (file-exists-p "@jc@")
+ :when (and (file-exists-p "@jc@") (not (eq window-system nil)))
  :after (dired dired-subtree evil)
  :load-path "@jc@"
  :config
