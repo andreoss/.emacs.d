@@ -538,6 +538,8 @@
  (add-hook
   'prog-mode-hook
   (lambda ()
+    (if (eq window-system nil)
+        (font-lock-mode -1))
     (hs-minor-mode +1)
     (hs-hide-initial-comment-block))))
 (use-package
