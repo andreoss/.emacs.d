@@ -461,14 +461,16 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
-(use-package eglot)
+(use-package eglot :hook (c-mode . eglot-ensure) (sh-mode . eglot-ensure) (c++-mode . eglot-ensure))
 (use-package dumb-jump)
 (use-package modern-cpp-font-lock
   :config
   (modern-c++-font-lock-global-mode))
 
 (use-package cmake-mode)
-(use-package lsp-mode :hook (cpp-mode . lsp) (java-mode . lsp) (scala-mode . lsp))
+(use-package company
+  :hook (prog-mode . company-mode))
+(use-package lsp-mode :hook (java-mode . lsp) (scala-mode . lsp))
 (use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
