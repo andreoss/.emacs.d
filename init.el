@@ -323,13 +323,15 @@
 (use-package
  jc-themes
  ;builtin
- :when (and (file-exists-p "@jc@") (not (eq window-system nil)))
+ :when (file-exists-p "@jc@")
  :after (dired dired-subtree evil)
  :load-path "@jc@"
  :config
  (add-hook
   'after-init-hook ;;
-  #'(lambda () (load-theme 'jc-themes-random t))))
+  #'(lambda ()
+      (if (eq window-system 'x)
+          (load-theme 'jc-themes-random t)))))
 (require 'eshell)
 (require 'shell)
 (require 'ansi-color)
@@ -341,17 +343,9 @@
  comint-prompt-read-only t
  eshell-where-to-jump 'begin
  eshell-review-quick-commands nil)
-(defun eshell-maybe-bol ()
-  "Go to the beginning of current line."
-  (interactive)
-  (let ((p (point)))
-    (eshell-bol)
-    (if (= p (point))
-        (beginning-of-line))))
-(add-hook
- 'eshell-mode-hook
- '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-maybe-bol)))
+
 (require 'em-smart)
+
 (defun eshell-here ()
   "Go to eshell and set current directory to the buffer's directory."
   (interactive)
