@@ -464,7 +464,9 @@
 (use-package cmake-mode)
 (use-package company
   :hook (prog-mode . company-mode))
-(use-package lsp-mode :hook (java-mode . lsp) (scala-mode . lsp))
+(use-package lsp-mode
+  :hook (java-mode . lsp) (scala-mode . lsp)
+  )
 (use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
@@ -474,6 +476,10 @@
   '("-J-Dmetals.allow-multiline-string-formatting=off"))
  )
 
+(use-package typescript-mode)
+(use-package json-mode)
+(use-package yasnippet
+ :hook (after-init . yasnippet-global-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -985,7 +991,6 @@
   )
 
 (use-package yaml-mode)
-(use-package json-mode)
 (use-package protobuf-mode)
 
 (provide 'init.el)
