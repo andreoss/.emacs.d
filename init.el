@@ -320,30 +320,29 @@
        (font-spec :family "Noto Color Emoji"))))
 (add-hook 'after-init-hook (lambda () (ai:setup-frame nil)) t)
 (add-to-list 'after-make-frame-functions #'ai:setup-frame)
-(use-package
- jc-themes
- ;builtin
- :when (file-exists-p "@jc@")
- :after (dired dired-subtree evil)
- :load-path "@jc@"
- :config
- (add-hook
-  'after-init-hook ;;
-  #'(lambda ()
-      (if (eq window-system 'x)
-          (load-theme 'jc-themes-random t)))))
-(require 'eshell)
-(require 'shell)
-(require 'ansi-color)
-(setq-default eshell-where-to-jump 'begin)
-(setq-default eshell-review-quick-commands nil)
-(setq-default eshell-smart-space-goes-to-end t)
-(setq-default
- comint-input-sender-no-newline t
- comint-prompt-read-only t
- eshell-where-to-jump 'begin
- eshell-review-quick-commands nil)
-
+(if (eq system-type 'linux)
+    (use-package
+      jc-themes
+                                        ;builtin
+      :when (file-exists-p "@jc@")
+      :load-path "@jc@"
+      :config
+      (add-hook
+       'after-init-hook ;;
+       #'(lambda ()
+           (if (eq window-system 'x)
+               (load-theme 'jc-themes-random t)))))
+  (use-package jc-themes
+    :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
+    :after (dired dired-subtree evil)
+    :config
+    :config
+    (add-hook
+     'after-init-hook ;;
+     #'(lambda ()
+         (if (eq window-system 'x)
+             (load-theme 'jc-themes-random t))))))
+  
 (require 'em-smart)
 
 (defun eshell-here ()
@@ -504,6 +503,7 @@
 (use-package
  ansi-color
  ;builtin
+ :straight (:type built-in)
  :init
  (defun colorize-compilation-buffer ()
    (read-only-mode -1)
@@ -536,6 +536,7 @@
 (use-package
  font-lock
  ;builtin
+     :straight (:type built-in)
  :config
  (add-hook
   'prog-mode-hook
@@ -546,6 +547,7 @@
     (hs-hide-initial-comment-block))))
 (use-package
  cperl-mode
+ :straight (:type built-in)
  ;builtin
  :after (evil)
  :mode "\\.pl\\'"
@@ -663,6 +665,7 @@
  :config (add-hook 'before-save-hook 'nix-format-before-save))
 (use-package
  elisp-autofmt ;builtin
+ :straight (:type built-in)
  :when (file-exists-p "@autofmt@")
  :load-path "@autofmt@"
  :commands (elisp-autofmt-mode elisp-autofmt-buffer)
@@ -691,6 +694,7 @@
 (use-package
  dired
  ;builtin
+ :straight (:type built-in)
  :after (evil)
  :init (require' dired-x)
  :custom (dired-omit-files "^.$\\|^#\\|~$\\|^.#")
@@ -758,6 +762,7 @@
 
 (use-package
  emms
+ :when (eq system-type 'linux)
  :after (hydra evil dired)
  :init
  (require 'emms-setup)
@@ -796,17 +801,20 @@
 (use-package ack :config (lead-def "ta" 'ack))
 (use-package
  flyspell ;builtin
+ :straight (:type built-in)
  :config
  (require 'ispell)
  (setq ispell-program-name
        (or (executable-find "hunspell") (executable-find "ispell")))
- (ispell-change-dictionary "en_GB")
+ 
+ (ispell-change-dictionary (if (eq system-type 'linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
 ;; Org
 (use-package
  calendar ;builtin
+ :straight (:type built-in)
  :config (require 'holidays))
 (use-package vterm
   :config
@@ -882,6 +890,7 @@
 (use-package
  emacs
  ;builtin
+ :straight (:type built-in)
  :init
  (setq completion-cycle-threshold 3)
  (setq read-extended-command-predicate
@@ -897,7 +906,41 @@
 (use-package bufler)
 (use-package perspective-exwm :after (exwm))
 (use-package exwm-mff :after (exwm) :hook (exwm-init . exwm-mff-mode))
+(use-package flycheck
+  :straight (flycheck :type git :host github :repo "flycheck/flycheck")
+  :config
+  (define-fringe-bitmap 'flycheck-fringe-indicator
+    (vector #b0000000000000000
+            #b0000000000000000
+            #b0111111111111110
+            #b1111111111111111
+            #b1111111111111111
+            #b1111111111111111
+            #b1111111111111111
+            #b0111111111111110
+            #b0000000000000000
+            #b0000000000000000)
+    nil nil 'center)
+  :custom (flycheck-indication-mode 'right-fringe)
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (flycheck-define-error-level 'error
+    :severity 2
+    :overlay-category 'flycheck-error-overlay
+    :fringe-bitmap 'flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-error)
+  (flycheck-define-error-level 'warning
+    :severity 1
+    :overlay-category 'flycheck-warning-overlay
+    :fringe-bitmap 'flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-warning)
+  (flycheck-define-error-level 'info
+    :severity 0
+    :overlay-category 'flycheck-info-overlay
+    :fringe-bitmap 'flycheck-fringe-indicator
+    :fringe-face 'flycheck-fringe-info))
 (use-package fringe-current-line
+  :after (flycheck)
   :init
  (define-fringe-bitmap 'wave
     (vector #b00000000
@@ -930,38 +973,6 @@
 
   :hook (after-init . global-fringe-current-line-mode)
   )
-(use-package flycheck
-  :config
-  (define-fringe-bitmap 'flycheck-fringe-indicator
-    (vector #b0000000000000000
-            #b0000000000000000
-            #b0111111111111110
-            #b1111111111111111
-            #b1111111111111111
-            #b1111111111111111
-            #b1111111111111111
-            #b0111111111111110
-            #b0000000000000000
-            #b0000000000000000)
-    nil nil 'center)
-  :custom (flycheck-indication-mode 'right-fringe)
-  :hook (after-init . global-flycheck-mode)
-  :config
-  (flycheck-define-error-level 'error
-    :severity 2
-    :overlay-category 'flycheck-error-overlay
-    :fringe-bitmap 'flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-error)
-  (flycheck-define-error-level 'warning
-    :severity 1
-    :overlay-category 'flycheck-warning-overlay
-    :fringe-bitmap 'flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-warning)
-  (flycheck-define-error-level 'info
-    :severity 0
-    :overlay-category 'flycheck-info-overlay
-    :fringe-bitmap 'flycheck-fringe-indicator
-    :fringe-face 'flycheck-fringe-info))
 (use-package unicode-fonts)
 (use-package dr-racket-like-unicode
   :hook (prog-mode . dr-racket-like-unicode-mode))
