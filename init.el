@@ -1,15 +1,20 @@
 ;;; init --- ...
 ;;; Commentary:
 ;;; Code:
-(setq inhibit-message t)
-(add-hook
- 'after-init-hook ;;
- #'(lambda () (setq inhibit-message nil)))
+;; (setq inhibit-message t)
+;; (add-hook
+;;  'after-init-hook ;;
+;;  #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
+(when (and (featurep' seq)
+          (not (fboundp 'seq-keep)))
+  (unload-feature 'seq 'force))
+(require 'seq)
 (setq use-package-always-defer nil)
 (setq use-package-always-demand t)
 (setq use-package-always-ensure nil)
+(setq use-package-ignore-unknown-keywords t)
 (use-package better-defaults)
 (if (eq window-system 'x)
     (scroll-bar-mode +1))
@@ -36,9 +41,39 @@
 (global-hl-line-mode +1)
 (toggle-truncate-lines +1)
 (visual-line-mode -1)
+
+(use-package unicode-fonts)
+(use-package
+ prettify-greek
+ :config
+ (setq prettify-symbols-alist
+       (append
+        prettify-symbols-alist
+        prettify-greek-lower
+        prettify-greek-upper))
+ (global-prettify-symbols-mode +1)
+ )
+(if (eq system-type 'gnu/linux)
+    ;; nix
+    (use-package
+      jc-themes
+                                        ;builtin
+      :when (file-exists-p "@jc@")
+      :load-path "@jc@"
+      :config
+      (load-theme 'jc-themes-random t))
+  (use-package jc-themes
+    :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
+    :after (dired dired-subtree evil)
+    :config
+    (load-theme 'jc-themes-random t)))
+(use-package quelpa)
+(use-package el-patch)
 (use-package
  evil
- :init (setq evil-want-keybinding nil)
+ :init
+ (setq evil-want-keybinding nil)
+ (evil-mode +1)
  :config
  (define-key evil-normal-state-map (kbd "C-z") 'evil-normal-state)
  (define-key evil-emacs-state-map (kbd "C-z") 'evil-emacs-state)
@@ -71,13 +106,13 @@
   (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
   (evil-global-set-key state (kbd "C-e") 'end-of-line)
   (evil-global-set-key state (kbd "C-k") 'kill-line)))
-(evil-mode +1)
 (use-package
  evil-collection
  :after evil
  :config
- (setq evil-want-integration t)
- (evil-collection-init))
+ (evil-collection-init)
+ :init
+ (setq evil-want-integration t))
 (use-package
  evil-goggles
  :after (evil)
@@ -94,7 +129,7 @@
 (use-package
  evil-commentary
  :after (evil)
- :config (evil-commentary-mode +1))
+ :init (evil-commentary-mode +1))
 (use-package
  avy
  :after (evil)
@@ -123,8 +158,8 @@
 (use-package editorconfig :config (editorconfig-mode +1))
 (use-package
  pdf-tools
- :hook (after-init . pdf-tools-install)
  :config
+ (pdf-tools-install-noverify)
  (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1))))
 (use-package
  feebleline
@@ -135,7 +170,7 @@
  (feebleline-show-previous-buffer nil)
  (mode-line-modes nil)
  :hook (emacs-startup . feebleline-mode))
-(use-package marginalia :hook (after-init . marginalia-mode))
+(use-package marginalia :config (marginalia-mode))
 (use-package
  vertico
  :custom (vertico-count-format nil)
@@ -190,8 +225,9 @@
 (use-package
  winum
  :after (evil)
- :hook ((after-init . winum--clear-mode-line) (after-init . winner-mode))
+ :hook ((after-init . winum--clear-mode-line))
  :config
+ (winner-mode +1)
  (defconst evil-winner-key (kbd "C-w")
    "Evil winner prefix")
  (evil-global-set-key 'insert evil-winner-key 'evil-window-map)
@@ -301,48 +337,7 @@
  (which-key-sort-order nil)
  (which-key-side-window-max-height 0.33)
  :config (which-key-mode +1))
-(defmacro if-any-window-system (&rest body)
-  "If Emacs running in graphical enviroment execute BODY."
-  `(if (not (eq (window-system) 'nil))
-       (progn
-         ,@body)))
-(defun ai:setup-frame (frame)
-  "Setup a FRAME."
-  (setq frame (or frame (selected-frame)))
-  (if-any-window-system
-   (when (display-graphic-p)
-     (set-frame-parameter frame 'internal-border-width 2)
-     (fringe-mode '(14 . 7))))
-  (if (>= emacs-major-version 27)
-      (set-fontset-font
-       t
-       '(#x1f000 . #x1faff)
-       (font-spec :family "Noto Color Emoji"))))
-(add-hook 'after-init-hook (lambda () (ai:setup-frame nil)) t)
-(add-to-list 'after-make-frame-functions #'ai:setup-frame)
-(if (eq system-type 'linux)
-    (use-package
-      jc-themes
-                                        ;builtin
-      :when (file-exists-p "@jc@")
-      :load-path "@jc@"
-      :config
-      (add-hook
-       'after-init-hook ;;
-       #'(lambda ()
-           (if (eq window-system 'x)
-               (load-theme 'jc-themes-random t)))))
-  (use-package jc-themes
-    :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
-    :after (dired dired-subtree evil)
-    :config
-    :config
-    (add-hook
-     'after-init-hook ;;
-     #'(lambda ()
-         (if (eq window-system 'x)
-             (load-theme 'jc-themes-random t))))))
-  
+
 (require 'em-smart)
 
 (defun eshell-here ()
@@ -536,7 +531,7 @@
 (use-package
  font-lock
  ;builtin
-     :straight (:type built-in)
+ :straight (:type built-in)
  :config
  (add-hook
   'prog-mode-hook
@@ -672,7 +667,6 @@
  :hook (emacs-lisp-mode . elisp-autofmt-mode))
 (use-package elisp-lint)
 (use-package elisp-refs)
-(use-package elsa)
 (use-package
  eros
  :hook (lisp-mode . eros-mode) (emacs-lisp-mode . eros-mode))
@@ -762,7 +756,7 @@
 
 (use-package
  emms
- :when (eq system-type 'linux)
+ :when (eq system-type 'gnu/linux)
  :after (hydra evil dired)
  :init
  (require 'emms-setup)
@@ -787,16 +781,6 @@
 ;;   ("9" emms-volume-lower  "v")
 ;;   ("i" emms-show "v"))
 ;; (lead-def "a" 'emms-control/body)
-;; Text
-(use-package
- prettify-greek
- :config (global-prettify-symbols-mode -1)
- (setq prettify-symbols-alist
-       (append
-        prettify-symbols-alist
-        prettify-greek-lower
-        prettify-greek-upper))
- (global-prettify-symbols-mode +1))
 (use-package rainbow-mode)
 (use-package ack :config (lead-def "ta" 'ack))
 (use-package
@@ -806,8 +790,8 @@
  (require 'ispell)
  (setq ispell-program-name
        (or (executable-find "hunspell") (executable-find "ispell")))
- 
- (ispell-change-dictionary (if (eq system-type 'linux) "en_GB" "en-GB"))
+
+ (ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
@@ -825,7 +809,7 @@
 ;; WM
 (use-package
  exwm
- :when (eq window-system 'x)
+ :when (and (eq window-system 'x) (getenv "EXWM"))
  :custom
  (exwm-replace nil)
  (exwm-workspace-number 6)
@@ -973,7 +957,6 @@
 
   :hook (after-init . global-fringe-current-line-mode)
   )
-(use-package unicode-fonts)
 (use-package dr-racket-like-unicode
   :hook (prog-mode . dr-racket-like-unicode-mode))
 (use-package auto-highlight-symbol
