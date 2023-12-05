@@ -7,10 +7,12 @@
 ;;  #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
-(when (and (featurep' seq)
-          (not (fboundp 'seq-keep)))
-  (unload-feature 'seq 'force))
 (require 'seq)
+
+(if (not (fboundp 'seq-keep))
+    (defun seq-keep (function sequence)
+      "Apply FUNCTION to SEQUENCE and return the list of all the non-nil results."
+      (delq nil (seq-map function sequence))))
 (setq use-package-always-defer nil)
 (setq use-package-always-demand t)
 (setq use-package-always-ensure nil)
