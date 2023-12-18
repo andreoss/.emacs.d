@@ -475,7 +475,7 @@
 (use-package typescript-mode)
 (use-package json-mode)
 (use-package yasnippet
- :hook (after-init . yasnippet-global-mode))
+ :hook (after-init . yas-global-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
