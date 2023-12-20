@@ -198,7 +198,9 @@
  vundo
  :after (evil)
  :bind ("C-x u" . vundo))
-(use-package centered-cursor-mode :config (centered-cursor-mode +1))
+(use-package centered-cursor-mode
+  :when (not (eq window-system nil))
+  :config (centered-cursor-mode +1))
 (use-package magit :bind ("C-x g" . magit-status))
 (use-package
  git-commit
@@ -453,9 +455,6 @@
 (use-package c-eldoc)
 (use-package eglot :hook (c-mode . eglot-ensure) (sh-mode . eglot-ensure) (c++-mode . eglot-ensure))
 (use-package dumb-jump)
-(use-package modern-cpp-font-lock
-  :config
-  (modern-c++-font-lock-global-mode))
 
 (use-package cmake-mode)
 (use-package company
@@ -475,7 +474,7 @@
 (use-package typescript-mode)
 (use-package json-mode)
 (use-package yasnippet
- :hook (after-init . yasnippet-global-mode))
+ :hook (after-init . yas-global-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -793,7 +792,7 @@
  (setq ispell-program-name
        (or (executable-find "hunspell") (executable-find "ispell")))
 
- (ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
+ ;;(ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
@@ -954,9 +953,6 @@
   :config
   (setq fcl-fringe-bitmap 'arrow-indicator)
   (setq-default indicate-empty-lines t)
-
-  (setcdr (assq 'empty-line fringe-indicator-alist) 'wave)
-
   :hook (after-init . global-fringe-current-line-mode)
   )
 (use-package dr-racket-like-unicode
