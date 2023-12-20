@@ -3,5 +3,5 @@
 ** Try it
 
 #+begin_src shell
-  nix run github.com:andreoss/.emacs.d#emacs
+  nix run github:andreoss/.emacs.d#emacs
 #+end_src
