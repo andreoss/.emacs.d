@@ -178,23 +178,6 @@
  :custom (vertico-count-format nil)
  :config (vertico-mode 1))
 (use-package
- dashboard
- :hook
- ((after-init . dashboard-setup-startup-hook)
-  (after-init . dashboard-refresh-buffer))
- :config
- (add-to-list 'recentf-exclude "/nix/store")
- (add-to-list 'recentf-exclude "ido.last")
- :custom
- (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
- (dashboard-banner-official-png nil)
- (dashboard-startup-banner nil)
- (dashboard-banner-logo-png nil)
- (dashboard-footer-messages nil)
- (dashboard-projects-backend 'project-el)
- (dashboard-items '((recents . 20) (projects . 20) (agenda . 20)))
- (dashboard-banner-logo-title ""))
-(use-package
  vundo
  :after (evil)
  :bind ("C-x u" . vundo))
@@ -576,11 +559,13 @@
  (evil-define-key
   'normal perl-mode-map (kbd "g d") 'cperl-perldoc-at-point))
 ;;; Org
-(use-package org :after (evil) :config (setq-default org-log-done t))
+(use-package org :after (evil) :config (setq-default org-log-done t)
+  :bind (:map org-mode-map ("C-i" . org-cycle) ))
 (use-package
  org-bullets
  :after (org)
- :hook (org-mode . org-bullets-mode))
+ :hook (org-mode . org-bullets-mode)
+ )
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
