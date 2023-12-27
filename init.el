@@ -41,7 +41,6 @@
 (global-reveal-mode +1)
 (setq global-hl-line-sticky-flag nil)
 (global-hl-line-mode +1)
-(toggle-truncate-lines +1)
 (visual-line-mode -1)
 
 (use-package unicode-fonts)
@@ -522,6 +521,7 @@
   (lambda ()
     (if (eq window-system nil)
         (font-lock-mode -1))
+    (toggle-truncate-lines +1)
     (hs-minor-mode +1)
     (hs-hide-initial-comment-block))))
 (use-package
