@@ -1,10 +1,6 @@
 ;;; init --- ...
 ;;; Commentary:
 ;;; Code:
-;; (setq inhibit-message t)
-;; (add-hook
-;;  'after-init-hook ;;
-;;  #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
@@ -435,23 +431,29 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
-(use-package eglot :hook (c-mode . eglot-ensure) (sh-mode . eglot-ensure) (c++-mode . eglot-ensure))
-(use-package dumb-jump)
+(use-package eglot-java :after (eglot))
+(use-package scala-mode :after (eglot))
+(use-package eglot
+  :bind (:map eglot-mode-map
+              ("C-c <tab>" . company-complete)
+              ("C-c e f n" . flymake-goto-next-error)
+              ("C-c e f p" . flymake-goto-prev-error)
+              ("C-c e f r" . eglot-format)
+              ("C-c e f b" . eglot-format-buffer)
+              ("C-c e r" . eglot-rename)
+              ("C-c e a" . eglot-code-actions))
+  :hook
+  (c-mode . eglot-ensure)
+  (sh-mode . eglot-ensure)
+  (c++-mode . eglot-ensure)
+  (scala-mode . eglot-ensure)
+  )
 
+(use-package dumb-jump)
 (use-package cmake-mode)
 (use-package company
   :hook (prog-mode . company-mode))
-(use-package lsp-mode
-  :hook (java-mode . lsp) (scala-mode . lsp)
-  )
-(use-package dap-mode :after (lsp))
-(use-package
- lsp-metals
- :after (lsp)
- :custom
- (lsp-metals-server-args
-  '("-J-Dmetals.allow-multiline-string-formatting=off"))
- )
+
 
 (use-package typescript-mode)
 (use-package json-mode)
@@ -470,15 +472,6 @@
   )
 
 (use-package
- lsp-java
- :after (lsp)
- :hook
- (java-mode . lsp)
- (java-mode . lsp-java-lens-mode))
-(use-package
-  lsp-ui
-  :after (lsp))
-(use-package
  ansi-color
  ;builtin
  :straight (:type built-in)
@@ -489,7 +482,6 @@
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
 ;;; Haskell
-(use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
  haskell-mode
  :custom (haskell-font-lock-symbols t)
@@ -966,10 +958,8 @@
               (ejc-set-column-width-limit 25)
               (ejc-set-use-unicode t)))
   )
-
 (use-package yaml-mode)
 (use-package protobuf-mode)
-
 (provide 'init.el)
 
 ;;; init.el ends here
