@@ -559,6 +559,8 @@
  org-bullets
  :after (org)
  :hook (org-mode . org-bullets-mode)
+ :config
+ (setq org-bullets-bullet-list '("×" "×" "×" "×"))
  )
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
