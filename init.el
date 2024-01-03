@@ -63,7 +63,9 @@
     :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
     :after (dired dired-subtree evil)
     :config
-    (load-theme 'jc-themes-random t)))
+    (if (eq window-system 'nil)
+        (load-theme 'jc-themes-obscure t)
+        (load-theme 'jc-themes-random t))))
 (use-package quelpa)
 (use-package el-patch)
 (use-package
