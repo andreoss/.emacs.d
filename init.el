@@ -1,15 +1,18 @@
 ;;; init --- ...
 ;;; Commentary:
 ;;; Code:
-(setq inhibit-message t)
-(add-hook
- 'after-init-hook ;;
- #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
+(require 'seq)
+
+(if (not (fboundp 'seq-keep))
+    (defun seq-keep (function sequence)
+      "Apply FUNCTION to SEQUENCE and return the list of all the non-nil results."
+      (delq nil (seq-map function sequence))))
 (setq use-package-always-defer nil)
 (setq use-package-always-demand t)
 (setq use-package-always-ensure nil)
+(setq use-package-ignore-unknown-keywords t)
 (use-package better-defaults)
 (if (eq window-system 'x)
     (scroll-bar-mode +1))
@@ -34,11 +37,42 @@
 (global-reveal-mode +1)
 (setq global-hl-line-sticky-flag nil)
 (global-hl-line-mode +1)
-(toggle-truncate-lines +1)
 (visual-line-mode -1)
+
+(use-package unicode-fonts)
+(use-package
+ prettify-greek
+ :config
+ (setq prettify-symbols-alist
+       (append
+        prettify-symbols-alist
+        prettify-greek-lower
+        prettify-greek-upper))
+ (global-prettify-symbols-mode +1)
+ )
+(if (eq system-type 'gnu/linux)
+    ;; nix
+    (use-package
+      jc-themes
+                                        ;builtin
+      :when (file-exists-p "@jc@")
+      :load-path "@jc@"
+      :config
+      (load-theme 'jc-themes-random t))
+  (use-package jc-themes
+    :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
+    :after (dired dired-subtree evil)
+    :config
+    (if (eq window-system 'nil)
+        (load-theme 'jc-themes-obscure t)
+        (load-theme 'jc-themes-random t))))
+(use-package quelpa)
+(use-package el-patch)
 (use-package
  evil
- :init (setq evil-want-keybinding nil)
+ :init
+ (setq evil-want-keybinding nil)
+ (evil-mode +1)
  :config
  (define-key evil-normal-state-map (kbd "C-z") 'evil-normal-state)
  (define-key evil-emacs-state-map (kbd "C-z") 'evil-emacs-state)
@@ -71,13 +105,13 @@
   (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
   (evil-global-set-key state (kbd "C-e") 'end-of-line)
   (evil-global-set-key state (kbd "C-k") 'kill-line)))
-(evil-mode +1)
 (use-package
  evil-collection
  :after evil
  :config
- (setq evil-want-integration t)
- (evil-collection-init))
+ (evil-collection-init)
+ :init
+ (setq evil-want-integration t))
 (use-package
  evil-goggles
  :after (evil)
@@ -94,7 +128,7 @@
 (use-package
  evil-commentary
  :after (evil)
- :config (evil-commentary-mode +1))
+ :init (evil-commentary-mode +1))
 (use-package
  avy
  :after (evil)
@@ -123,8 +157,8 @@
 (use-package editorconfig :config (editorconfig-mode +1))
 (use-package
  pdf-tools
- :hook (after-init . pdf-tools-install)
  :config
+ (pdf-tools-install-noverify)
  (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1))))
 (use-package
  feebleline
@@ -135,33 +169,18 @@
  (feebleline-show-previous-buffer nil)
  (mode-line-modes nil)
  :hook (emacs-startup . feebleline-mode))
-(use-package marginalia :hook (after-init . marginalia-mode))
+(use-package marginalia :config (marginalia-mode))
 (use-package
  vertico
  :custom (vertico-count-format nil)
  :config (vertico-mode 1))
 (use-package
- dashboard
- :hook
- ((after-init . dashboard-setup-startup-hook)
-  (after-init . dashboard-refresh-buffer))
- :config
- (add-to-list 'recentf-exclude "/nix/store")
- (add-to-list 'recentf-exclude "ido.last")
- :custom
- (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
- (dashboard-banner-official-png nil)
- (dashboard-startup-banner nil)
- (dashboard-banner-logo-png nil)
- (dashboard-footer-messages nil)
- (dashboard-projects-backend 'project-el)
- (dashboard-items '((recents . 20) (projects . 20) (agenda . 20)))
- (dashboard-banner-logo-title ""))
-(use-package
  vundo
  :after (evil)
  :bind ("C-x u" . vundo))
-(use-package centered-cursor-mode :config (centered-cursor-mode +1))
+(use-package centered-cursor-mode
+  :when (not (eq window-system nil))
+  :config (centered-cursor-mode +1))
 (use-package magit :bind ("C-x g" . magit-status))
 (use-package
  git-commit
@@ -190,8 +209,9 @@
 (use-package
  winum
  :after (evil)
- :hook ((after-init . winum--clear-mode-line) (after-init . winner-mode))
+ :hook ((after-init . winum--clear-mode-line))
  :config
+ (winner-mode +1)
  (defconst evil-winner-key (kbd "C-w")
    "Evil winner prefix")
  (evil-global-set-key 'insert evil-winner-key 'evil-window-map)
@@ -301,57 +321,9 @@
  (which-key-sort-order nil)
  (which-key-side-window-max-height 0.33)
  :config (which-key-mode +1))
-(defmacro if-any-window-system (&rest body)
-  "If Emacs running in graphical enviroment execute BODY."
-  `(if (not (eq (window-system) 'nil))
-       (progn
-         ,@body)))
-(defun ai:setup-frame (frame)
-  "Setup a FRAME."
-  (setq frame (or frame (selected-frame)))
-  (if-any-window-system
-   (when (display-graphic-p)
-     (set-frame-parameter frame 'internal-border-width 2)
-     (fringe-mode '(14 . 7))))
-  (if (>= emacs-major-version 27)
-      (set-fontset-font
-       t
-       '(#x1f000 . #x1faff)
-       (font-spec :family "Noto Color Emoji"))))
-(add-hook 'after-init-hook (lambda () (ai:setup-frame nil)) t)
-(add-to-list 'after-make-frame-functions #'ai:setup-frame)
-(use-package
- jc-themes
- ;builtin
- :when (and (file-exists-p "@jc@") (not (eq window-system nil)))
- :after (dired dired-subtree evil)
- :load-path "@jc@"
- :config
- (add-hook
-  'after-init-hook ;;
-  #'(lambda () (load-theme 'jc-themes-random t))))
-(require 'eshell)
-(require 'shell)
-(require 'ansi-color)
-(setq-default eshell-where-to-jump 'begin)
-(setq-default eshell-review-quick-commands nil)
-(setq-default eshell-smart-space-goes-to-end t)
-(setq-default
- comint-input-sender-no-newline t
- comint-prompt-read-only t
- eshell-where-to-jump 'begin
- eshell-review-quick-commands nil)
-(defun eshell-maybe-bol ()
-  "Go to the beginning of current line."
-  (interactive)
-  (let ((p (point)))
-    (eshell-bol)
-    (if (= p (point))
-        (beginning-of-line))))
-(add-hook
- 'eshell-mode-hook
- '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-maybe-bol)))
+
 (require 'em-smart)
+
 (defun eshell-here ()
   "Go to eshell and set current directory to the buffer's directory."
   (interactive)
@@ -461,25 +433,34 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
-(use-package eglot :hook (c-mode . eglot-ensure) (sh-mode . eglot-ensure) (c++-mode . eglot-ensure))
-(use-package dumb-jump)
-(use-package modern-cpp-font-lock
-  :config
-  (modern-c++-font-lock-global-mode))
+(use-package eglot-java :after (eglot))
+(use-package scala-mode :after (eglot))
+(use-package eglot
+  :bind (:map eglot-mode-map
+              ("C-c <tab>" . company-complete)
+              ("C-c e f n" . flymake-goto-next-error)
+              ("C-c e f p" . flymake-goto-prev-error)
+              ("C-c e f r" . eglot-format)
+              ("C-c e f b" . eglot-format-buffer)
+              ("C-c e r" . eglot-rename)
+              ("C-c e a" . eglot-code-actions))
+  :hook
+  (c-mode . eglot-ensure)
+  (sh-mode . eglot-ensure)
+  (c++-mode . eglot-ensure)
+  (scala-mode . eglot-ensure)
+  )
 
+(use-package dumb-jump)
 (use-package cmake-mode)
 (use-package company
   :hook (prog-mode . company-mode))
-(use-package lsp-mode :hook (java-mode . lsp) (scala-mode . lsp))
-(use-package dap-mode :after (lsp))
-(use-package
- lsp-metals
- :after (lsp)
- :custom
- (lsp-metals-server-args
-  '("-J-Dmetals.allow-multiline-string-formatting=off"))
- )
 
+
+(use-package typescript-mode)
+(use-package json-mode)
+(use-package yasnippet
+ :hook (after-init . yas-global-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -493,17 +474,9 @@
   )
 
 (use-package
- lsp-java
- :after (lsp)
- :hook
- (java-mode . lsp)
- (java-mode . lsp-java-lens-mode))
-(use-package
-  lsp-ui
-  :after (lsp))
-(use-package
  ansi-color
  ;builtin
+ :straight (:type built-in)
  :init
  (defun colorize-compilation-buffer ()
    (read-only-mode -1)
@@ -511,7 +484,6 @@
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
 ;;; Haskell
-(use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
  haskell-mode
  :custom (haskell-font-lock-symbols t)
@@ -536,16 +508,19 @@
 (use-package
  font-lock
  ;builtin
+ :straight (:type built-in)
  :config
  (add-hook
   'prog-mode-hook
   (lambda ()
     (if (eq window-system nil)
         (font-lock-mode -1))
+    (toggle-truncate-lines +1)
     (hs-minor-mode +1)
     (hs-hide-initial-comment-block))))
 (use-package
  cperl-mode
+ :straight (:type built-in)
  ;builtin
  :after (evil)
  :mode "\\.pl\\'"
@@ -578,11 +553,15 @@
  (evil-define-key
   'normal perl-mode-map (kbd "g d") 'cperl-perldoc-at-point))
 ;;; Org
-(use-package org :after (evil) :config (setq-default org-log-done t))
+(use-package org :after (evil) :config (setq-default org-log-done t)
+  :bind (:map org-mode-map ("C-i" . org-cycle) ))
 (use-package
  org-bullets
  :after (org)
- :hook (org-mode . org-bullets-mode))
+ :hook (org-mode . org-bullets-mode)
+ :config
+ (setq org-bullets-bullet-list '("×" "×" "×" "×"))
+ )
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
@@ -663,13 +642,13 @@
  :config (add-hook 'before-save-hook 'nix-format-before-save))
 (use-package
  elisp-autofmt ;builtin
+ :straight (:type built-in)
  :when (file-exists-p "@autofmt@")
  :load-path "@autofmt@"
  :commands (elisp-autofmt-mode elisp-autofmt-buffer)
  :hook (emacs-lisp-mode . elisp-autofmt-mode))
 (use-package elisp-lint)
 (use-package elisp-refs)
-(use-package elsa)
 (use-package
  eros
  :hook (lisp-mode . eros-mode) (emacs-lisp-mode . eros-mode))
@@ -691,6 +670,7 @@
 (use-package
  dired
  ;builtin
+ :straight (:type built-in)
  :after (evil)
  :init (require' dired-x)
  :custom (dired-omit-files "^.$\\|^#\\|~$\\|^.#")
@@ -758,6 +738,7 @@
 
 (use-package
  emms
+ :when (eq system-type 'gnu/linux)
  :after (hydra evil dired)
  :init
  (require 'emms-setup)
@@ -782,31 +763,24 @@
 ;;   ("9" emms-volume-lower  "v")
 ;;   ("i" emms-show "v"))
 ;; (lead-def "a" 'emms-control/body)
-;; Text
-(use-package
- prettify-greek
- :config (global-prettify-symbols-mode -1)
- (setq prettify-symbols-alist
-       (append
-        prettify-symbols-alist
-        prettify-greek-lower
-        prettify-greek-upper))
- (global-prettify-symbols-mode +1))
 (use-package rainbow-mode)
 (use-package ack :config (lead-def "ta" 'ack))
 (use-package
  flyspell ;builtin
+ :straight (:type built-in)
  :config
  (require 'ispell)
  (setq ispell-program-name
        (or (executable-find "hunspell") (executable-find "ispell")))
- (ispell-change-dictionary "en_GB")
+
+ ;;(ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
 ;; Org
 (use-package
  calendar ;builtin
+ :straight (:type built-in)
  :config (require 'holidays))
 (use-package vterm
   :config
@@ -817,7 +791,7 @@
 ;; WM
 (use-package
  exwm
- :when (eq window-system 'x)
+ :when (and (eq window-system 'x) (getenv "EXWM"))
  :custom
  (exwm-replace nil)
  (exwm-workspace-number 6)
@@ -882,6 +856,7 @@
 (use-package
  emacs
  ;builtin
+ :straight (:type built-in)
  :init
  (setq completion-cycle-threshold 3)
  (setq read-extended-command-predicate
@@ -897,40 +872,8 @@
 (use-package bufler)
 (use-package perspective-exwm :after (exwm))
 (use-package exwm-mff :after (exwm) :hook (exwm-init . exwm-mff-mode))
-(use-package fringe-current-line
-  :init
- (define-fringe-bitmap 'wave
-    (vector #b00000000
-            #b00000000
-            #b00011000
-            #b00100100
-            #b00100100
-            #b00011000
-            #b00000000
-            #b00000000
-            )
-    nil nil 'center)
- (define-fringe-bitmap 'arrow-indicator
-    (vector #b00111100
-            #b01111110
-            #b11100111
-            #b11000011
-            #b11000011
-            #b11100111
-            #b01111110
-            #b00111100)
-    nil nil 'center)
-  :custom
-  (flycheck-indication-mode 'right-fringe)
-  :config
-  (setq fcl-fringe-bitmap 'arrow-indicator)
-  (setq-default indicate-empty-lines t)
-
-  (setcdr (assq 'empty-line fringe-indicator-alist) 'wave)
-
-  :hook (after-init . global-fringe-current-line-mode)
-  )
 (use-package flycheck
+  :straight (flycheck :type git :host github :repo "flycheck/flycheck")
   :config
   (define-fringe-bitmap 'flycheck-fringe-indicator
     (vector #b0000000000000000
@@ -962,7 +905,37 @@
     :overlay-category 'flycheck-info-overlay
     :fringe-bitmap 'flycheck-fringe-indicator
     :fringe-face 'flycheck-fringe-info))
-(use-package unicode-fonts)
+(use-package fringe-current-line
+  :after (flycheck)
+  :init
+ (define-fringe-bitmap 'wave
+    (vector #b00000000
+            #b00000000
+            #b00011000
+            #b00100100
+            #b00100100
+            #b00011000
+            #b00000000
+            #b00000000
+            )
+    nil nil 'center)
+ (define-fringe-bitmap 'arrow-indicator
+    (vector #b00111100
+            #b01111110
+            #b11100111
+            #b11000011
+            #b11000011
+            #b11100111
+            #b01111110
+            #b00111100)
+    nil nil 'center)
+  :custom
+  (flycheck-indication-mode 'right-fringe)
+  :config
+  (setq fcl-fringe-bitmap 'arrow-indicator)
+  (setq-default indicate-empty-lines t)
+  :hook (after-init . global-fringe-current-line-mode)
+  )
 (use-package dr-racket-like-unicode
   :hook (prog-mode . dr-racket-like-unicode-mode))
 (use-package auto-highlight-symbol
@@ -972,9 +945,7 @@
   (lead-def "t h" 'auto-highlight-symbol-mode))
 
 (use-package yaml-mode)
-(use-package json-mode)
 (use-package protobuf-mode)
-
 (provide 'init.el)
 
 ;;; init.el ends here
