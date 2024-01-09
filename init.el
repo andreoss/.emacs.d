@@ -971,25 +971,6 @@
   :config
   (lead-def "t h" 'auto-highlight-symbol-mode))
 
-(use-package ejc-sql
-  :config
-  (setq ejc-leiningen-home "@lein@")
-  (setq ejc-jdbc-drivers-classpath
-        '(
-          (mysql . "@mysql_jdbc@")
-          (psql . "@psql_jdbc@")
-          (sqlite . "@sqlite_jdbc@")
-          )
-        )
-  (add-hook 'ejc-sql-connected-hook
-            (lambda ()
-              (ejc-set-fetch-size 50)
-              (ejc-set-max-rows 50)
-              (ejc-set-show-too-many-rows-message t)
-              (ejc-set-column-width-limit 25)
-              (ejc-set-use-unicode t)))
-  )
-
 (use-package yaml-mode)
 (use-package json-mode)
 (use-package protobuf-mode)
