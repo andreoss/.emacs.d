@@ -659,12 +659,14 @@
  (cider-repl-use-pretty-printing t)
  (cider-repl-display-help-banner nil))
 ;; Common Lisp
+(use-package slime)
 (use-package sly)
 (use-package sly-asdf)
 (use-package sly-quicklisp)
 (use-package sly-repl-ansi-color)
 (use-package sly-macrostep)
 ;; TeX
+(use-package auctex)
 (use-package xenops :hook (latex-mode . xenops-mode))
 ;;; Dired
 (use-package
