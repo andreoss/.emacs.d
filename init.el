@@ -1,6 +1,10 @@
 ;;; init --- ...
 ;;; Commentary:
 ;;; Code:
+;; (setq inhibit-message t)
+;; (add-hook
+;;  'after-init-hook ;;
+;;  #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
@@ -455,7 +459,17 @@
 (use-package cmake-mode)
 (use-package company
   :hook (prog-mode . company-mode))
-
+(use-package lsp-mode
+  :hook (java-mode . lsp) (scala-mode . lsp)
+  )
+(use-package dap-mode :after (lsp))
+(use-package
+ lsp-metals
+ :after (lsp)
+ :custom
+ (lsp-metals-server-args
+  '("-J-Dmetals.allow-multiline-string-formatting=off"))
+ )
 
 (use-package typescript-mode)
 (use-package json-mode)
@@ -474,6 +488,15 @@
   )
 
 (use-package
+ lsp-java
+ :after (lsp)
+ :hook
+ (java-mode . lsp)
+ (java-mode . lsp-java-lens-mode))
+(use-package
+  lsp-ui
+  :after (lsp))
+(use-package
  ansi-color
  ;builtin
  :straight (:type built-in)
@@ -484,6 +507,7 @@
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
 ;;; Haskell
+(use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
  haskell-mode
  :custom (haskell-font-lock-symbols t)
@@ -945,6 +969,25 @@
   (ahs-idle-interval 0.1)
   :config
   (lead-def "t h" 'auto-highlight-symbol-mode))
+
+(use-package ejc-sql
+  :config
+  (setq ejc-leiningen-home "@lein@")
+  (setq ejc-jdbc-drivers-classpath
+        '(
+          (mysql . "@mysql_jdbc@")
+          (psql . "@psql_jdbc@")
+          (sqlite . "@sqlite_jdbc@")
+          )
+        )
+  (add-hook 'ejc-sql-connected-hook
+            (lambda ()
+              (ejc-set-fetch-size 50)
+              (ejc-set-max-rows 50)
+              (ejc-set-show-too-many-rows-message t)
+              (ejc-set-column-width-limit 25)
+              (ejc-set-use-unicode t)))
+  )
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
