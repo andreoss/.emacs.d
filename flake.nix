@@ -20,6 +20,65 @@
         emacs = self.outputs.packages.${prev.system}.emacs;
         notmuch = self.outputs.packages.${prev.system}.notmuch;
       };
+      nixosModules.home-manager = { config, pkgs, ... }: {
+        options = { };
+        config = {
+          programs.emacs = { enable = true; };
+          editorconfig = {
+            enable = true;
+            settings = {
+              "*" = {
+                end_of_line = "lf";
+                trim_trailing_whitespace = true;
+                insert_final_newline = true;
+              };
+            };
+          };
+          xresources.properties = {
+            "Emacs*toolBar" = 0;
+            "Emacs*menuBar" = 0;
+            "Emacs*font" = "Spleen";
+            "Emacs*geometry" = "80x38";
+            "Emacs*scrollBar" = "on";
+            "Emacs*scrollBarWidth" = 6;
+          };
+          home = {
+            file.".local/bin/et" = {
+              executable = true;
+              text = ''
+                #!/bin/sh
+                exec emacsclient -t "$@"
+              '';
+            };
+            file.".local/bin/ec" = {
+              executable = true;
+              text = ''
+                #!/bin/sh
+                exec emacsclient -c "$@"
+              '';
+            };
+            packages = with pkgs; [
+              spleen
+              zile
+              coreutils-full
+              (hunspellWithDicts [
+                hunspellDicts.ru_RU
+                hunspellDicts.es_ES
+                hunspellDicts.en_GB-large
+              ])
+            ];
+            sessionVariables = { EDITOR = "vi"; };
+          };
+          services.emacs = {
+            enable = true;
+            startWithUserSession = "graphical";
+            client = {
+              enable = true;
+              arguments = [ "-c" ];
+            };
+          };
+        };
+      };
     } // flake-utils.lib.eachDefaultSystem (system:
       let
         systems = lib.systems.flakeExposed;
