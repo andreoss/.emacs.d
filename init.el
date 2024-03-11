@@ -317,6 +317,7 @@
      ensime-inf
      completion-list
      pdf-outline-buffer
+     treemacs-mode
      sbt)
    do (add-hook (symbol-concat mode '-mode-hook) text-dec)))
 (use-package
