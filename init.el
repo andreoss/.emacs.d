@@ -525,7 +525,8 @@
   :hook (prog-mode . company-mode))
 (use-package lsp-mode
   :hook (java-mode . lsp) (scala-mode . lsp)
-  )
+  :custom
+  (lsp-headerline-breadcrumb-segments '(symbols)))
 (use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
