@@ -1034,6 +1034,12 @@
   :config
   (lead-def "t h" 'auto-highlight-symbol-mode))
 
+(use-package envrc
+  :config
+  (envrc-global-mode)
+  (with-eval-afte-load 'envrc
+                       (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map)))
+
 (use-package yaml-mode)
 (use-package protobuf-mode)
 (provide 'init.el)
