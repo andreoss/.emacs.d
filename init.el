@@ -526,7 +526,13 @@
 (use-package lsp-mode
   :hook (java-mode . lsp) (scala-mode . lsp)
   :custom
-  (lsp-headerline-breadcrumb-segments '(symbols)))
+  (lsp-headerline-breadcrumb-segments '(symbols))
+  :bind-keymap
+  ("C-l" . lsp-command-map)
+  :init
+  (define-key lsp-command-map (kbd "t") #'lsp-avy-lens)
+  )
+
 (use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
@@ -544,6 +550,9 @@
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :config
+  (evil-define-key
+  'normal scala-mode-map (kbd "! !") 'sbt-start)
+
   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
   ;; allows using SPACE when in the minibuffer
   (substitute-key-definition
