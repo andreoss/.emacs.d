@@ -247,7 +247,8 @@
  :bind ("C-x u" . vundo))
 (use-package centered-cursor-mode
   :when (not (eq window-system nil))
-  :config (centered-cursor-mode +1))
+  :config (global-centered-cursor-mode +1))
+
 (use-package magit :bind ("C-x g" . magit-status))
 (use-package
  git-commit
@@ -1054,7 +1055,7 @@
 (use-package envrc
   :config
   (envrc-global-mode)
-  (with-eval-afte-load 'envrc
+  (with-eval-after-load 'envrc
                        (define-key envrc-mode-map (kbd "C-c e") 'envrc-command-map)))
 
 (use-package yaml-mode)
