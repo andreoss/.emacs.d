@@ -667,6 +667,7 @@
  :prefix-map 'lead-map
  :prefix "SPC"
  :non-normal-prefix "M-q")
+
 (general-create-definer lead-def :keymaps 'lead-map)
 (general-def universal-argument-map "SPC u" 'universal-argument-more)
 (lead-def ;;
@@ -721,15 +722,19 @@
   "m m i"
   '(lambda ()
      (interactive)
-     (notmuch-tree "is:inbox"))
+     (notmuch-tree "tag:inbox"))
+  "m m w"
+  '(lambda ()
+     (interactive)
+     (notmuch-tree "tag:inbox and tag:work"))
   "m m p"
   '(lambda ()
      (interactive)
-     (notmuch-tree "is:inbox and is:private"))
+     (notmuch-tree "tag:inbox and tag:private"))
   "m m g"
   '(lambda ()
      (interactive)
-     (notmuch-tree "is:inbox and is:github"))
+     (notmuch-tree "tag:inbox and tag:github"))
   "m m s"
   '(lambda ()
      (interactive)
@@ -872,7 +877,7 @@
  (setq ispell-program-name
        (or (executable-find "hunspell") (executable-find "ispell")))
 
- ;;(ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
+;; (ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
@@ -882,9 +887,12 @@
  :straight (:type built-in)
  :config (require 'holidays))
 (use-package vterm
+  :after (projectile)
   :config
+  (lead-def "vv" 'projectile-run-vterm-other-window)
   (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state))))
-(use-package ag :config (lead-def "tg" 'ag))
+(use-package ag :config (lead-def "tg" 'ag)
+  )
 (use-package wgrep :after ag)
 (use-package wgrep-ag :after wgrep)
 ;; WM
@@ -1051,6 +1059,7 @@
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
+(use-package telega)
 (provide 'init.el)
 
 ;;; init.el ends here
