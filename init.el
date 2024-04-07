@@ -502,7 +502,8 @@
 (require 'elide-head)
 (use-package c-eldoc)
 (use-package eglot-java :after (eglot))
-(use-package scala-mode :after (eglot))
+(use-package scala-mode
+  :after (lsp))
 (use-package eglot
   :bind (:map eglot-mode-map
               ("C-c <tab>" . company-complete)
@@ -516,7 +517,6 @@
   (c-mode . eglot-ensure)
   (sh-mode . eglot-ensure)
   (c++-mode . eglot-ensure)
-  (scala-mode . eglot-ensure)
   )
 
 (use-package dumb-jump)
