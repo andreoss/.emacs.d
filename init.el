@@ -85,6 +85,10 @@
   :after (treemacs evil)
   :ensure t)
 
+(use-package projectile
+  :bind
+  (:map global-map
+        ("C-x b"   . projectile-switch-to-buffer)))
 (use-package treemacs-projectile
   :after (treemacs projectile)
   :ensure t)
