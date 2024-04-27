@@ -22,3 +22,8 @@
 (setq use-package-always-ensure t)
 (setq use-package-always-demand nil)
 (setq straight-vc-git-default-clone-depth 1)
+
+
+;;; LSP Performance
+(setq read-process-output-max (expt 2 20))
+(setenv "LSP_USE_PLISTS" "true")
