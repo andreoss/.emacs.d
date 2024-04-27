@@ -88,7 +88,9 @@
 (use-package projectile
   :bind
   (:map global-map
-        ("C-x b"   . projectile-switch-to-buffer)))
+        ("C-x b"   . projectile-switch-to-buffer))
+  )
+
 (use-package treemacs-projectile
   :after (treemacs projectile)
   :ensure t)
@@ -249,8 +251,8 @@
  vundo
  :after (evil)
  :bind ("C-x u" . vundo))
+
 (use-package centered-cursor-mode
-  :when (not (eq window-system nil))
   :config (global-centered-cursor-mode +1))
 
 (use-package magit :bind ("C-x g" . magit-status))
@@ -534,7 +536,7 @@
   (lsp-headerline-breadcrumb-segments '(symbols))
   :bind-keymap
   ("C-l" . lsp-command-map)
-  :init
+  :conf
   (define-key lsp-command-map (kbd "t") #'lsp-avy-lens)
   )
 
@@ -974,14 +976,12 @@
  (setq read-extended-command-predicate
        #'command-completion-default-include-p)
  (setq tab-always-indent 'complete))
-(use-package
- perspective
- :bind
- (("C-x b" . persp-switch-to-buffer*) ("C-x k" . persp-kill-buffer*))
- :hook (kill-emacs . persp-state-save)
- :custom (persp-suppress-no-prefix-key-warning t)
- :config (persp-mode))
-(use-package bufler)
+
+(use-package bufler
+  :bind
+  (:map global-map
+        ("C-x C-b"   . bufler))
+  )
 (use-package perspective-exwm :after (exwm))
 (use-package exwm-mff :after (exwm) :hook (exwm-init . exwm-mff-mode))
 (use-package flycheck
