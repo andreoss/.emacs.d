@@ -662,13 +662,6 @@
 ;;; Org
 (use-package org :after (evil) :config (setq-default org-log-done t)
   :bind (:map org-mode-map ("C-i" . org-cycle) ))
-(use-package
- org-bullets
- :after (org)
- :hook (org-mode . org-bullets-mode)
- :config
- (setq org-bullets-bullet-list '("×" "×" "×" "×"))
- )
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
