@@ -1059,7 +1059,6 @@
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
-(use-package telega)
 (provide 'init.el)
 
 ;;; init.el ends here
