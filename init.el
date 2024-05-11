@@ -511,7 +511,9 @@
 (use-package eglot-java :after (eglot))
 (use-package scala-mode
   :after (lsp))
+(use-package project)
 (use-package eglot
+  :after (project)
   :bind (:map eglot-mode-map
               ("C-c <tab>" . company-complete)
               ("C-c e f n" . flymake-goto-next-error)
@@ -521,7 +523,7 @@
               ("C-c e r" . eglot-rename)
               ("C-c e a" . eglot-code-actions))
   :hook
-  (c-mode . eglot-ensure)
+    (c-mode . eglot-ensure)
   (sh-mode . eglot-ensure)
   (c++-mode . eglot-ensure)
   )
@@ -536,7 +538,7 @@
   (lsp-headerline-breadcrumb-segments '(symbols))
   :bind-keymap
   ("C-l" . lsp-command-map)
-  :conf
+  :config
   (define-key lsp-command-map (kbd "t") #'lsp-avy-lens)
   )
 
@@ -660,13 +662,6 @@
 ;;; Org
 (use-package org :after (evil) :config (setq-default org-log-done t)
   :bind (:map org-mode-map ("C-i" . org-cycle) ))
-(use-package
- org-bullets
- :after (org)
- :hook (org-mode . org-bullets-mode)
- :config
- (setq org-bullets-bullet-list '("×" "×" "×" "×"))
- )
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
@@ -1082,7 +1077,6 @@
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
-(use-package telega)
 (provide 'init.el)
 
 ;;; init.el ends here
