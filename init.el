@@ -763,11 +763,7 @@
  (cider-repl-use-pretty-printing t)
  (cider-repl-display-help-banner nil))
 ;; Common Lisp
-(use-package sly)
-(use-package sly-asdf)
-(use-package sly-quicklisp)
-(use-package sly-repl-ansi-color)
-(use-package sly-macrostep)
+(use-package slime)
 ;; TeX
 (use-package auctex)
 (use-package xenops :hook (latex-mode . xenops-mode))
