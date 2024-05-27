@@ -280,6 +280,12 @@
  [(control mouse-5)]
  (function default-text-scale-decrease))
 (require 'uniquify)
+
+(defun halve-other-window-height ()
+  "Expand current window to use half of the other window's lines."
+  (interactive)
+  (enlarge-window (/ (window-height (next-window)) 2)))
+
 (use-package
  winum
  :after (evil)
@@ -296,7 +302,6 @@
  (define-key
   'evil-window-map (kbd "C-/") 'switch-to-buffer-other-window)
  (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
- (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
  (define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
  (define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
  (define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
@@ -309,6 +314,7 @@
  (winner-mode +1)
  (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
  (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
+ (define-key 'evil-window-map (kbd "e") 'halve-other-window-height)
  (define-key 'evil-window-map (kbd "u") 'winner-undo)
  (define-key 'evil-window-map (kbd "l") 'winner-undo)
  (define-key
