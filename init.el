@@ -131,14 +131,14 @@
       :when (file-exists-p "@jc@")
       :load-path "@jc@"
       :config
-      (load-theme 'jc-themes-random t))
+      (load-theme 'jc-themes-plain t))
   (use-package jc-themes
     :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
     :after (dired dired-subtree evil)
     :config
     (if (eq window-system 'nil)
         (load-theme 'jc-themes-obscure t)
-        (load-theme 'jc-themes-random t))))
+        (load-theme 'jc-themes-plain t))))
 (use-package quelpa)
 (use-package el-patch)
 (use-package
@@ -1077,6 +1077,13 @@
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
+(use-package pulsar)
+(use-package dimmer
+             :config
+ (dimmer-configure-which-key)
+ (dimmer-configure-helm)
+ (dimmer-mode t)
+ )
 (provide 'init.el)
 
 ;;; init.el ends here
