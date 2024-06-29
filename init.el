@@ -666,7 +666,8 @@
  (evil-define-key
   'normal perl-mode-map (kbd "g d") 'cperl-perldoc-at-point))
 ;;; Org
-;;(use-package org :after (evil) :config (setq-default org-log-done t) :bind (:map org-mode-map ("C-i" . org-cycle) ))
+(use-package org :after (evil) :config (setq-default org-log-done t)
+  :bind (:map org-mode-map ("C-i" . org-cycle) ))
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
