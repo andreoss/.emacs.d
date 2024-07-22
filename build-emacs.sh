@@ -9,7 +9,7 @@ PREFIX="$HOME/.local"
 __git() {
     __cmd="$1"
     shift
-    git "$__cmd" --quiet --jobs=5 --depth=1 $*
+    git "$__cmd" $*
 }
 
 
@@ -43,7 +43,8 @@ fi
 
 cd emacs
 
-__git pull
+__git fetch
+__git reset --hard origin/master
 
 ./autogen.sh
 
