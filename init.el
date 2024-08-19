@@ -229,11 +229,6 @@
  (define-key evil-visual-state-map "gX" #'evil-exchange-cancel))
 (use-package editorconfig :config (editorconfig-mode +1))
 (use-package
- pdf-tools
- :config
- (pdf-tools-install-noverify)
- (add-hook 'pdf-view-mode-hook (lambda () (blink-cursor-mode -1))))
-(use-package
  feebleline
  :custom
  (feebleline-show-git-branch t)
