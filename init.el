@@ -275,6 +275,12 @@
  [(control mouse-5)]
  (function default-text-scale-decrease))
 (require 'uniquify)
+
+(defun halve-other-window-height ()
+  "Expand current window to use half of the other window's lines."
+  (interactive)
+  (enlarge-window (/ (window-height (next-window)) 2)))
+
 (use-package
  winum
  :after (evil)
@@ -291,7 +297,6 @@
  (define-key
   'evil-window-map (kbd "C-/") 'switch-to-buffer-other-window)
  (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
- (define-key 'evil-window-map (kbd "1") 'winum-select-window-1)
  (define-key 'evil-window-map (kbd "2") 'winum-select-window-2)
  (define-key 'evil-window-map (kbd "3") 'winum-select-window-3)
  (define-key 'evil-window-map (kbd "4") 'winum-select-window-4)
@@ -304,6 +309,7 @@
  (winner-mode +1)
  (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
  (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
+ (define-key 'evil-window-map (kbd "e") 'halve-other-window-height)
  (define-key 'evil-window-map (kbd "u") 'winner-undo)
  (define-key 'evil-window-map (kbd "l") 'winner-undo)
  (define-key
@@ -655,7 +661,8 @@
  (evil-define-key
   'normal perl-mode-map (kbd "g d") 'cperl-perldoc-at-point))
 ;;; Org
-;;(use-package org :after (evil) :config (setq-default org-log-done t) :bind (:map org-mode-map ("C-i" . org-cycle) ))
+(use-package org :after (evil) :config (setq-default org-log-done t)
+  :bind (:map org-mode-map ("C-i" . org-cycle) ))
 (use-package general :after evil :custom (general-emit-autoloads nil))
 (general-define-key
  :states '(normal insert motion emacs)
@@ -758,11 +765,7 @@
  (cider-repl-use-pretty-printing t)
  (cider-repl-display-help-banner nil))
 ;; Common Lisp
-(use-package sly)
-(use-package sly-asdf)
-(use-package sly-quicklisp)
-(use-package sly-repl-ansi-color)
-(use-package sly-macrostep)
+(use-package slime)
 ;; TeX
 (use-package auctex)
 (use-package xenops :hook (latex-mode . xenops-mode))
@@ -1077,6 +1080,7 @@
  (dimmer-configure-which-key)
  (dimmer-configure-helm)
  (dimmer-mode t)
+ (setq dimmer-fraction 0.5)
  )
 (provide 'init.el)
 
