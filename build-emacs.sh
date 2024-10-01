@@ -43,14 +43,14 @@ fi
 
 cd emacs
 
-__git fetch
+__git fetch --depth=1 origin master
 __git reset --hard origin/master
 
 ./autogen.sh
 
 ./configure \
 	--prefix="${PREFIX:?no prefix}" \
-	--with-x-toolkit=lucid \
+	--with-x-toolkit=gtk3 \
 	--with-sqlite3 \
 	--with-imagemagick \
 	--without-harfbuzz \
