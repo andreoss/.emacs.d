@@ -1082,6 +1082,7 @@
  (dimmer-mode t)
  (setq dimmer-fraction 0.5)
  )
+(use-package writeroom-mode)
 (provide 'init.el)
 
 ;;; init.el ends here
