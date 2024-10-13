@@ -251,12 +251,6 @@
   :config (global-centered-cursor-mode +1))
 
 (use-package magit :bind ("C-x g" . magit-status))
-(use-package
- git-commit
- :hook
- ((git-commit-mode . flyspell-mode)
-  (git-commit-mode . git-commit-save-message)
-  (git-commit-mode . turn-on-auto-fill)))
 (use-package git-gutter :config (global-git-gutter-mode +1))
 (use-package default-text-scale)
 
