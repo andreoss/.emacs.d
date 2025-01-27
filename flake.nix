@@ -49,7 +49,7 @@
             xresources.properties = {
               "Emacs*toolBar" = 0;
               "Emacs*menuBar" = 0;
-              "Emacs*font" = "Spleen";
+              "Emacs*font" = "-misc-Spleen-regular-normal-normal-*-24-*-*-*-c-120-iso10646-1";
               "Emacs*geometry" = "80x38";
               "Emacs*scrollBar" = "on";
               "Emacs*scrollBarWidth" = 6;
