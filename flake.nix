@@ -79,7 +79,7 @@
                 ])
               ];
               sessionVariables = {
-                EDITOR = "vi";
+                EDITOR = "ec";
               };
             };
             services.emacs = {

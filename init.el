@@ -537,7 +537,6 @@
   (define-key lsp-command-map (kbd "t") #'lsp-avy-lens)
   )
 
-(use-package dap-mode :after (lsp))
 (use-package
  lsp-metals
  :after (lsp)
