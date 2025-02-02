@@ -571,9 +571,6 @@
  (java-mode . lsp)
  (java-mode . lsp-java-lens-mode))
 (use-package
-  lsp-ui
-  :after (lsp))
-(use-package
  ansi-color
  ;builtin
  :straight (:type built-in)
