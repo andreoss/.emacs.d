@@ -505,7 +505,7 @@
 (use-package c-eldoc)
 (use-package eglot-java :after (eglot))
 (use-package scala-mode
-  :after (lsp))
+  :after (eglot))
 (use-package project)
 (use-package eglot
   :after (project)
@@ -527,23 +527,7 @@
 (use-package cmake-mode)
 (use-package company
   :hook (prog-mode . company-mode))
-(use-package lsp-mode
-  :hook (java-mode . lsp) (scala-mode . lsp)
-  :custom
-  (lsp-headerline-breadcrumb-segments '(symbols))
-  :bind-keymap
-  ("C-l" . lsp-command-map)
-  :config
-  (define-key lsp-command-map (kbd "t") #'lsp-avy-lens)
-  )
 
-(use-package
- lsp-metals
- :after (lsp)
- :custom
- (lsp-metals-server-args
-  '("-J-Dmetals.allow-multiline-string-formatting=off"))
- )
 
 (use-package typescript-mode)
 (use-package json-mode)
@@ -565,12 +549,6 @@
   )
 
 (use-package
- lsp-java
- :after (lsp)
- :hook
- (java-mode . lsp)
- (java-mode . lsp-java-lens-mode))
-(use-package
  ansi-color
  ;builtin
  :straight (:type built-in)
@@ -581,7 +559,6 @@
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
 ;;; Haskell
-(use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
  haskell-mode
  :custom (haskell-font-lock-symbols t)
