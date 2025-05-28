@@ -112,8 +112,7 @@
                 alwaysEnsure = true;
                 defaultInitFile = true;
                 config = builtins.readFile (
-                  pkgs.substituteAll {
-                    src = ./init.el;
+                  pkgs.replaceVars ./init.el {
                     jc = jc-themes;
                     autofmt = elisp-autofmt;
                     lein = pkgs.leiningen.out;
