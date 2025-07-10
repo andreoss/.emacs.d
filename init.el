@@ -1066,15 +1066,14 @@
 
 (use-package yaml-mode)
 (use-package protobuf-mode)
-(use-package pulsar)
-(use-package dimmer
-             :config
- (dimmer-configure-which-key)
- (dimmer-configure-helm)
- (dimmer-mode t)
- (setq dimmer-fraction 0.5)
- )
-(use-package writeroom-mode)
+
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame)
+                (select-frame frame)
+                (set-frame-font "Terminus"))))
+
 (provide 'init.el)
 
 ;;; init.el ends here
