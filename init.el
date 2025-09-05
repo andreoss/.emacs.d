@@ -523,6 +523,8 @@
   (c++-mode . eglot-ensure)
   )
 
+(use-package lsp :after (eglot))
+
 (use-package dumb-jump)
 (use-package cmake-mode)
 (use-package company
@@ -566,6 +568,8 @@
  ((haskell-mode . turn-on-haskell-doc-mode)
   (haskell-mode . turn-on-haskell-indent)
   (haskell-mode . interactive-haskell-mode)))
+;;; Dart
+(use-package dart-mode)
 ;;; Perl
 (use-package raku-mode)
 ;; https://raw.github.com/illusori/emacs-flymake-perlcritic/master/flymake-perlcritic.el
