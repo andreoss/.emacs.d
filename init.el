@@ -822,33 +822,6 @@
   "Sort Dired listings with directories first before adding marks."
   (dired-sort*))
 
-(use-package
- emms
- :when (eq system-type 'gnu/linux)
- :after (hydra evil dired)
- :init
- (require 'emms-setup)
- (require 'emms-cue)
- (require 'emms-player-mpv)
- (add-to-list 'emms-player-list 'emms-player-mpv)
- (evil-define-key 'normal dired-mode-map (kbd "g p") 'emms-play-dired)
- :config (emms-player-mpd-connect))
-;; (defhydra emms-control () ;;
-;;   "
-;; %s(let ((inhibit-message t)) (emms-show))
-
-;; " ;;
-;;   ("p" emms-pause "pause")
-;;   ("." emms-seek-forward    ">>>")
-;;   ("," emms-seek-backard   "<<<")
-;;   ("J" emms-cue-next        ">")
-;;   ("K" emms-cue-previous    "<")
-;;   ("j" emms-player-mpd-next ">>")
-;;   ("k" emms-player-mpd-previous ">>")
-;;   ("0" emms-volume-raise  "^")
-;;   ("9" emms-volume-lower  "v")
-;;   ("i" emms-show "v"))
-;; (lead-def "a" 'emms-control/body)
 (use-package rainbow-mode)
 (use-package ack :config (lead-def "ta" 'ack))
 (use-package
