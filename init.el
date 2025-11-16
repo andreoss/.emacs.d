@@ -123,7 +123,7 @@
         prettify-greek-upper))
  (global-prettify-symbols-mode +1)
  )
-(if (eq system-type 'gnu/linux)
+(if (and (eq system-type 'linux) (file-exists-p "/nix"))
     ;; nix
     (use-package
       jc-themes
@@ -503,27 +503,17 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
-(use-package eglot-java :after (eglot))
 (use-package scala-mode
   :after (lsp))
 (use-package project)
-(use-package eglot
-  :after (project)
-  :bind (:map eglot-mode-map
-              ("C-c <tab>" . company-complete)
-              ("C-c e f n" . flymake-goto-next-error)
-              ("C-c e f p" . flymake-goto-prev-error)
-              ("C-c e f r" . eglot-format)
-              ("C-c e f b" . eglot-format-buffer)
-              ("C-c e r" . eglot-rename)
-              ("C-c e a" . eglot-code-actions))
-  :hook
-    (c-mode . eglot-ensure)
-  (sh-mode . eglot-ensure)
-  (c++-mode . eglot-ensure)
-  )
 
-(use-package lsp :after (eglot))
+(use-package lsp-mode :after (eglot)
+  :hook (scala-mode . lsp-mode)
+  )
+(use-package lsp-metals :after (lsp-mode))
+
+(use-package scala-mode
+  :after (lsp-metals))
 
 (use-package dumb-jump)
 (use-package cmake-mode)
@@ -563,8 +553,7 @@
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
-   minibuffer-local-completion-map)
-  )
+   minibuffer-local-completion-map))
 
 (use-package
  lsp-java
@@ -582,6 +571,7 @@
    (ansi-color-apply-on-region compilation-filter-start (point))
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
+
 ;;; Haskell
 (use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
