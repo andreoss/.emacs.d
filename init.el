@@ -672,7 +672,6 @@
  "s" (cons "shell" (make-sparse-keymap))
  ;;
  "ss" 'project-shell ;;
- "st" 'vterm ;;
  "sv" 'project-vc-dir ;;
  "sc" 'project-shell-command ;;
  "sg" 'project-search ;;
@@ -869,11 +868,6 @@
  calendar ;builtin
  :straight (:type built-in)
  :config (require 'holidays))
-(use-package vterm
-  :after (projectile)
-  :config
-  (lead-def "vv" 'projectile-run-vterm-other-window)
-  (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state))))
 (use-package ag :config (lead-def "tg" 'ag)
   )
 (use-package wgrep :after ag)
