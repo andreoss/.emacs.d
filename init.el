@@ -8,7 +8,6 @@
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
-
 (if (not (fboundp 'seq-keep))
     (defun seq-keep (function sequence)
       "Apply FUNCTION to SEQUENCE and return the list of all the non-nil results."
@@ -43,86 +42,51 @@
 (global-hl-line-mode +1)
 (visual-line-mode -1)
 
-(use-package unicode-fonts)
-
-(use-package treemacs
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
+(let ((emacs-runtime-dir (concat (getenv "HOME") "/" ".cache" "/" "emacs-runtime")))
   (progn
+    (make-directory emacs-runtime-dir t)
+    (setq
+     backup-by-copying t
+     delete-old-versions nil
+     backup-directory-alist `(("." . ,(concat emacs-runtime-dir "/" "backup")))
+     kept-new-versions 10
+     kept-old-versions 10
+     version-control t)
+    (setf kill-buffer-delete-auto-save-files nil)
 
+    (setq auto-save-timeout   5
+          auto-save-interval 10
+          auto-save-file-name-transforms
+          `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+             ,(concat emacs-runtime-dir "/auto-save/"  "\\2") t)))
 
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
-
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
-
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
-
-    (treemacs-hide-gitignored-files-mode nil))
-  :bind
-  (:map global-map
-        ("M-1"       . treemacs)
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
-
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
+    (setq lock-file-name-transforms
+          `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+             ,(concat emacs-runtime-dir "/lock/"  "\\2") t)))
+    )
+  )
 
 (use-package projectile
   :bind
   (:map global-map
-        ("C-x b"   . projectile-switch-to-buffer))
-  )
+        ("C-x b"   . projectile-switch-to-buffer)))
 
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
+(global-prettify-symbols-mode +1)
 
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
-
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :ensure t
-  :config (treemacs-set-scope-type 'Perspectives))
-
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
-  :ensure t
-  :config (treemacs-set-scope-type 'Tabs))
 
 (use-package
- prettify-greek
- :config
- (setq prettify-symbols-alist
-       (append
-        prettify-symbols-alist
-        prettify-greek-lower
-        prettify-greek-upper))
- (global-prettify-symbols-mode +1)
- )
+  prettify-greek
+  :after evil
+  :config
+  (add-hook 'prog-mode-hook
+            (lambda () 
+              (setq-local prettify-symbols-alist
+                          (append
+                           prettify-symbols-alist
+                           prettify-greek-lower
+                           prettify-greek-upper)))))
+
+
 (if (and (eq system-type 'linux) (file-exists-p "/nix"))
     ;; nix
     (use-package
@@ -139,6 +103,7 @@
     (if (eq window-system 'nil)
         (load-theme 'jc-themes-obscure t)
         (load-theme 'jc-themes-plain t))))
+
 (use-package quelpa)
 (use-package el-patch)
 (use-package
@@ -374,7 +339,6 @@
      Info
      help
      shell
-     eshell
      xref--xref-buffer
      magit-status
      ielm
@@ -382,7 +346,6 @@
      ensime-inf
      completion-list
      pdf-outline-buffer
-     treemacs-mode
      sbt)
    do (add-hook (symbol-concat mode '-mode-hook) text-dec)))
 (use-package
@@ -394,53 +357,7 @@
 
 (require 'em-smart)
 
-(defun eshell-here ()
-  "Go to eshell and set current directory to the buffer's directory."
-  (interactive)
-  (let ((dir
-         (file-name-directory
-          (or (buffer-file-name) default-directory))))
-    (eshell)
-    (eshell/pushd ".")
-    (cd dir)
-    (goto-char (point-max))
-    (eshell-kill-input)
-    (eshell-send-input)))
 (setq-default eshell-banner-message "")
-(eval-after-load 'em-ls
-  '(progn
-     (defun ted-eshell-ls-find-file-at-point (point)
-       "RET on Eshell's `ls' output to open files."
-       (interactive "d")
-       (find-file
-        (buffer-substring-no-properties
-         (previous-single-property-change point 'help-echo)
-         (next-single-property-change point 'help-echo))))
-     (defun pat-eshell-ls-find-file-at-mouse-click (event)
-       "Middle click on Eshell's `ls' output to open files.
-       From Patrick Anderson via the wiki."
-       (interactive "e")
-       (ted-eshell-ls-find-file-at-point
-        (posn-point (event-end event))))
-     (let ((map (make-sparse-keymap)))
-       (define-key
-        map (kbd "<return>") 'ted-eshell-ls-find-file-at-point)
-       (define-key
-        map (kbd "<mouse-1>") 'pat-eshell-ls-find-file-at-mouse-click)
-       (defvar ted-eshell-ls-keymap map))
-     (defadvice eshell-ls-decorated-name
-         (after ted-electrify-ls activate)
-       "Eshell's `ls' now lets you click or RET on file names to open them."
-       (add-text-properties 0 (length ad-return-value)
-                            (list
-                             'help-echo
-                             "RET, mouse-1: visit this file"
-                             'mouse-face
-                             'highlight
-                             'keymap
-                             ted-eshell-ls-keymap)
-                            ad-return-value)
-       ad-return-value)))
 (setq-default shell-font-lock-keywords
               '(("[ \t]\\([+-][^ \t\n]+\\)" . font-lock-comment-face)
                 ("^[a-zA-Z]+:" . font-lock-doc-face)
@@ -468,33 +385,7 @@
 (add-to-list 'eshell-modules-list 'eshell-tramp)
 (setq password-cache t)
 (setq password-cache-expiry 3600)
-(defun ai/iimage-mode-refresh--eshell/cat (orig-fun &rest args)
-  "Display image when using cat on it."
-  (let ((image-path
-         (cons default-directory iimage-mode-image-search-path)))
-    (dolist (arg args)
-      (let ((imagep nil)
-            file)
-        (with-silent-modifications
-          (save-excursion
-            (dolist (pair iimage-mode-image-regex-alist)
-              (when (and (not imagep)
-                         (string-match (car pair) arg)
-                         (setq file (match-string (cdr pair) arg))
-                         (setq file (locate-file file image-path)))
-                (setq imagep t)
-                (add-text-properties 0 (length arg)
-                                     `(display
-                                       ,(create-image file)
-                                       modification-hooks
-                                       (iimage-modification-hook))
-                                     arg)
-                (eshell-buffered-print arg)
-                (eshell-flush)))))
-        (when (not imagep)
-          (apply orig-fun (list arg)))))
-    (eshell-flush)))
-(advice-add 'eshell/cat :around #'ai/iimage-mode-refresh--eshell/cat)
+
 (defun eshell/clear ()
   "Clear the eshell buffer."
   (let ((inhibit-read-only t))
@@ -503,6 +394,9 @@
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
+
+(use-package python-mode
+  :after (lsp))
 (use-package scala-mode
   :after (lsp))
 (use-package project)
@@ -847,70 +741,6 @@
 (use-package wgrep-ag :after wgrep)
 ;; WM
 (use-package
- exwm
- :when (and (eq window-system 'x) (getenv "EXWM"))
- :custom
- (exwm-replace nil)
- (exwm-workspace-number 6)
- (exwm-workspace-show-all-buffers t)
- :config
- (require 'exwm-systemtray)
- (exwm-systemtray-enable)
- (require 'exwm-config)
- (exwm-config-ido)
- (add-hook
-  'exwm-mode-hook
-  #'(lambda () (local-set-key (kbd "C-w") 'evil-window-map)))
- (define-key 'evil-window-map (kbd "C-q") 'exwm-input-send-next-key)
- (defun exwm-rename-buffer ()
-   (interactive)
-   (exwm-workspace-rename-buffer
-    (concat
-     exwm-class-name ":"
-     (if (<= (length exwm-title) 50)
-         exwm-title
-       (concat (substring exwm-title 0 49) "...")))))
- ;; Add these hooks in a suitable place (e.g., as done in exwm-config-default)
- (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
- (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
- (add-hook
-  'exwm-update-title-hook
-  (lambda ()
-    (when (or (not exwm-instance-name)
-              (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-              (string= "gimp" exwm-instance-name))
-      (exwm-workspace-rename-buffer exwm-title))))
- (exwm-input-set-key (kbd "s-r") #'exwm-reset)
- (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
- (exwm-input-set-key (kbd "s-m") #'exwm-workspace-move-window)
- (setq-default exwm-input-prefix-keys
-               '(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-: ?\C-w))
- (cl-loop
-  for i from 1 to exwm-workspace-number do
-  (exwm-input-set-key
-   (kbd (format "s-%d" (% i 10)))
-   `(lambda ()
-      (interactive)
-      (exwm-workspace-switch-create (- ,i 1)))))
- (cl-loop
-  for i from 1 to exwm-workspace-number do
-  (exwm-input-set-key
-   (kbd (format "s-s %d" (% i 10)))
-   `(lambda ()
-      (interactive)
-      (exwm-workspace-move-window (- ,i 1)))))
- (exwm-input-set-key
-  (kbd "s-&")
-  (lambda (command)
-    (interactive (list (read-shell-command "$ ")))
-    (start-process-shell-command command nil command)))
- (exwm-enable)
- (exwm-init))
-(use-package
- olivetti
- :after (evil)
- :config (define-key 'evil-window-map (kbd "z") 'olivetti-mode))
-(use-package
  emacs
  ;builtin
  :straight (:type built-in)
@@ -925,8 +755,8 @@
   (:map global-map
         ("C-x C-b"   . bufler))
   )
-(use-package perspective-exwm :after (exwm))
-(use-package exwm-mff :after (exwm) :hook (exwm-init . exwm-mff-mode))
+
+
 (use-package flycheck
   :straight (flycheck :type git :host github :repo "flycheck/flycheck")
   :config
@@ -1034,3 +864,5 @@
 (provide 'init.el)
 
 ;;; init.el ends here
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
