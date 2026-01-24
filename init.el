@@ -41,6 +41,29 @@
 (setq global-hl-line-sticky-flag nil)
 (global-hl-line-mode +1)
 (visual-line-mode -1)
+(use-package
+ emacs
+ ;builtin
+ :straight (:type built-in)
+ :init
+ (setq completion-cycle-threshold 3)
+ (setq read-extended-command-predicate
+       #'command-completion-default-include-p)
+ (setq tab-always-indent 'complete))
+
+(use-package
+ font-lock
+ ;builtin
+ :straight (:type built-in)
+ :config
+ (add-hook
+  'prog-mode-hook
+  (lambda ()
+    (if (eq window-system nil)
+        (font-lock-mode -1))
+    (toggle-truncate-lines +1)
+    (hs-minor-mode +1)
+    (hs-hide-initial-comment-block))))
 
 (let ((emacs-runtime-dir (concat (getenv "HOME") "/" ".cache" "/" "emacs-runtime")))
   (progn
@@ -66,13 +89,7 @@
     )
   )
 
-(use-package projectile
-  :bind
-  (:map global-map
-        ("C-x b"   . projectile-switch-to-buffer)))
-
 (global-prettify-symbols-mode +1)
-
 
 (use-package
   prettify-greek
@@ -85,7 +102,6 @@
                            prettify-symbols-alist
                            prettify-greek-lower
                            prettify-greek-upper)))))
-
 
 (if (and (eq system-type 'linux) (file-exists-p "/nix"))
     ;; nix
@@ -104,8 +120,6 @@
         (load-theme 'jc-themes-obscure t)
         (load-theme 'jc-themes-plain t))))
 
-(use-package quelpa)
-(use-package el-patch)
 (use-package
  evil
  :init
@@ -385,36 +399,17 @@
 (add-to-list 'eshell-modules-list 'eshell-tramp)
 (setq password-cache t)
 (setq password-cache-expiry 3600)
-
-(defun eshell/clear ()
-  "Clear the eshell buffer."
-  (let ((inhibit-read-only t))
-    (erase-buffer)))
-
 ;; C
 (require 'elide-head)
 (use-package c-eldoc)
 
-(use-package python-mode
-  :after (lsp))
-(use-package scala-mode
-  :after (lsp))
 (use-package project)
-
-(use-package lsp-mode :after (eglot)
-  :hook (scala-mode . lsp-mode)
-  )
-(use-package lsp-metals :after (lsp-mode))
-
-(use-package scala-mode
-  :after (lsp-metals))
+(use-package projectile :bind (:map global-map ("C-x b"   . projectile-switch-to-buffer)))
 
 (use-package dumb-jump)
 (use-package cmake-mode)
-(use-package company
-  :hook (prog-mode . company-mode))
-(use-package lsp-mode
-  :hook (java-mode . lsp) (scala-mode . lsp)
+(use-package company :hook (prog-mode . company-mode))
+(use-package lsp-mode :hook (java-mode . lsp) (scala-mode . lsp)
   :custom
   (lsp-headerline-breadcrumb-segments '(symbols))
   :bind-keymap
@@ -431,10 +426,12 @@
   '("-J-Dmetals.allow-multiline-string-formatting=off"))
  )
 
+(use-package scala-mode  :after (lsp-metals))
+(use-package python-mode :after (lsp-mode))
+
 (use-package typescript-mode)
 (use-package json-mode)
-(use-package yasnippet
- :hook (after-init . yas-global-mode))
+(use-package yasnippet :hook (after-init . yas-global-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -466,7 +463,6 @@
    (read-only-mode +1))
  :hook (compilation-filter . colorize-compilation-buffer))
 
-;;; Haskell
 (use-package lsp-haskell :after (lsp) :hook (haskell-mode . lsp))
 (use-package
  haskell-mode
@@ -475,9 +471,7 @@
  ((haskell-mode . turn-on-haskell-doc-mode)
   (haskell-mode . turn-on-haskell-indent)
   (haskell-mode . interactive-haskell-mode)))
-;;; Dart
 (use-package dart-mode)
-;;; Perl
 (use-package raku-mode)
 ;; https://raw.github.com/illusori/emacs-flymake-perlcritic/master/flymake-perlcritic.el
 (setq flymake-perlcritic-severity 5)
@@ -491,19 +485,6 @@
 (defmacro shell-command-on-buffer (&rest args)
   "Mark the whole buffer; pass ARGS to `shell-command-on-region'."
   `(shell-command-on-region (point-min) (point-max) ,@args))
-(use-package
- font-lock
- ;builtin
- :straight (:type built-in)
- :config
- (add-hook
-  'prog-mode-hook
-  (lambda ()
-    (if (eq window-system nil)
-        (font-lock-mode -1))
-    (toggle-truncate-lines +1)
-    (hs-minor-mode +1)
-    (hs-hide-initial-comment-block))))
 (use-package
  cperl-mode
  :straight (:type built-in)
@@ -623,13 +604,6 @@
  nix-mode
  :hook (after-init . nix-prettify-global-mode)
  :config (add-hook 'before-save-hook 'nix-format-before-save))
-(use-package
- elisp-autofmt ;builtin
- :straight (:type built-in)
- :when (file-exists-p "@autofmt@")
- :load-path "@autofmt@"
- :commands (elisp-autofmt-mode elisp-autofmt-buffer)
- :hook (emacs-lisp-mode . elisp-autofmt-mode))
 (use-package elisp-lint)
 (use-package elisp-refs)
 (use-package
@@ -645,7 +619,6 @@
 (use-package slime)
 ;; TeX
 (use-package auctex)
-(use-package xenops :hook (latex-mode . xenops-mode))
 ;;; Dired
 (use-package
  dired
@@ -735,27 +708,13 @@
  calendar ;builtin
  :straight (:type built-in)
  :config (require 'holidays))
-(use-package ag :config (lead-def "tg" 'ag)
-  )
+(use-package ag :config (lead-def "tg" 'ag))
 (use-package wgrep :after ag)
 (use-package wgrep-ag :after wgrep)
-;; WM
-(use-package
- emacs
- ;builtin
- :straight (:type built-in)
- :init
- (setq completion-cycle-threshold 3)
- (setq read-extended-command-predicate
-       #'command-completion-default-include-p)
- (setq tab-always-indent 'complete))
 
 (use-package bufler
   :bind
-  (:map global-map
-        ("C-x C-b"   . bufler))
-  )
-
+  (:map global-map ("C-x C-b"   . bufler)))
 
 (use-package flycheck
   :straight (flycheck :type git :host github :repo "flycheck/flycheck")
@@ -819,8 +778,7 @@
   :config
   (setq fcl-fringe-bitmap 'arrow-indicator)
   (setq-default indicate-empty-lines t)
-  :hook (after-init . global-fringe-current-line-mode)
-  )
+  :hook (after-init . global-fringe-current-line-mode))
 (use-package dr-racket-like-unicode
   :hook (prog-mode . dr-racket-like-unicode-mode))
 (use-package auto-highlight-symbol
@@ -854,7 +812,6 @@
 (use-package yaml-mode)
 (use-package protobuf-mode)
 
-
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
@@ -864,5 +821,3 @@
 (provide 'init.el)
 
 ;;; init.el ends here
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
