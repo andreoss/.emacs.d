@@ -3,11 +3,11 @@
     "elisp-autofmt": {
       "flake": false,
       "locked": {
-        "lastModified": 1774659199,
-        "narHash": "sha256-BGhmLtmjpmh0kxc8IStPAR8j1jpucEsE2qzcnV+A/yQ=",
+        "lastModified": 1774697409,
+        "narHash": "sha256-x0096dhRXx4ZaYYdPJu0wD0Q1Mnx7tr972BEycx75qY=",
         "ref": "refs/heads/main",
-        "rev": "3557cf2d2d21eb4a659d299d76c6a44fbe290824",
-        "revCount": 357,
+        "rev": "277e01797187efc621ef6b054307884d56959d23",
+        "revCount": 358,
         "type": "git",
         "url": "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git"
       },
