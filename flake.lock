@@ -3,11 +3,11 @@
     "elisp-autofmt": {
       "flake": false,
       "locked": {
-        "lastModified": 1774697409,
-        "narHash": "sha256-x0096dhRXx4ZaYYdPJu0wD0Q1Mnx7tr972BEycx75qY=",
+        "lastModified": 1774745754,
+        "narHash": "sha256-HxLNCDCDPKl1De5+kf8+b1BCS9ayUIc8HQb9tmXiM6w=",
         "ref": "refs/heads/main",
-        "rev": "277e01797187efc621ef6b054307884d56959d23",
-        "revCount": 358,
+        "rev": "4436178ae0954c5c52d27571e7f2c5c31f5638b2",
+        "revCount": 361,
         "type": "git",
         "url": "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git"
       },
@@ -22,11 +22,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1774715725,
-        "narHash": "sha256-NQxGm28v5E/kszUDJKFiQXBw2NSi7MpYVcqDQQT/+dM=",
+        "lastModified": 1774753964,
+        "narHash": "sha256-vecn1RNL+ur7ovkGrgWH5AyUa7RpI4nLjAHQlXY8CRA=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "ea735098e185ae5764c5676f4df97acb95b7549e",
+        "rev": "d3ba96f83fe40914394fc3f58f705c0723cdceaf",
         "type": "github"
       },
       "original": {
