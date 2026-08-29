@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "elisp-autofmt": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1786424162,
-        "narHash": "sha256-5UHY8xkdVlB+YZdXdaDYBeUg0tFYuU2gdNlVspm4Ons=",
-        "ref": "refs/heads/main",
-        "rev": "a41fe15d3d2c69a6f069bab4d90caab8a4b62be7",
-        "revCount": 412,
-        "type": "git",
-        "url": "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git"
-      }
-    },
     "emacs-overlay": {
       "inputs": {
         "nixpkgs": "nixpkgs",
@@ -120,7 +104,6 @@
     },
     "root": {
       "inputs": {
-        "elisp-autofmt": "elisp-autofmt",
         "emacs-overlay": "emacs-overlay",
         "flake-utils": "flake-utils",
         "jc-themes": "jc-themes",

@@ -7,10 +7,6 @@
       url = "gitlab:andreoss/jc-themes/master";
       flake = false;
     };
-    elisp-autofmt = {
-      url = "git+https://codeberg.org/ideasman42/emacs-elisp-autofmt.git";
-      flake = false;
-    };
   };
   description = "emacs";
   outputs =
@@ -20,7 +16,6 @@
       flake-utils,
       emacs-overlay,
       jc-themes,
-      elisp-autofmt,
       ...
     }:
     {
@@ -114,7 +109,6 @@
                 config = builtins.readFile (
                   pkgs.replaceVars ./init.el {
                     jc = jc-themes;
-                    autofmt = elisp-autofmt;
                     lein = pkgs.leiningen.out;
                     mysql_jdbc = pkgs.mysql_jdbc.out;
                     psql_jdbc = pkgs.postgresql_jdbc.out;
