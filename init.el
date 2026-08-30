@@ -1,4 +1,4 @@
-;;; init --- ...  -*- lexical-binding: nil -*-
+;;; init.el --- user init file  -*- lexical-binding: nil -*-
 ;;; Commentary:
 ;;; Code:
 (require 'cl-lib)
@@ -110,28 +110,23 @@
     (hs-hide-initial-comment-block))))
 
 (let ((emacs-runtime-dir (concat (getenv "HOME") "/" ".cache" "/" "emacs-runtime")))
-  (progn
-    (make-directory emacs-runtime-dir t)
-    (setq
-     backup-by-copying t
-     delete-old-versions nil
-     backup-directory-alist `(("." . ,(concat emacs-runtime-dir "/" "backup")))
-     kept-new-versions 10
-     kept-old-versions 10
-     version-control t)
-    (setf kill-buffer-delete-auto-save-files nil)
-
-    (setq auto-save-timeout   5
-          auto-save-interval 10
-          auto-save-file-name-transforms
-          `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-             ,(concat emacs-runtime-dir "/auto-save/"  "\\2") t)))
-
-    (setq lock-file-name-transforms
-          `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-             ,(concat emacs-runtime-dir "/lock/"  "\\2") t)))
-    )
-  )
+  (make-directory emacs-runtime-dir t)
+  (setq
+   backup-by-copying t
+   delete-old-versions nil
+   backup-directory-alist `(("." . ,(concat emacs-runtime-dir "/" "backup")))
+   kept-new-versions 10
+   kept-old-versions 10
+   version-control t)
+  (setf kill-buffer-delete-auto-save-files nil)
+  (setq auto-save-timeout   5
+        auto-save-interval 10
+        auto-save-file-name-transforms
+        `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+           ,(concat emacs-runtime-dir "/auto-save/"  "\\2") t)))
+  (setq lock-file-name-transforms
+        `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+           ,(concat emacs-runtime-dir "/lock/"  "\\2") t))))
 
 (global-prettify-symbols-mode +1)
 
@@ -191,10 +186,7 @@
   evil-motion-state-cursor '(bar)
   evil-visual-state-cursor '("#11312F" hbar . hollow))
  (cl-loop
-  for
-  state
-  in
-  '(insert normal)
+  for state in '(insert normal)
   do
   (evil-global-set-key state (kbd "C-a") 'beginning-of-line)
   (evil-global-set-key state (kbd "C-h") 'delete-backward-char)
@@ -293,7 +285,7 @@
 (require 'uniquify)
 
 (defun halve-other-window-height ()
-  "Expand current window to use half of the other window\\='s lines."
+  "Halve the height of the next window."
   (interactive)
   (enlarge-window (/ (window-height (next-window)) 2)))
 
@@ -516,9 +508,8 @@
 (defmacro save-current-point (body)
   "Save current point; execute BODY; go back to the point."
   `(let ((p (point)))
-     (progn
-       ,body
-       (goto-char p))))
+     ,body
+     (goto-char p)))
 (defmacro shell-command-on-buffer (&rest args)
   "Mark the whole buffer; pass ARGS to `shell-command-on-region'."
   `(shell-command-on-region (point-min) (point-max) ,@args))
@@ -658,16 +649,15 @@
   :init (require 'dired-x)
  :custom (dired-omit-files "^.$\\|^#\\|~$\\|^.#")
  :config
- (defun kill-all-dired-buffers ()
-   "Kill all dired buffers."
-   (interactive)
-   (save-excursion
-     (let ((count 0))
-       (dolist (buffer (buffer-list))
-         (set-buffer buffer)
-         (when (equal major-mode 'dired-mode)
-           (setq count (1+ count))
-           (kill-buffer buffer)))
+  (defun kill-all-dired-buffers ()
+    "Kill all dired buffers."
+    (interactive)
+    (save-excursion
+      (let ((count 0))
+        (dolist (buffer (buffer-list))
+          (when (equal major-mode 'dired-mode)
+            (setq count (1+ count))
+            (kill-buffer buffer)))
        (message "Killed %i dired buffer(s)." count))))
  (add-hook 'dired-mode-hook 'hl-line-mode)
  (add-hook 'dired-mode-hook 'dired-omit-mode)
@@ -743,6 +733,8 @@
 
 (use-package flycheck
   :straight (flycheck :type git :host github :repo "flycheck/flycheck")
+  :custom (flycheck-indication-mode 'right-fringe)
+  :hook (after-init . global-flycheck-mode)
   :config
   (define-fringe-bitmap 'flycheck-fringe-indicator
     (vector #b0000000000000000
@@ -756,9 +748,6 @@
             #b0000000000000000
             #b0000000000000000)
     nil nil 'center)
-  :custom (flycheck-indication-mode 'right-fringe)
-  :hook (after-init . global-flycheck-mode)
-  :config
   (flycheck-define-error-level 'error
     :severity 2
     :overlay-category 'flycheck-error-overlay
