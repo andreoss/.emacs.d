@@ -4,19 +4,7 @@
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
-;; The :straight keyword is only used as metadata for the Nix package
-;; builder (emacsWithPackagesFromUsePackage); it is inert at runtime.
-;; Register it as a recognized no-op keyword so use-package does not warn
-;; about an unrecognized keyword, both when this file is byte-compiled
-;; (the Nix build) and when it is loaded.
 (eval-and-compile
-  ;; The :straight keyword is only used as metadata for the Nix package
-  ;; builder (emacsWithPackagesFromUsePackage); under Nix the packages are
-  ;; already provided, so the keyword is inert at runtime and would otherwise
-  ;; be reported as "Unrecognized keyword". When straight.el is active it
-  ;; registers its own :straight handler (which actually installs packages),
-  ;; so we must NOT override that -- otherwise straight stops installing
-  ;; packages. Only register the no-op when straight has not claimed it.
   (unless (memq :straight use-package-keywords)
     (add-to-list 'use-package-keywords :straight)
     (defun use-package-normalize/:straight (_name _keyword args)
@@ -101,7 +89,6 @@
 (visual-line-mode -1)
 (use-package
  emacs
- ;builtin
  :straight (:type built-in)
  :init
  (setq completion-cycle-threshold 3)
@@ -111,7 +98,6 @@
 
 (use-package
  font-lock
- ;builtin
  :straight (:type built-in)
  :config
  (add-hook
@@ -165,7 +151,6 @@
     ;; nix
     (use-package
       jc-themes
-                                        ;builtin
       :when (file-exists-p "@jc@")
       :load-path "@jc@"
       :config
@@ -199,11 +184,11 @@
  (add-function
   :after (symbol-function 'recenter-top-bottom) #'evil-show-file-info)
  (setq
-  evil-insert-state-cursor '("#952111" (bar . 3)) ;;
-  evil-normal-state-cursor '("#33A050" (hbar . 4)) ;;
-  evil-operator-state-cursor '(box) ;;
-  evil-emacs-state-cursor '(bar) ;;
-  evil-motion-state-cursor '(bar) ;;
+  evil-insert-state-cursor '("#952111" (bar . 3))
+  evil-normal-state-cursor '("#33A050" (hbar . 4))
+  evil-operator-state-cursor '(box)
+  evil-emacs-state-cursor '(bar)
+  evil-motion-state-cursor '(bar)
   evil-visual-state-cursor '("#11312F" hbar . hollow))
  (cl-loop
   for
@@ -512,7 +497,6 @@
  (java-mode . lsp-java-lens-mode))
 (use-package
  ansi-color
- ;builtin
  :straight (:type built-in)
  :init
  (defun colorize-compilation-buffer ()
@@ -546,7 +530,6 @@
 (use-package
  cperl-mode
  :straight (:type built-in)
- ;builtin
  :after (evil)
  :mode "\\.pl\\'"
  :init
@@ -590,33 +573,29 @@
 
 (general-create-definer lead-def :keymaps 'lead-map)
 (general-def universal-argument-map "SPC u" 'universal-argument-more)
-(lead-def ;;
+(lead-def
  "SPC" '("M-x" . execute-extended-command)
- ;;
  "c" (cons "code" (make-sparse-keymap))
- ;;
- "cb" 'flymake-show-buffer-diagnostics ;;
- "cc" 'compile ;;
- "cn" 'next-error ;;
- "cp" 'previous-error ;;
- "cr" 'recompile ;;
- "cx" 'kill-compilation ;;
- "c=" 'indent-region-or-buffer ;:
+ "cb" 'flymake-show-buffer-diagnostics
+ "cc" 'compile
+ "cn" 'next-error
+ "cp" 'previous-error
+ "cr" 'recompile
+ "cx" 'kill-compilation
+ "c=" 'indent-region-or-buffer
  "s" (cons "shell" (make-sparse-keymap))
- ;;
- "ss" 'project-shell ;;
- "sv" 'project-vc-dir ;;
- "sc" 'project-shell-command ;;
- "sg" 'project-search ;;
- "se" 'project-eshell ;;
- "sa" 'project-async-shell-command ;;
- "sf" 'project-find-file ;;
- "sd" 'project-find-dir ;;
- "sg" 'project-find-regexp ;;
+ "ss" 'project-shell
+ "sv" 'project-vc-dir
+ "sc" 'project-shell-command
+ "sg" 'project-search
+ "se" 'project-eshell
+ "sa" 'project-async-shell-command
+ "sf" 'project-find-file
+ "sd" 'project-find-dir
+ "sg" 'project-find-regexp
  "g" (cons "git" (make-sparse-keymap))
- ;;
- "gg" 'magit-dispatch ;;
- "gs" 'magit-status ;;
+ "gg" 'magit-dispatch
+ "gs" 'magit-status
  )
 (general-def
  "M-j"
@@ -637,8 +616,8 @@
  :when (file-exists-p "~/Maildir")
  :after (general)
  :init
- (lead-def ;;
-  "m m i"
+  (lead-def
+   "m m i"
   '(lambda ()
      (interactive)
      (notmuch-tree "tag:inbox"))
@@ -670,8 +649,8 @@
 ;; Clojure
 (use-package
  cider
- :custom ;;
- (cider-repl-use-pretty-printing t)
+ :custom
+  (cider-repl-use-pretty-printing t)
  (cider-repl-display-help-banner nil))
 ;; Common Lisp
 (use-package slime)
@@ -680,7 +659,6 @@
 ;;; Dired
 (use-package
  dired
- ;builtin
  :straight (:type built-in)
  :after (evil)
  :init (require' dired-x)
@@ -700,13 +678,13 @@
  (add-hook 'dired-mode-hook 'hl-line-mode)
  (add-hook 'dired-mode-hook 'dired-omit-mode)
  (evil-define-key
-  'normal dired-mode-map ;;
-  (kbd "g h") 'dired-hide-details-mode ;;
-  (kbd "g o") 'dired-omit-mode ;;
-  (kbd "C-<return>") 'dired-subtree-insert ;;
-  (kbd "M-<return>") 'dired-insert-subdir ;;
-  (kbd ",") 'dired-insert-subdir ;;
-  (kbd "C-o") 'dired-up-directory ;;
+  'normal dired-mode-map
+  (kbd "g h") 'dired-hide-details-mode
+  (kbd "g o") 'dired-omit-mode
+  (kbd "C-<return>") 'dired-subtree-insert
+  (kbd "M-<return>") 'dired-insert-subdir
+  (kbd ",") 'dired-insert-subdir
+  (kbd "C-o") 'dired-up-directory
   (kbd ".") 'dired-up-directory)
  (evil-define-key
   'insert wdired-mode-map (kbd "<return>") 'wdired-finish-edit)
@@ -746,7 +724,7 @@
 (use-package rainbow-mode)
 (use-package ack :config (lead-def "ta" 'ack))
 (use-package
- flyspell ;builtin
+ flyspell
  :straight (:type built-in)
  :config
  (require 'ispell)
@@ -758,7 +736,7 @@
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
 ;; Org
 (use-package
- calendar ;builtin
+ calendar
  :straight (:type built-in)
  :config (require 'holidays))
 (use-package ag :config (lead-def "tg" 'ag))
