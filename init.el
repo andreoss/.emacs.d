@@ -1,10 +1,6 @@
 ;;; init --- ...  -*- lexical-binding: nil -*-
 ;;; Commentary:
 ;;; Code:
-;; (setq inhibit-message t)
-;; (add-hook
-;;  'after-init-hook ;;
-;;  #'(lambda () (setq inhibit-message nil)))
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
@@ -754,10 +750,9 @@
  :straight (:type built-in)
  :config
  (require 'ispell)
- (setq ispell-program-name
-       (or (executable-find "hunspell") (executable-find "ispell")))
+  (setq ispell-program-name
+        (or (executable-find "hunspell") (executable-find "ispell")))
 
-;; (ispell-change-dictionary (if (eq system-type 'gnu/linux) "en_GB" "en-GB"))
  (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
  (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode))))
