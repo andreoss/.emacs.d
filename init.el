@@ -159,7 +159,7 @@
     :straight (jc-themes :type git :host gitlab :repo "andreoss/jc-themes")
     :after (dired dired-subtree evil)
     :config
-    (if (eq window-system 'nil)
+    (if (eq window-system nil)
         (load-theme 'jc-themes-obscure t)
         (load-theme 'jc-themes-plain t))))
 
@@ -322,7 +322,6 @@
  (define-key 'evil-window-map (kbd "8") 'winum-select-window-8)
  (define-key 'evil-window-map (kbd "9") 'winum-select-window-9)
  (define-key 'evil-window-map (kbd "0") 'winum-select-window-0-or-10)
- (winner-mode +1)
  (define-key 'evil-window-map (kbd "s") 'split-window-vertically)
  (define-key 'evil-window-map (kbd "v") 'split-window-horizontally)
  (define-key 'evil-window-map (kbd "e") 'halve-other-window-height)
@@ -350,10 +349,11 @@
 (use-package
  ace-window
  :custom
- (define-key 'evil-window-map (kbd "a") 'ace-window)
  (window-divider-default-right-width 3)
  (window-divider-default-places 'right-only)
- :config (window-divider-mode +1))
+ :config
+ (define-key 'evil-window-map (kbd "a") 'ace-window)
+ (window-divider-mode +1))
 (defun switch-to-previous-buffer ()
   "Switch to previous buffer."
   (interactive)
@@ -587,7 +587,6 @@
  "ss" 'project-shell
  "sv" 'project-vc-dir
  "sc" 'project-shell-command
- "sg" 'project-search
  "se" 'project-eshell
  "sa" 'project-async-shell-command
  "sf" 'project-find-file
@@ -661,7 +660,7 @@
  dired
  :straight (:type built-in)
  :after (evil)
- :init (require' dired-x)
+  :init (require 'dired-x)
  :custom (dired-omit-files "^.$\\|^#\\|~$\\|^.#")
  :config
  (defun kill-all-dired-buffers ()
@@ -849,7 +848,7 @@
                 (select-frame frame)
                 (set-frame-font "Terminus"))))
 
-(provide 'init.el)
+(provide 'init)
 
 ;;; init.el ends here
 
