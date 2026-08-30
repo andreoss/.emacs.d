@@ -1,4 +1,4 @@
-;;; init --- ...
+;;; init --- ...  -*- lexical-binding: nil -*-
 ;;; Commentary:
 ;;; Code:
 ;; (setq inhibit-message t)
@@ -8,6 +8,60 @@
 (require 'cl-lib)
 (require 'use-package)
 (require 'seq)
+;; The :straight keyword is only used as metadata for the Nix package
+;; builder (emacsWithPackagesFromUsePackage); it is inert at runtime.
+;; Register it as a recognized no-op keyword so use-package does not warn
+;; about an unrecognized keyword, both when this file is byte-compiled
+;; (the Nix build) and when it is loaded.
+(eval-and-compile
+  (add-to-list 'use-package-keywords :straight)
+  (defun use-package-normalize/:straight (_name _keyword args)
+    args)
+  (defun use-package-handler/:straight (_name _keyword _arg rest state)
+    (use-package-process-keywords _name rest state)))
+;; Make sure mouse-wheel events are defined even in non-windowed sessions
+;; (centered-cursor-mode references them at load time).
+(require 'mwheel)
+;; Silence byte-compiler warnings for functions and variables that are
+;; provided by packages loaded via use-package at runtime.
+(defvar auto-revert-verbose)
+(defvar global-hl-line-sticky-flag)
+(defvar flymake-perlcritic-severity)
+(defvar dired-x-hands-off-my-keys)
+(defvar ejc-leiningen-home)
+(defvar ejc-jdbc-drivers-classpath)
+(declare-function minibuffer-keyboard-quit "minibuffer")
+(declare-function scroll-bar-mode "scroll-bar")
+(declare-function hs-hide-initial-comment-block "hideshow")
+(declare-function evil-mode "evil")
+(declare-function evil-define-key* "evil")
+(declare-function evil-global-set-key "evil")
+(declare-function evil-show-file-info "evil")
+(declare-function evil-snipe-mode "evil-snipe")
+(declare-function evil-snipe-override-mode "evil-snipe")
+(declare-function evil-commentary-mode "evil-commentary")
+(declare-function evil-goggles-mode "evil-goggles")
+(declare-function evil-collection-init "evil-collection")
+(declare-function vertico-mode "vertico")
+(declare-function marginalia-mode "marginalia")
+(declare-function winum-mode "winum")
+(declare-function default-text-scale-increase "default-text-scale")
+(declare-function default-text-scale-decrease "default-text-scale")
+(declare-function global-git-gutter-mode "git-gutter")
+(declare-function global-centered-cursor-mode "centered-cursor-mode")
+(declare-function envrc-global-mode "envrc")
+(declare-function flycheck-define-error-level "flycheck")
+(declare-function dired-subtree-toggle "dired-subtree")
+(declare-function dired-subtree-cycle "dired-subtree")
+(declare-function general-define-key "general")
+(declare-function ansi-color-apply-on-region "ansi-color")
+(declare-function lsp-avy-lens "lsp-mode")
+(declare-function bash-completion-setup "bash-completion")
+(declare-function ejc-set-max-rows "ejc-sql")
+(declare-function ejc-set-fetch-size "ejc-sql")
+(declare-function ejc-set-show-too-many-rows-message "ejc-sql")
+(declare-function ejc-set-column-width-limit "ejc-sql")
+(declare-function ejc-set-use-unicode "ejc-sql")
 (if (not (fboundp 'seq-keep))
     (defun seq-keep (function sequence)
       "Apply FUNCTION to SEQUENCE and return the list of all the non-nil results."
@@ -103,7 +157,7 @@
                            prettify-greek-lower
                            prettify-greek-upper)))))
 
-(if (and (eq system-type 'linux) (file-exists-p "/nix"))
+(if (and (eq system-type 'gnu/linux) (file-exists-p "/nix"))
     ;; nix
     (use-package
       jc-themes
@@ -124,8 +178,8 @@
  evil
  :init
  (setq evil-want-keybinding nil)
- (evil-mode +1)
  :config
+ (evil-mode +1)
  (define-key evil-normal-state-map (kbd "C-z") 'evil-normal-state)
  (define-key evil-emacs-state-map (kbd "C-z") 'evil-emacs-state)
  (define-key evil-insert-state-map (kbd "C-z") 'evil-normal-state)
@@ -180,7 +234,7 @@
 (use-package
  evil-commentary
  :after (evil)
- :init (evil-commentary-mode +1))
+ :config (evil-commentary-mode +1))
 (use-package
  avy
  :after (evil)
@@ -250,7 +304,7 @@
 (require 'uniquify)
 
 (defun halve-other-window-height ()
-  "Expand current window to use half of the other window's lines."
+  "Expand current window to use half of the other window\\='s lines."
   (interactive)
   (enlarge-window (/ (window-height (next-window)) 2)))
 
@@ -294,9 +348,9 @@
  (setq-default windmove-wrap-around t)
  (windmove-default-keybindings)
  (windmove-swap-states-default-keybindings)
- (setq
-  idle-update-delay 2
-  jit-lock-defer-time 0
+  (setq
+   which-func-update-delay 2
+   jit-lock-defer-time 0
   jit-lock-stealth-time 0.2
   jit-lock-stealth-verbose nil)
  ;; Prefer vertical splits
@@ -318,9 +372,9 @@
 (defmacro hook! (hook &rest body)
   "Extend HOOK with BODY (wrapped in lambda if necessary)."
   (cond
-   ((and (eq (length body) 1) (symbolp (first body)))
-    (let ((s (first body)))
-      `(add-hook ',hook ',s)))
+    ((and (eq (length body) 1) (symbolp (cl-first body)))
+     (let ((s (cl-first body)))
+       `(add-hook ',hook ',s)))
    (t
     `(add-hook ',hook (lambda () ,@body)))))
 (hook! shell-mode-hook
@@ -670,13 +724,11 @@
 (define-key global-map "\C-x\C-d" 'dired-jump)
 (define-key global-map "\C-x\C-j" 'dired-jump-other-window)
 (require 'wdired)
-(add-hook
- 'dired-load-hook
- (lambda ()
-   ;; Set dired-x global variables here.  For example:
-   (setq wdired-allow-to-change-permissions t)
-   (setq dired-x-hands-off-my-keys nil)
-   (load "dired-x")))
+(with-eval-after-load 'dired
+  ;; Set dired-x global variables here.  For example:
+  (setq wdired-allow-to-change-permissions t)
+  (setq dired-x-hands-off-my-keys nil)
+  (load "dired-x"))
 (defun dired-sort* ()
   "Sort Dired listings with directories first."
   (save-excursion
@@ -684,9 +736,7 @@
       (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
     (set-buffer-modified-p nil)))
-(defadvice dired-readin
-    (after dired-after-updating-hook first () activate)
-  "Sort Dired listings with directories first before adding marks."
+(define-advice dired-readin (:after (&rest _) "Sort Dired listings with directories first before adding marks.")
   (dired-sort*))
 
 (use-package rainbow-mode)
@@ -821,3 +871,7 @@
 (provide 'init.el)
 
 ;;; init.el ends here
+
+;; Local Variables:
+;; byte-compile-warnings: (not docstrings)
+;; End:
