@@ -14,11 +14,19 @@
 ;; about an unrecognized keyword, both when this file is byte-compiled
 ;; (the Nix build) and when it is loaded.
 (eval-and-compile
-  (add-to-list 'use-package-keywords :straight)
-  (defun use-package-normalize/:straight (_name _keyword args)
-    args)
-  (defun use-package-handler/:straight (_name _keyword _arg rest state)
-    (use-package-process-keywords _name rest state)))
+  ;; The :straight keyword is only used as metadata for the Nix package
+  ;; builder (emacsWithPackagesFromUsePackage); under Nix the packages are
+  ;; already provided, so the keyword is inert at runtime and would otherwise
+  ;; be reported as "Unrecognized keyword". When straight.el is active it
+  ;; registers its own :straight handler (which actually installs packages),
+  ;; so we must NOT override that -- otherwise straight stops installing
+  ;; packages. Only register the no-op when straight has not claimed it.
+  (unless (memq :straight use-package-keywords)
+    (add-to-list 'use-package-keywords :straight)
+    (defun use-package-normalize/:straight (_name _keyword args)
+      args)
+    (defun use-package-handler/:straight (_name _keyword _arg rest state)
+      (use-package-process-keywords _name rest state))))
 ;; Make sure mouse-wheel events are defined even in non-windowed sessions
 ;; (centered-cursor-mode references them at load time).
 (require 'mwheel)
