@@ -352,12 +352,8 @@
  (window-divider-default-right-width 3)
  (window-divider-default-places 'right-only)
  :config
- (define-key 'evil-window-map (kbd "a") 'ace-window)
+  (define-key 'evil-window-map (kbd "a") 'ace-window)
  (window-divider-mode +1))
-(defun switch-to-previous-buffer ()
-  "Switch to previous buffer."
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
 (defmacro hook! (hook &rest body)
   "Extend HOOK with BODY (wrapped in lambda if necessary)."
   (cond
@@ -433,7 +429,6 @@
     "magenta4"
     "cyan4"
     "gray44"]))
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'eshell-mode-hook 'ansi-color-for-comint-mode-on)
 (use-package bash-completion :config (bash-completion-setup))
 (require 'em-tramp)
